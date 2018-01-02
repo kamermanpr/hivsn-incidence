@@ -1,0 +1,10 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.DS_store
+.dropbox
+icon?
+*_cache/
+raw-data/data-august-2017.xlsx
+
