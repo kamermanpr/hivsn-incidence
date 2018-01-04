@@ -1,0 +1,674 @@
+---
+title: 'HIV-SN incidence and logistic regression modeling'
+author: 'Peter Kamerman and Prinisha Pillay'
+date: "`r format(Sys.Date(), '%d %B %Y')`"
+output: 
+    html_document:
+        theme: yeti
+        highlight: pygments
+        code_folding: show
+        toc: true
+        toc_float: true
+---
+
+****
+
+**This script calculates the cumulative incidence and incidence rate of HIV-SN, and models the risk factors for HIV-SN.**
+
+**All bootstrap estimates are bias-corrected and accelerated (bca) intervals, based on 1000 replicates.**
+
+****
+
+```{r setup, include = FALSE}
+# Load packages 
+library(boot)
+library(car)
+library(dplyr)
+library(rms)
+library(survival)
+library(survminer)
+
+# knitr options
+knitr::opts_chunk$set(warning = FALSE,
+                      message = FALSE, 
+                      cache = TRUE,
+                      fig.align = 'center')
+
+# Load cleaned data
+original_data <- readr::read_rds('./data/clean_data.rds')
+```
+
+# Quick data inspection
+```{r quick_look}
+glimpse(original_data)
+```
+
+# Data cleaning
+```{r data_cleaning}
+############################################################
+#                                                          #
+#       Data incidence/survival analyses (all rows)        #
+#                                                          #
+############################################################
+# Pare down original data to core columns
+data <- original_data %>%
+    # Select columns
+    select(ID, 
+           visit_number, 
+           visit_day, 
+           hivsn_present,
+           pain) 
+    
+# Add approximate_day column to 'data'
+## Approximate day is the mid-point between two succesive visits 
+## if the next visit was SN+, otherwise approximate_day = visit_day
+
+### Create filter of participants who developed SN 
+sn_filter <- unique(data$ID[data$hivsn_present == 'yes'])
+
+### SN+ group
+approx_sn <- data %>%
+    # Filter for participants that developed SN
+    filter(ID %in% sn_filter) %>%
+    # Group by ID
+    group_by(ID) %>%
+    # Approximate days
+    mutate(approximate_day = ifelse(visit_number == 1,
+                                    yes = 0,
+                                    no = ifelse(hivsn_present == 'yes',
+                                                yes = (visit_day + lag(visit_day)) / 2,
+                                                no = visit_day)),
+           approximate_day = as.integer(round(approximate_day))) %>%
+    # Add person years
+    mutate(visit_year = visit_day / 365.25,
+           approximate_year = approximate_day / 365.25)
+
+### SN- group
+approx_no_sn <- data %>%
+    # Filter for participants that did not develop SN
+    filter(!ID %in% sn_filter) %>%
+    # Group by ID
+    group_by(ID) %>%
+    # approximate days (because no SN developed, use visit_day)
+    mutate(approximate_day = visit_day,
+           approximate_day = as.integer(round(approximate_day))) %>%
+    # Add person years
+    mutate(visit_year = visit_day / 365.25,
+           approximate_year = approximate_day / 365.25)
+
+### Put approx_* data frames together
+data <- bind_rows(approx_sn, approx_no_sn)
+
+### Quick look
+glimpse(data)
+
+############################################################
+#                                                          #
+#               Data for cumulative incidence              #
+#                                                          #
+############################################################
+# Extract 3 and 6 month periods for cumulative incidence 
+# NB data censored at last screening within 3/6 month period.
+
+## Generate time filters
+months_6 <- round(lubridate::dyears(0.5) / lubridate::ddays(1)) 
+months_3 <- round(lubridate::dyears(0.25) / lubridate::ddays(1))
+    
+# Extract SN+ within 6-month period
+df_6months <- data %>%
+    # Filter values within 6 months
+    filter(visit_day <= months_6) %>%
+    # Group by ID 
+    group_by(ID) %>%
+    # Filter max visit_day
+    filter(visit_day == max(visit_day))
+
+# Quick look
+glimpse(df_6months)
+
+# Extract SN+ within first 3-month period
+df_3months <- data %>%
+    # Filter values within 6 months
+    filter(visit_day <= months_3) %>%
+    # Group by ID 
+    group_by(ID) %>%
+    # Filter max visit_day
+    filter(visit_day == max(visit_day))
+
+# Quick look
+glimpse(df_3months)
+
+# Extract SN+ within second 3-month period
+df_3to6months <-  df_6months %>%
+    # Filter out those with SN with first 3 months
+    filter(!ID %in% df_3months[df_3months$hivsn_present == 'yes', ]$ID) 
+
+# Quick look
+glimpse(df_3to6months)
+
+############################################################
+#                                                          #
+#                 Data for incidence rate                  #
+#                                                          #
+############################################################
+# Only need full 6 month period
+    
+# Extract SN+ for full period
+py_6months <- data %>%
+    # Group by ID 
+    group_by(ID) %>%
+    # Filter max visit_day
+    filter(visit_day == max(visit_day))
+
+# Quick look
+glimpse(py_6months)
+
+############################################################
+#                                                          #
+#                Data for survival analysis                #
+#                                                          #
+############################################################
+# Create a data frame of SN+ patients
+sn <- data %>%
+    # Select columns
+    select(ID, 
+           visit_number, 
+           visit_day, 
+           visit_year,
+           approximate_day,
+           approximate_year,
+           hivsn_present,
+           pain) %>%
+    # Add counting columns
+    ## SN+ and SN-
+    mutate(sn_count = ifelse(hivsn_present == 'yes',
+                             yes = 1,
+                             no = 0)) %>%
+    # Create counting index to identify when SN first develop
+    ## Sum sn_count
+    group_by(ID) %>%
+    mutate(sn_count = cumsum(sn_count)) %>%
+    # Filter by sn_count == 1 to get when SN first developed
+    filter(sn_count == 1) %>%
+    # Remove sn_count
+    select(-sn_count)
+
+# Create data frame of SN- patients
+no_sn <- data %>%
+    # Select columns
+    select(ID, 
+           visit_number, 
+           visit_day, 
+           visit_year,
+           approximate_day,
+           approximate_year,
+           hivsn_present,
+           pain) %>%
+    # Filter out SN+ patient with the filter created earlier
+    filter(!ID %in% sn_filter) %>%
+    # Filter out 'repeats' (only the data at the last visit)
+    group_by(ID) %>%
+    mutate(max_visits = max(visit_number)) %>%
+    filter(visit_number == max_visits) %>%
+    select(-max_visits) 
+
+# Merge the SN+ and SN- data frames
+df_surv <- sn %>%
+    full_join(no_sn) %>%
+    # New column with recoded hivsn_present data for survival analysis
+    mutate(hivsn_coded = ifelse(hivsn_present == 'yes',
+                                  yes = 1, # SN+
+                                  no = 0)) # SN-
+
+# Add a new column with painful SN (but only if they have SN)
+df_surv <- df_surv %>%
+    mutate(hivsn_painful = ifelse(hivsn_present == 'yes' & pain == 'yes',
+                                  yes = 'yes',
+                                  no = ifelse(hivsn_present == 'yes' &
+                                                  pain == 'no',
+                                              yes = 'no',
+                                              no = NA))) 
+
+# Quick look
+glimpse(df_surv)
+```
+
+# Cumulative incidence
+
+Cumulative incidence measures the number of new cases per person in the population over a defined period of time (i.e., a fixed follow-up period). Therefore, to calculate cumulative incidence we defined a fixed 6-month follow-up period, and also subdivided this period into a 1^st^ and 2^nd^ 3-month period of this follow-up. To standardize the periods of follow-up, data were cleaned such that only visits falling into the indicated periods ((0-3 months], (3-6 months], (0-6 months]) were used to define SN status. As such, participant's whose last clinic visit occurred after 91 days (end of first 3-month interval) or 182 days (end of 6-month interval), and who were found to have new-onset SN at this visit, were recorded as SN-free over the 3 or 6-month period of follow-up. This conservative strategy may have lead to a slight under-estimation of the cumulative incidence of SN.  
+
+## Boostrap function
+```{r incidence_bootstrap}
+## Formula for cases / person year
+cases_boot <- function(data, i){
+    foo <- data[i, ]
+    tab <- table(foo$hivsn_present)
+    prop <- round(prop.table(tab) * 100)
+    case <- prop * 10
+    case[2]
+}
+```
+
+## Six-month period
+```{r six_months}
+# Tabulate SN+/SN-
+tab_sn <- table(df_6months$hivsn_present)
+
+# Calculate proportions, convert to percent
+prop_sn <- round(prop.table(tab_sn) * 100) 
+
+# Bootstrap cases per 1000 patients
+cases_ci <- boot.ci(boot.out = boot(data = df_6months, 
+                                    statistic = cases_boot, 
+                                    R = 1000, 
+                                    stype = 'i'),
+                    type = 'bca')
+
+# Create kable data frame
+kable_df <- as.data.frame(tab_sn) %>%
+    rename(Count = Freq) %>%
+    left_join(as.data.frame(prop_sn)) %>%
+    rename(Percentage = Freq) %>%
+    bind_cols(Incidence = c('', paste(cases_ci$t0))) %>%
+    bind_cols(CI95 = c('', paste(cases_ci$bca[4],' - ', cases_ci$bca[5])))
+
+# Convert to dataframe and print table
+knitr::kable(kable_df,
+             caption = 'Cumulative incidence of SN in 83 HIV+ patients over a 6-month period',
+             col.names = c('SN present', 'Count', 'Percentage', 
+                           'Cases per 1000 patients', '95% conf interval'),
+             align = 'lrrrr')
+```
+
+## First 3-month period
+```{r first_three_months}
+# Tabulate SN+/SN-
+tab_sn <- table(df_3months$hivsn_present)
+
+# Calculate proportions, convert to percent
+prop_sn <- round(prop.table(tab_sn) * 100) 
+
+# Bootstrap cases per 1000 patients
+cases_boot <- function(data, i){
+    foo <- data[i, ]
+    tab <- table(foo$hivsn_present)
+    prop <- round(prop.table(tab) * 100)
+    case <- prop * 10
+    case[2]
+}
+
+cases_ci <- boot.ci(boot.out = boot(data = df_3months, 
+                                    statistic = cases_boot, 
+                                    R = 1000, 
+                                    stype = 'i'),
+                    type = 'bca')
+
+# Create kable data frame
+kable_df <- as.data.frame(tab_sn) %>%
+    rename(Count = Freq) %>%
+    left_join(as.data.frame(prop_sn)) %>%
+    rename(Percentage = Freq) %>%
+    bind_cols(Incidence = c('', paste(cases_ci$t0))) %>%
+    bind_cols(CI95 = c('', paste(cases_ci$bca[4],' - ', cases_ci$bca[5])))
+
+# Convert to dataframe and print table
+knitr::kable(kable_df,
+             caption = 'Cumulative incidence of SN in 83 HIV+ patients over the first 3 months of follow-up',
+             col.names = c('SN present', 'Count', 'Percentage', 
+                           'Cases per 1000 patients', '95% conf interval'),
+             align = 'lrrrr')
+```
+
+## Second 3-month period
+```{r second_three_months}
+# Tabulate SN+/SN-
+tab_sn <- table(df_3to6months$hivsn_present)
+
+# Calculate proportions, convert to percent
+prop_sn <- round(prop.table(tab_sn) * 100) 
+
+# Bootstrap cases per 1000 patients
+cases_boot <- function(data, i){
+    foo <- data[i, ]
+    tab <- table(foo$hivsn_present)
+    prop <- round(prop.table(tab) * 100)
+    case <- prop * 10
+    case[2]
+}
+
+cases_ci <- boot.ci(boot.out = boot(data = df_3to6months, 
+                                    statistic = cases_boot, 
+                                    R = 1000, 
+                                    stype = 'i'),
+                    type = 'bca')
+
+# Create kable data frame
+kable_df <- as.data.frame(tab_sn) %>%
+    rename(Count = Freq) %>%
+    left_join(as.data.frame(prop_sn)) %>%
+    rename(Percentage = Freq) %>%
+    bind_cols(Incidence = c('', paste(cases_ci$t0))) %>%
+    bind_cols(CI95 = c('', paste(cases_ci$bca[4],' - ', round(cases_ci$bca[5]))))
+
+# Convert to dataframe and print table
+knitr::kable(kable_df,
+             caption = 'Cumulative incidence of SN in 83 HIV+ patients over the second 3 months of follow-up',
+             col.names = c('SN present', 'Count', 'Percentage', 
+                           'Cases per 1000 patients', '95% conf interval'),
+             align = 'lrrrr')
+```
+
+# Incidence rate (person years)
+
+Incidence rate is a measure of the number of new cases per unit of time. We did not have extact dates of SN onset to define the per patient unit of time, and nor was there uniform spacing between clinic visits. We therefore chose to calculate an approximate SN onset time, arbitrarily defined as the number of days between the first neuropathy screening and the mid-point between the visit when neuropathy was detected and the preceeding visit. For participants who did not develop SN, the date of censoring was defined by the number of days between the first neuropathy screening and the last screening (study exit).
+
+## Boostrap function
+```{r py_bootstrap}
+## Formula for cases / person year
+boot_py <- function(data, i){
+    foo <- data[i, ]
+    cases <- sum(foo$hivsn_present == 'yes')
+    person_time <- sum(foo$approximate_year)
+    cases / person_time
+}
+```
+
+## Six-month period
+```{r py_six_months}
+# Bootstrap confidence intervals
+py_ci <- boot.ci(boot.out = boot(data = py_6months,
+                                 statistic = boot_py,
+                                 R = 1000,
+                                 stype = 'i'),
+                 type = 'bca')
+
+kable_py <- data_frame(Statistic = round(py_ci$t0, 2),
+                       `95% conf interval` = paste(round(py_ci$bca[4], 2),
+                                                   ' - ',
+                                                   round(py_ci$bca[5], 2)))
+
+## Tabulate
+knitr::kable(kable_py,
+             caption = 'New SN cases per person-year',
+             align = 'rr')
+```
+
+# Survival curves
+
+## Plot a basic Kaplan-Meyer survival curve
+```{r km_basic, fig.height = 8}
+# Basic Kaplan-Meyer (KM)
+## No predictors (~ 1)
+km_basic <- survfit(Surv(time = approximate_day, 
+                         event = hivsn_coded) ~ 1, 
+                    data = df_surv)
+
+# Summary of KM fit
+km_basic
+summary(km_basic)
+
+# Plot
+ggsurvplot(km_basic,
+           conf.int = TRUE,
+           xlab = 'Time in days', 
+           # Show risk table with absolute number and percentage at risk.
+           risk.table = 'abs_pct', 
+           # Change ggplot2 theme
+           ggtheme = theme_bw(), 
+           palette = '#0072B2',
+           # Plot as cumulative hazard
+           fun = 'event',
+           # Y-axis ,limits
+           ylim = c(0, 1),
+           # Title
+           title = 'Kaplan-Meier Survival Curve: SN vs Days')
+```
+
+## Plot a basic KM curve conditioned on painful SN
+
+In addition a log-rank test was performed to test differences between the painful and non-painful SN strata. 
+
+```{r km_pain, fig.height = 8}
+# Incidence ~ pain
+km_pain <- survfit(Surv(time = approximate_day, 
+                        event = hivsn_coded) ~ pain,
+                   data = df_surv)
+
+# Summary
+km_pain
+summary(km_pain)
+
+# Log-rank test
+survdiff(Surv(time = visit_day, 
+              event = hivsn_coded) ~ pain,
+         data = df_surv)
+
+# Plot
+ggsurvplot(km_pain,
+           # show p-value of log-rank test.
+           pval = TRUE, 
+           conf.int = TRUE, 
+           xlab = 'Time in days', 
+           ggtheme = theme_bw(), 
+           # Show risk table with absolute number and percentage at risk.
+           risk.table = 'abs_pct',  
+           # Colour risk table text annotations.
+           risk.table.y.text.col = TRUE, 
+           # Show bars instead of names in text annotations
+           risk.table.y.text = FALSE, 
+           # plot the number of censored subjects at time t
+           ncensor.plot = TRUE,
+           # Add the median survival pointer.
+           surv.median.line = 'hv', 
+           # Change legend labels.
+           legend.labs = c('Non-painful SN', 'Painful SN'), 
+           palette = c('#0072B2', '#D55E00'), 
+           # Plot as cumulative hazard
+           fun = 'event',
+           # Y-axis ,limits
+           ylim = c(0, 1),
+           # Title
+           title = 'Kaplan-Meier Survival Curve: SN vs Days ~ pain') 
+```
+
+# Multivariate modeling
+
+In an exploratory analysis using Cox proportional hazard models (not shown here) various predictors violated assumptions of the model (e.g., proportional hazard, linearity, no influence points). Therefore we used logistic regression modelling, with visit 1 charateristics as predictors of SN onset. 
+
+**Note: Only complete datasets used (n = 77)**
+
+## Process data
+```{r model_data}
+# Did they develop sn at any time?
+sn_model <- original_data %>%
+    select(ID, visit_number, hivsn_present) %>%
+    group_by(ID) %>%
+    mutate(max_visit = max(visit_number)) %>%
+    filter(visit_number == max_visit) %>%
+    select(ID, hivsn_present) %>%
+    rename(sn = hivsn_present)
+
+# Visit 1 characteristics
+df_model <- filter(original_data, 
+                   visit_number == 1)
+
+# Join SN indicator to visit 1 data frame
+df_model <- df_model %>%
+    left_join(sn_model) %>%
+    # Remove hivsn_present column
+    select(-hivsn_present)
+
+# Clean-up df_model data frame for analyses
+## These data will be used for all the baseline charateristic analyses.
+df_model <- df_model %>%
+    # Recode rifafour 'prophylaxis' to 'yes'
+    mutate(rifafour_treatment = as.character(rifafour_treatment),
+           rifafour_treatment = ifelse(rifafour_treatment == 'prophylaxis',
+                                       yes = 'yes',
+                                       no = rifafour_treatment),
+           rifafour_treatment = factor(rifafour_treatment)) %>%
+    # Select data that will be modelled
+    select(ID, sn, age_years, sex, mass_kg, height_m, CD4_cell.ul,
+           viral_load_copies.ml, alcohol_units.week, TB_current,
+           rifafour_treatment) %>%
+    # Only use complete cases
+    filter(complete.cases(.))
+```
+
+## Model data
+
+1. Model does not include `diabetes_hba1c` because nobody had HbA1c > 7%.   
+2. Model does not include `vitaminB12_deficiency` because only one individual had a deficiency.  
+3. Model does not include `mass_kg` because it is likely to be co-linear with `height_m`.  
+4. Model does not include `consumes_alcohol` because this information was deemed to be encoded in `alcohol_units.week`.
+
+## Model selection
+```{r model_selection}
+# Set random seed
+set.seed(1234)
+
+# Double-check presumed 'mass_kg' vs 'height_m' relationship before proceeding
+ggplot(data = df_model) +
+    aes(x = height_m,
+        y = mass_kg) +
+    geom_point() +
+    geom_smooth(method = 'lm') +
+    labs(title = 'Relationship between body mass and height') +
+    theme_bw()
+
+with(df_model, cor.test(height_m, mass_kg))
+
+# Start with full model
+## Include interaction between 'height_m' and 'sex'
+mod_1 <- glm(sn ~ age_years + height_m * sex + CD4_cell.ul +
+                 viral_load_copies.ml + alcohol_units.week + TB_current +
+                 rifafour_treatment,
+             family = binomial(logit),
+             data = df_model)
+
+## Type II SS ANOVA
+Anova(mod_1, type = 'II')
+
+# Model selection
+library(MuMIn)
+
+## Change the default "na.omit" 
+options(na.action = "na.fail") 
+
+## Use "dredge" to select best models based on AIC
+mod_dredge <- dredge(mod_1, 
+                     beta = FALSE, 
+                     evaluate = TRUE, 
+                     rank = "AIC")
+
+## Build a model selection table
+mod_sel <- model.sel(mod_dredge)
+
+## Subset those models that show an change in AIC 
+## of 2 or less (not different from each other)
+mod_get <- get.models(mod_sel, 
+                      subset = delta < 2)
+
+## Average across the subsetted models
+mod_average <- model.avg(mod_get)
+summary(mod_average)
+### Made a priori choice to only take variables that occur in >50% of models
+### OUTCOME: 'height_m', 'sex', 'TB_current' and 'alcohol_units.week' selected
+```
+
+## Final model
+```{r final_model}
+# NOTE: Use rms::lrm for this stage because better fit indicators
+## Prep data for modeling with rms
+attach(df_model)
+data_dist <- datadist(height_m,
+                      TB_current,
+                      alcohol_units.week,
+                      sex)
+detach(df_model)
+options(datadist = 'data_dist')
+
+# Fit model 
+## package rms
+mod_final <- lrm(sn ~ height_m + TB_current + alcohol_units.week + sex,
+               data = df_model, 
+               x = TRUE, 
+               y = TRUE, 
+               linear.predictors = TRUE)
+
+## base r
+mod_final_base <- glm(sn ~ height_m + TB_current + alcohol_units.week + sex,
+                    family = binomial(link = 'logit'),
+                    data = df_model)
+
+## Generate model summaries (rms)
+### (Model lilelihood Ratio test indicates model is better than NULL model)
+### (C - area under the ROC curve - indicates good predictive utility)
+### (Type II SS ANOVA shows significant effect for height_m, TB_current)
+### (NOTE: CI of odds ratios for height_m and TB_current are wide)
+mod_final
+anova(mod_final)
+summary(mod_final)
+
+# Summary plot effect size ~ predictor, with anova results
+plot(Predict(mod_final), 
+     anova = anova(mod_final),
+     pval = TRUE)
+```
+
+## Model diagnostics
+```{r model_diagnostics}
+# NOTE: See above for Likelihood Ratio Test and area under the ROC curve (C) results
+
+# Check goodness of fit (Hosmer-Lemeshow goodness of fit test)
+ResourceSelection::hoslem.test(x = mod_final_base$y, 
+                               y = fitted(mod_final_base))
+
+# Residual vs predictor plots
+## (There should be bo relationship between residuals and predictor value)
+## (All seem okay; green line should be roughly straight and horizontal)
+residualPlots(mod_final_base)
+
+# Outliers, leverage, and influence
+influenceIndexPlot(mod_final_base, 
+                   id.n = 3, 
+                   id.col = 'red')
+outlierTest(mod_final_base) # (no issues, '6' is the only 'large' deviation)
+influencePlot(mod_final_base, 
+              id.col = 'red')
+
+## Remove influence points one at a time
+mod_influence6 <- update(mod_final_base, 
+                        subset = c(-6))
+mod_influence66 <- update(mod_final_base, 
+                        subset = c(-66))
+mod_influence68 <- update(mod_final_base, 
+                        subset = c(-68))
+
+## Compare coefficients with and without influence points
+### (Only '6' causes any major change to coefficients, and primarily to 'height_m')
+compareCoefs(mod_final_base, mod_influence6)
+compareCoefs(mod_final_base, mod_influence66)
+compareCoefs(mod_final_base, mod_influence68)
+
+## Check '6' for anything strange 
+### (nothing unusual so leave)
+df_model %>%
+    select(ID, sn, height_m, TB_current, alcohol_units.week, sex) %>%
+    .[6, ]
+
+# Test for multicolinearity using variance inflation factor (vif)
+## (No issues; values > 4 are a problem)
+vif(mod_final_base) 
+
+# Test for correlated residuals 
+## (No correlation between residuals)
+durbinWatsonTest(mod_final_base)
+```
+
+# Session information
+```{r session_info, echo = FALSE}
+# Session information
+sessionInfo()
+```
+

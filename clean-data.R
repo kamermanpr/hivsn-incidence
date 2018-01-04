@@ -67,8 +67,7 @@ df <- raw %>%
                                       yes = NA,
                                       no = vitaminB12_pmol.l)) %>%
     # Fix column classes
-    mutate(clinic_code = as.character(clinic_code),
-           visit_number = as.integer(visit_number),
+    mutate(visit_number = as.integer(visit_number),
            visit_day = as.integer(visit_day),
            hivsn_present = fct_recode(as_factor(hivsn_present),
                                       yes = '1',
