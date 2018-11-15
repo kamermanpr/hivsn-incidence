@@ -1,0 +1,8 @@
+html_document:
+    keep_md: true
+    theme: yeti
+    highlight: pygments
+    code_folding: show
+    toc: true
+    toc_depth: 4
+    toc_float: true
