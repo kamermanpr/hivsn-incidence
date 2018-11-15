@@ -4,11 +4,10 @@
 #                                                          #
 ############################################################
 # Load packages
-library(dplyr)
-library(forcats)
+library(tidyverse)
 
 # Load raw data
-raw <- readxl::read_excel('./raw-data/deidentified-data-august-2017.xlsx')
+raw <- readxl::read_excel('data-original/deidentified-data-august-2017.xlsx')
 
 # Quick view
 dim(raw)
@@ -69,6 +68,7 @@ df <- raw %>%
     # Fix column classes
     mutate(visit_number = as.integer(visit_number),
            visit_day = as.integer(visit_day),
+           sex = factor(sex),
            hivsn_present = fct_recode(as_factor(hivsn_present),
                                       yes = '1',
                                       no = '0'),
@@ -140,10 +140,6 @@ df <- df %>%
 
 # Export data to rds and csv
 readr::write_csv(x = df, 
-                 path = './data/clean_data.csv')
-
+                 path = './data-clean/clean_data.csv')
 readr::write_rds(x = df,
-                 path = './data/clean_data.rds')
-
-# Clean up
-rm(list = ls())
+                 path = './data-clean/clean_data.rds')
