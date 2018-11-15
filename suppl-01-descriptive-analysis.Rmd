@@ -1,0 +1,296 @@
+---
+title: "Supplement 1"
+subtitle: "Descriptive statistics for the whole cohort"
+author: "Peter Kamerman and Prinisha Pillay"
+date: "`r format(Sys.Date(), '%d %B %Y')`"
+---
+
+```{r setup, include = FALSE}
+# Load packages
+library(magrittr)
+library(tidyverse)
+library(skimr)
+
+# Set plot theme
+theme_set(new = theme_bw(base_size = 14))
+
+# knitr options
+knitr::opts_chunk$set(warning = FALSE,
+                      message = FALSE, 
+                      fig.width = 5,
+                      fig.height = 6,
+                      fig.align = 'center',
+                      fig.path = './figures/suppl-01-descriptive-analysis/')
+```
+
+----
+
+**This script generates descriptive statistics for variables collected at baseline (visit day: 0).**
+
+The following data columns were not analysed:
+
+- `pain` and `pain score`: related to sensory neuropathy (SN) only, therefore not relevant at baseline when everyone was free from SN.  
+
+- `*_record`: inconsistent patient records.  
+
+- `hba1c_percent` and `vitaminB12_pmol.l`: These data were only used to classify individuals as having diabetes or vitamin B12 deficiency when cleaning the data _(see:clean-data.R)_.  
+
+- `ID`, `visit_number`, `visit_day`, `hivsn_present`, `visit_months`: provide sorting and grouping information only. 
+
+----
+
+# Import data
+```{r import}
+data <- readr::read_rds('data/clean_data.rds') %>% 
+    # Filter for visit one
+    filter(visit_number == 1) %>% 
+    # Remove columns that won't be analysed
+    select(-starts_with('pain'), -ends_with('_record'), 
+           -visit_number, -visit_months, 
+           -hba1c_percent, -vitaminB12_pmol.l) 
+```
+
+# Inspect data
+```{r quick_look}
+# Dimensions 
+dim(data) 
+# Column names
+names(data)
+# Head and tail
+head(data)
+tail(data)
+# Data structure
+glimpse(data)
+```
+
+----
+
+# Analyses
+
+## Age
+```{r age}
+# Tabular summary
+data %>% 
+    select(age_years) %>% 
+    skim()
+
+# Plot
+data %>%
+    ggplot(data = .) +
+    aes(y = age_years, 
+        x = 'All patients') +
+    geom_boxplot() +
+    geom_jitter(height = 0) +
+    labs(title = 'Age at recruitment',
+         y = 'Age (years)',
+         x = 'All participants') +
+    theme(axis.text.x = element_blank())
+```
+
+## Body mass
+```{r mass}
+# Tabular summary
+data %>%
+    select(mass_kg) %>% 
+    skim()
+
+# Plot
+data %>%
+    ggplot(data = .) +
+    aes(y = mass_kg, 
+        x = 'All patients') +
+    geom_boxplot() +
+    geom_jitter(height = 0) +
+    labs(title = 'Body mass at recruitment',
+         y = 'Body mass (kg)') +
+    theme(axis.text.x = element_blank())
+```
+
+## Height
+Expect height to show sex difference, so analyse seperately for males and females.
+```{r height}
+# Tabular summary
+data %>%
+    select(height_m, sex) %>% 
+    group_by(sex) %>% 
+    skim()
+
+# Plots 
+data %>%
+    ggplot(data = .) +
+    aes(y = height_m, 
+        x = sex) +
+    geom_boxplot() +
+    geom_jitter(height = 0) +
+    labs(title = 'Height at recruitment, grouped by sex',
+         y = 'Height (m)',
+         x = 'Sex')
+```
+
+## Sex
+```{r sex}
+# Tabular summary
+data %>%
+    select(sex) %>% 
+    skim()
+
+# Plot
+data %>%
+    ggplot(data = .) +
+    aes(x = 'All participants',
+        fill = sex) +
+    geom_bar(position = 'fill') + 
+    geom_hline(yintercept = 0.5,
+               linetype = 2) +
+    labs(title = 'Sex ratio at recruitment',
+         subtitle = '(All participants)',
+         y = 'Proportion') +
+    scale_fill_grey(name = 'Sex') +
+    theme(axis.text.x = element_blank())
+```
+
+## CD4 T-cell count
+```{r cd4}
+# Tabular summary
+data %>%
+    select(CD4_cell.ul) %>%  
+    skim()
+
+# Plot
+data %>%
+    ggplot(data = .) +
+    aes(y = CD4_cell.ul, 
+        x = 'All patients') +
+    geom_boxplot() +
+    geom_jitter(height = 0) +
+    labs(title = 'CD4 T-cell count at recruitment',
+         y = expression(paste('CD4 T-cell count (cells.', mu, l^-1, ')'))) +
+    theme(axis.text.x = element_blank())
+```
+
+## Viral load
+```{r viral_load}
+# Tabular summary
+data %>%
+    select(viral_load_copies.ml) %>%  
+    skim()
+
+# Plot
+data %>%
+    filter(!is.na(viral_load_copies.ml)) %>%
+    ggplot(data = .) +
+    aes(y = viral_load_copies.ml, 
+        x = 'All patients') +
+    geom_boxplot() +
+    geom_jitter(height = 0) +
+    labs(title = 'Viral load at recruitment',
+         y = expression(paste('log' [10], 'viral load (copies.ml' ^-1, ')')))  +
+    theme(axis.text.x = element_blank())
+```
+
+## Alcohol
+```{r alcohol_1}
+# Tabular summary
+data %>%
+    select(alcohol_units.week) %>%
+    mutate(drinks_alcohol = case_when(
+        alcohol_units.week >= 1 ~ 'Yes',
+        alcohol_units.week == 0 ~ 'No'
+    )) %>% 
+    mutate(drinks_alcohol = factor(drinks_alcohol)) %>% 
+    group_by(drinks_alcohol) %>% 
+    skim()
+
+# Plot
+data %>%
+    filter(alcohol_units.week > 0) %>% 
+    ggplot(data = .) +
+    aes(x = 'Participants who drink\n(n=16)',
+        y = alcohol_units.week) +
+    geom_boxplot() +
+    geom_jitter(height = 0) +
+    labs(title = 'Alcohol consumption at recruitment',
+         y = expression(paste('Alcohol consumption (units.week' ^-1, ')'))) +
+    theme(axis.text.x = element_blank())
+```
+
+## TB
+_Note: Treatment policy was to start some patients, irrespective of TB diagnosis, on TB treatment. Therefore current TB infection and treatment for TB analysed seperately._
+
+### Currently infected with TB
+```{r tb_current}
+# Tabular summary
+data %>%
+    select(TB_current) %>%  
+    skim()
+
+# Plot
+data %>%
+    mutate(TB_current = str_to_title(TB_current)) %>% 
+    ggplot(data = .) +
+    aes(x = 'All participants',
+        fill = TB_current) +
+    geom_bar(position = 'fill') + 
+    geom_hline(yintercept = 0.5,
+               linetype = 2) +
+    labs(title = 'Current TB at recruitment',
+         y = 'Proportion') +
+    scale_fill_grey(name = 'Infected') +
+    theme(axis.text.x = element_blank())
+```
+
+### Currently receiving TB treatment?
+Treatment consisted of rifafour and pyridoxine (prophylaxis). Therefore only need to analyse rifafour data. Data coded as _'No'_ (not being treated), _'Yes'_ (being treated for active TB), and _'Prophylaxis'_ (being treated prophylactically for TB).
+```{r tb_rifafour}
+# Double-check matching between rifafour and pyridoxine columns 
+unique(data$rifafour_treatment == data$pyridoxine_prophylaxis)
+
+# Tabular summary
+data %>%
+    select(rifafour_treatment) %>%  
+    skim()
+
+# Plot
+data %>%
+    mutate(rifafour_treatment = str_to_title(rifafour_treatment),
+           rifafour_treatment = factor(rifafour_treatment,
+                                       levels = c('No', 'Yes',
+                                                  'Prophylaxis'),
+                                       ordered =TRUE)) %>% 
+    ggplot(data = .) +
+    aes(x = 'All participants',
+        fill = rifafour_treatment) +
+    geom_bar(position = 'fill') + 
+    geom_hline(yintercept = 0.5,
+               linetype = 2) +
+    labs(title = 'Being treated for TB at recruitment',
+         y = 'Proportion') +
+    scale_fill_grey(name = 'Treatment') +
+    theme(axis.text.x = element_blank())
+```
+
+## Diabetes
+Classified as diabetic based on `data$hba1c_percent` > 7%. No participants were diabetic.
+```{r diabetes}
+# Tabular summary
+data %>%
+    select(diabetic_hba1c) %>%  
+    skim()
+```
+
+## Vitamin B12 deficiency
+Classed as B12 deficient based on `data$vitaminB12_pmol.l` < 141 pmol/l. Only one participant had a deficiency.
+```{r vitaminB12}
+# Tabular summary
+data %>%
+    select(vitaminB12_deficiency) %>%  
+    skim()
+```
+
+----
+
+# Session information
+```{r session_info}
+sessionInfo()
+```
+
