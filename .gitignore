@@ -7,4 +7,5 @@
 icon?
 *_cache/
 figures/
-raw-data/data-august-2017.xlsx
+data-clean/
+data-original/
