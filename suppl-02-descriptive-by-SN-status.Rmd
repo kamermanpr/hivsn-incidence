@@ -1,0 +1,1013 @@
+---
+title: "Supplement 2"
+subtitle: "Descriptive statistics of baseline variables: SN:yes vs SN:no"
+author: "Peter Kamerman and Prinisha Pillay"
+date: "`r format(Sys.Date(), '%d %B %Y')`"
+---
+
+```{r setup, include = FALSE}
+# Load packages
+library(magrittr)
+library(tidyverse)
+library(boot)
+library(rcompanion)
+library(skimr)
+
+# Set plot theme
+theme_set(new = theme_bw(base_size = 14))
+
+# knitr options
+knitr::opts_chunk$set(warning = FALSE,
+                      message = FALSE, 
+                      fig.retina = 2,
+                      fig.width = 6,
+                      fig.height = 7,
+                      fig.align = 'center',
+                      fig.path = './figures/suppl-02-descriptive-by-SN-status/')
+```
+
+----
+
+This script describes variables collected at baseline (visit day: 0, visit_number: 1) conditioned on sensory neuropathy (SN) status (i.e., whether SN developed at any point during the follow-up period).
+
+For descriptive statistics of baseline variables for the whole cohort, see: `suppl-01-descriptive-whole-cohort.[Rmd/html/md/pdf]`
+
+The following data columns were not analysed:
+
+- `pain` and `pain score`: related to SN only, therefore not relevant at baseline when everyone was free from SN.  
+
+- `*_record`: inconsistent patient records.  
+
+- `hba1c_percent/diabetic_hba1c` and `vitaminB12_pmol.l/vitaminB12_deficiency`: Zero and one participant had diabetes mellitus or vitamin B12 deficiency, respectively, so these data were not analysed.  
+
+- `ID`, `visit_day`, `hivsn_present`, `visit_months`: provide sorting and grouping information only. 
+
+----
+
+# Define bootstrap functions
+Functions calculate the 95% confidence interval of the mean/median difference between SN:yes and SN:no, or the 95% confidence interval for the odds ratio between the two groups.
+```{r bootstrap_functions}
+# Difference between means
+## d = dataframe object
+## i = boot index
+## data_column = data column (character vector of length 1)
+## grouping_column = grouping variable column (character vector of length 1)
+boot_deltaMean <- function(d, i, data_column = NULL, grouping_column = NULL){
+    # Sample
+    df <- d[i, c(data_column, grouping_column)]
+    # Rename columns
+    colnames(df) <- c('x', 'y')
+    # Calculate means
+    df <- df %>% 
+        filter(!is.na(x)) %>% 
+        group_by(y) %>% 
+        summarise(mean = mean(x)) %>% 
+        ungroup()
+    # Calculate difference in means
+    df$mean[1] - df$mean[2]
+}
+
+# Difference between medians
+## d = dataframe object
+## i = boot index
+## data_column = data column (character vector of length 1)
+## grouping_column = grouping variable column (character vector of length 1)
+boot_deltaMedian <- function(d, i, data_column = NULL, grouping_column = NULL){
+    # Sample
+    df <- d[i, c(data_column, grouping_column)]
+    # Rename columns
+    colnames(df) <- c('x', 'y')
+    # Calculate means
+    df <- df %>% 
+        filter(!is.na(x)) %>% 
+        group_by(y) %>% 
+        summarise(median = median(x)) %>% 
+        ungroup()
+    # Calculate difference in means
+    df$median[1] - df$median[2]
+}
+
+# Odds ratio
+## d = dataframe object
+## i = boot index
+## data_column = data column (character vector of length 1)
+## grouping_column = grouping variable column (character vector of length 1)
+boot_OR <- function(d, i, data_column = NULL, grouping_column = NULL){
+    # Sample
+    df <- d[i, c(data_column, grouping_column)]
+    # Rename columns
+    colnames(df) <- c('x', 'y')
+    # xtabulate
+    x_tab <- xtabs(~ x + y,
+                  data = df)
+    # Calculate odds ratio
+    fisher.test(x_tab)$estimate
+}
+```
+
+----
+
+# Import data
+```{r import}
+data <- read_rds('data-clean/clean_data.rds') %>% 
+    # Remove columns that won't be analysed
+    select(-starts_with('pain'), -ends_with('_record'), 
+           -starts_with('vitaminB12'), -visit_months, 
+           -hba1c_percent, -vitaminB12_pmol.l, -diabetic_hba1c) 
+```
+
+# Process data
+Add a column indicating whether a participant developed SN at any time during the follow-up period, and then filter the dataframe to only contain rows of data from visit 1.
+```{r process_data}
+# Identify and extract information on SN development (at anytime) 
+# by looking at the presence of SN at the final visit
+data_sn <- data %>%
+    select(ID, visit_number, hivsn_present) %>%
+    group_by(ID) %>%
+    mutate(max_visit = max(visit_number)) %>%
+    filter(visit_number == max_visit) %>%
+    select(ID, hivsn_present) %>%
+    rename(sn_present = hivsn_present)
+
+# Join data_sn to data
+data %<>%
+    left_join(data_sn)
+
+# Restrict data to the baseline visit (visit 1)
+data %<>%
+    filter(visit_number == 1)
+
+# Order sn_present factor to improved plotting order
+data %<>%
+    mutate(sn_present = factor(sn_present,
+                               levels = c('yes', 'no'),
+                               ordered = TRUE))
+```
+
+# Inspect data
+```{r quick_look}
+# Dimensions 
+dim(data) 
+# Column names
+names(data)
+# Head and tail
+head(data)
+tail(data)
+# Data structure
+glimpse(data)
+```
+
+----
+
+# Analyses
+
+## Age
+```{r age}
+# Tabular summary
+data %>% 
+    select(age_years, sn_present) %>% 
+    group_by(sn_present) %>% 
+    skim()
+
+# 95% bootstrap confidence interval of the mean age by SN status
+## Method = BCa, Resamples = 10000
+set.seed(1234)
+groupwiseMean(age_years ~ sn_present, 
+              data = data, 
+              R = 10000, 
+              traditional = FALSE, 
+              boot = TRUE, 
+              bca = TRUE)[c(1:3, 5, 6, 7)]
+
+# Plot
+data %>%
+    ggplot(data = .) +
+    aes(y = age_years, 
+        x = sn_present) +
+    geom_boxplot() +
+    geom_jitter(height = 0) +
+    labs(title = 'Age at recruitment',
+         subtitle = 'SN:yes vs SN:no',
+         y = 'Age (years)',
+         x = 'SN present')
+
+# Bootstrap 95% CI for the difference in mean age
+## Resample: 10000
+set.seed(1234)
+boot_age <- boot.ci(boot(data = data,
+                         statistic = boot_deltaMean, 
+                         data_column = 'age_years', 
+                         grouping_column = 'sn_present',
+                         R = 10000, 
+                         stype = 'i'),
+                    type = 'bca') %>%
+    data_frame(n = nrow(filter(data, !is.na(age_years))), 
+               Mean.difference = round(.$t0, 3), 
+               Conf.level = 0.95, 
+               Bca.lower = round(.$bca[[4]], 3),
+               Bca.upper = round(.$bca[[5]], 3),
+               Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
+                                      yes = 'yes',
+                                      no = 'no')) %>%
+    .[1, -1] %>% 
+    as.data.frame(); boot_age
+
+ggplot(data = boot_age) +
+    geom_hline(yintercept = 0,
+               linetype = 2) +
+    geom_point(aes(x = 'x',
+                   y = Mean.difference),
+               size = 12) +
+    geom_errorbar(aes(x = 'x',
+                      ymin = Bca.lower,
+                      ymax = Bca.upper),
+                  width = 0.5,
+                  size = 1) +
+    geom_label(aes(x = 'x',
+                   y = Bca.lower,
+                   label = Bca.lower)) +
+    geom_label(aes(x = 'x',
+                   y = Mean.difference,
+                   label = Mean.difference)) +
+    geom_label(aes(x = 'x',
+                   y = Bca.upper,
+                   label = Bca.upper)) +
+    labs(title = 'Bootstrap 95% CI of the difference between mean age',
+         subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 10000",
+         y = 'Difference in age (years)') +
+    theme(axis.ticks.x = element_blank(),
+          axis.text.x = element_blank(),
+          axis.title.x = element_blank())
+```
+
+## Body mass
+```{r mass}
+# Tabular summary
+data %>% 
+    select(mass_kg, sn_present) %>% 
+    group_by(sn_present) %>% 
+    skim()
+
+# 95% bootstrap confidence interval of the mean body mass by SN status
+## Method = BCa, Resamples = 10000
+set.seed(1234)
+groupwiseMean(mass_kg ~ sn_present, 
+              data = data, 
+              R = 10000, 
+              traditional = FALSE, 
+              boot = TRUE, 
+              bca = TRUE)[c(1:3, 5, 6, 7)]
+
+# Plot
+data %>%
+    ggplot(data = .) +
+    aes(y = mass_kg, 
+        x = sn_present) +
+    geom_boxplot() +
+    geom_jitter(height = 0) +
+    labs(title = 'Mass at recruitment',
+         subtitle = "SN:yes vs SN:no",
+         y = 'Mass (kg)',
+         x = 'SN present')
+
+# Bootstrap 95% CI for the difference in mean mass
+## Resample: 10000
+set.seed(1234)
+boot_mass <- boot.ci(boot(data = data,
+                          statistic = boot_deltaMean, 
+                          data_column = 'mass_kg', 
+                          grouping_column = 'sn_present',
+                          R = 10000, 
+                          stype = 'i'),
+                     type = 'bca') %>%
+    data_frame(n = nrow(filter(data, !is.na(mass_kg))), 
+               Mean.difference = round(.$t0, 3), 
+               Conf.level = 0.95, 
+               Bca.lower = round(.$bca[[4]], 3),
+               Bca.upper = round(.$bca[[5]], 3),
+               Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
+                                      yes = 'yes',
+                                      no = 'no')) %>%
+    .[1, -1] %>% 
+    as.data.frame(); boot_mass
+
+ggplot(data = boot_mass) +
+    geom_hline(yintercept = 0,
+               linetype = 2) +
+    geom_point(aes(x = 'x',
+                   y = Mean.difference),
+               size = 12) +
+    geom_errorbar(aes(x = 'x',
+                      ymin = Bca.lower,
+                      ymax = Bca.upper),
+                  width = 0.5,
+                  size = 1) +
+    geom_label(aes(x = 'x',
+                   y = Bca.lower,
+                   label = Bca.lower)) +
+    geom_label(aes(x = 'x',
+                   y = Mean.difference,
+                   label = Mean.difference)) +
+    geom_label(aes(x = 'x',
+                   y = Bca.upper,
+                   label = Bca.upper)) +
+    labs(title = 'Bootstrap 95% CI of the difference in mean mass',
+         subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 10000",
+         y = 'Difference in mass (kg)') +
+    theme(axis.ticks.x = element_blank(),
+          axis.text.x = element_blank(),
+          axis.title.x = element_blank())
+```
+
+## Height
+Expect height to show sex difference, so analyse separately for males and females.
+```{r height}
+# Tabular summary
+data %>%
+    select(height_m, sex, sn_present) %>% 
+    group_by(sn_present, sex) %>% 
+    skim()
+
+# 95% bootstrap confidence interval of the mean height by SN status
+## Method = BCa, Resamples = 10000
+set.seed(1234)
+groupwiseMean(height_m ~ sn_present + sex, 
+              data = data, 
+              R = 10000, 
+              traditional = FALSE, 
+              boot = TRUE, 
+              bca = TRUE)[c(1:3, 5, 6:8)]
+
+# Plots 
+data %>%
+    ggplot(data = .) +
+    aes(y = height_m, 
+        x = sex,
+        fill = sn_present) +
+    geom_boxplot() +
+    geom_jitter() +
+    scale_fill_manual(name = 'SN+',
+                      values = c('#4C4C4C', '#CCCCCC')) +
+    labs(title = 'Height at recruitment',
+         subtitle = "SN:yes vs SN:no",
+         y = 'Height (m)',
+         x = 'Sex')
+
+# MALES ONLY
+## Bootstrap 95% CI for the difference in mean height
+### Resample: 10000
+set.seed(1234)
+boot_hm <- boot.ci(boot(data = data[data$sex == 'M', ],
+                        statistic = boot_deltaMean, 
+                        data_column = 'height_m', 
+                        grouping_column = 'sn_present',
+                        R = 10000, 
+                        stype = 'i'),
+                   type = 'bca') %>%
+    data_frame(n = nrow(filter(data, !is.na(height_m) & sex == 'M')), 
+               Mean.difference = round(.$t0, 3), 
+               Conf.level = 0.95, 
+               Bca.lower = round(.$bca[[4]], 3),
+               Bca.upper = round(.$bca[[5]], 3),
+               Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
+                                      yes = 'yes',
+                                      no = 'no')) %>%
+    .[1, -1] %>% 
+    as.data.frame(); boot_hm
+
+ggplot(data = boot_hm) +
+    geom_hline(yintercept = 0,
+               linetype = 2) +
+    geom_point(aes(x = 'x',
+                   y = Mean.difference),
+               size = 12) +
+    geom_errorbar(aes(x = 'x',
+                      ymin = Bca.lower,
+                      ymax = Bca.upper),
+                  width = 0.5,
+                  size = 1) +
+    geom_label(aes(x = 'x',
+                   y = Bca.lower,
+                   label = Bca.lower)) +
+    geom_label(aes(x = 'x',
+                   y = Mean.difference,
+                   label = Mean.difference)) +
+    geom_label(aes(x = 'x',
+                   y = Bca.upper,
+                   label = Bca.upper)) +
+    labs(title = 'Males: Bootstrap 95% CI of the difference in mean height',
+         subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 10000",
+         y = 'Difference in height (m)') +
+    theme(axis.ticks.x = element_blank(),
+          axis.text.x = element_blank(),
+          axis.title.x = element_blank())
+
+# FEMALES ONLY
+## Bootstrap 95% CI for the difference in mean height
+### Resample: 9000 (10000 gives a wierd error)
+set.seed(1234)
+boot_hf <- boot.ci(boot(data = data[data$sex == 'F', ],
+                        statistic = boot_deltaMean, 
+                        data_column = 'height_m', 
+                        grouping_column = 'sn_present',
+                        R = 10000, 
+                        stype = 'i'),
+                   type = 'bca') %>%
+    data_frame(n = nrow(filter(data, !is.na(height_m) & sex == 'F')), 
+               Mean.difference = round(.$t0, 3), 
+               Conf.level = 0.95, 
+               Bca.lower = round(.$bca[[4]], 3),
+               Bca.upper = round(.$bca[[5]], 3),
+               Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
+                                      yes = 'yes',
+                                      no = 'no')) %>%
+    .[1, -1] %>% 
+    as.data.frame(); boot_hf
+
+ggplot(data = boot_hf) +
+     geom_hline(yintercept = 0,
+               linetype = 2) +
+    geom_point(aes(x = 'x',
+                   y = Mean.difference),
+               size = 10) +
+    geom_errorbar(aes(x = 'x',
+                      ymin = Bca.lower,
+                      ymax = Bca.upper),
+                  width = 0.5,
+                  size = 1) +
+    geom_label(aes(x = 'x',
+                   y = Bca.lower,
+                   label = Bca.lower)) +
+    geom_label(aes(x = 'x',
+                   y = Mean.difference,
+                   label = Mean.difference)) +
+    geom_label(aes(x = 'x',
+                   y = Bca.upper,
+                   label = Bca.upper)) +
+    labs(title = 'Females: Bootstrap 95% CI of the  difference in mean height',
+         subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 10000",
+         y = 'Difference in height (m)') +
+    theme(axis.ticks.x = element_blank(),
+          axis.text.x = element_blank(),
+          axis.title.x = element_blank())
+```
+
+## Sex
+```{r sex}
+# Tabular summary
+data %>%
+    select(sex, sn_present) %>% 
+    group_by(sn_present) %>% 
+    skim()
+
+# 95% bootstrap confidence interval of the proportion of females by SN status
+## Method = BCa, Resamples = 10000
+### SN:yes
+set.seed(1234)
+sn_yes <- boot.ci(boot(data = data[data$sn_present == 'yes', ], 
+                       statistic = function(d, i){
+                           mean(d[i, 'sex'] == 'F')}, 
+                       R = 10000, 
+                       stype = 'i'), 
+                  type = 'bca') %>% 
+    data_frame(sn_present = 'yes',
+               n = nrow(filter(data, !is.na(sex) & 
+                                   sn_present == 'yes')), 
+               Proportion = round(.$t0, 3), 
+               Conf.level = 0.95, 
+               Bca.lower = round(.$bca[[4]], 3),
+               Bca.upper = round(.$bca[[5]], 3)) %>%
+    .[1, -1] %>% 
+    as.data.frame()
+
+### SN:no
+set.seed(1234)
+sn_no <- boot.ci(boot(data = data[data$sn_present == 'no', ], 
+                      statistic = function(d, i){
+                          mean(d[i, 'sex'] == 'F')}, 
+                      R = 10000, 
+                      stype = 'i'), 
+                 type = 'bca') %>% 
+    data_frame(sn_present = 'no',
+               n = nrow(filter(data, !is.na(sex) & 
+                                   sn_present == 'yes')), 
+               Proportion = round(.$t0, 3), 
+               Conf.level = 0.95, 
+               Bca.lower = round(.$bca[[4]], 3),
+               Bca.upper = round(.$bca[[5]], 3)) %>%
+    .[1, -1] %>% 
+    as.data.frame()
+
+### Put sn and sn_no together and print
+sn_yes %>% 
+    bind_rows(sn_no)
+    
+# Plot
+data %>%
+    ggplot(data = .) +
+    aes(x = sn_present,
+        fill = sex) +
+    geom_bar(position = 'fill') + 
+    geom_hline(yintercept = 0.5,
+               linetype = 2) +
+    labs(title = 'Sex ratio at recruitment',
+         subtitle = "SN:yes vs SN:no",
+         y = 'Proportion',
+         x = 'SN present') +
+    scale_fill_grey(name = 'Sex') 
+
+# Bootstrap 95% CI for the odds ratio of SN:yes vs SN:no
+## Resample: 10000
+set.seed(1234)
+boot_sex <- boot.ci(boot(data = data, 
+                         statistic = boot_OR, 
+                         data_column = 'sex',
+                         grouping_column = 'sn_present',
+                         R = 10000, 
+                         stype = 'i'),
+                    type = 'bca') %>%
+    data_frame(n = nrow(filter(data, !is.na(sex))), 
+               Odds.ratio = round(.$t0, 3), 
+               Conf.level = 0.95, 
+               Bca.lower = round(.$bca[[4]], 3),
+               Bca.upper = round(.$bca[[5]], 3),
+               Includes.one = ifelse(Bca.lower <= 1 & Bca.upper >= 1,
+                                      yes = 'yes',
+                                      no = 'no')) %>%
+    .[1, -1] %>% 
+    as.data.frame(); boot_sex
+
+ggplot(data = boot_sex) +
+    geom_hline(yintercept = 1,
+               linetype = 2) +
+    geom_point(aes(x = 'x',
+                   y = Odds.ratio),
+               size = 12) +
+    geom_errorbar(aes(x = 'x',
+                      ymin = Bca.lower,
+                      ymax = Bca.upper),
+                  width = 0.5,
+                  size = 1) +
+    geom_label(aes(x = 'x',
+                   y = Bca.lower,
+                   label = Bca.lower)) +
+    geom_label(aes(x = 'x',
+                   y = Odds.ratio,
+                   label = Odds.ratio)) +
+    geom_label(aes(x = 'x',
+                   y = Bca.upper,
+                   label = Bca.upper)) +
+    labs(title = 'Bootstrap 95% CI of the odds ratio for being female',
+         subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 10000",
+         y = 'Odds ratio') +
+    theme(axis.ticks.x = element_blank(),
+          axis.text.x = element_blank(),
+          axis.title.x = element_blank())
+```
+
+## CD4 T-cell count
+```{r cd4}
+# Tabular summary
+data %>%
+    select(CD4_cell.ul, sn_present) %>% 
+    group_by(sn_present) %>% 
+    skim()
+
+# 95% bootstrap confidence interval of the median CD4 T-cell count by SN status
+## Method = BCa, Resamples = 10000
+set.seed(1234)
+groupwiseMedian(CD4_cell.ul ~ sn_present, 
+                data = data, 
+                R = 10000,
+                boot = TRUE, 
+                bca = TRUE)[c(1:3, 5, 6, 7)]
+# Plot
+data %>%
+    ggplot(data = .) +
+    aes(y = CD4_cell.ul, 
+        x = sn_present) +
+    geom_boxplot() +
+    geom_jitter(height = 0) +
+    labs(title = 'CD4 T-cell count at recruitment',
+         subtitle = "SN:yes vs SN:no",
+         y = expression(paste('CD4 T-cell count (cells.', mu, l^-1, ')')),
+         x = 'SN present') 
+
+# Bootstrap 95% CI for the difference in median CD4 T-cell count
+## Resample: 10000
+set.seed(1234)
+boot_cd4 <- boot.ci(boot(data = data,
+                         statistic = boot_deltaMedian, 
+                         data_column = 'CD4_cell.ul', 
+                         grouping_column = 'sn_present',
+                         R = 10000, 
+                         stype = 'i'),
+                    type = 'bca') %>%
+    data_frame(n = nrow(filter(data, !is.na(CD4_cell.ul))), 
+               Median.difference = round(.$t0, 3), 
+               Conf.level = 0.95, 
+               Bca.lower = round(.$bca[[4]], 3),
+               Bca.upper = round(.$bca[[5]], 3),
+               Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
+                                      yes = 'yes',
+                                      no = 'no')) %>%
+    .[1, -1] %>% 
+    as.data.frame(); boot_cd4 
+
+ggplot(data = boot_cd4) +
+     geom_hline(yintercept = 0,
+               linetype = 2) +
+    geom_point(aes(x = 'x',
+                   y = Median.difference),
+               size = 12) +
+    geom_errorbar(aes(x = 'x',
+                      ymin = Bca.lower,
+                      ymax = Bca.upper),
+                  width = 0.5,
+                  size = 1) +
+    geom_label(aes(x = 'x',
+                   y = Bca.lower,
+                   label = Bca.lower)) +
+    geom_label(aes(x = 'x',
+                   y = Median.difference,
+                   label = Median.difference)) +
+    geom_label(aes(x = 'x',
+                   y = Bca.upper,
+                   label = Bca.upper)) +
+   labs(title = 'Bootstrap 95% CI of the difference in median CD4 T-cell count',
+         subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 10000",
+         y = expression(paste('Difference CD4 T-cell count (cells.', mu, l^-1, ')'))) +
+    theme(axis.ticks.x = element_blank(),
+          axis.text.x = element_blank(),
+          axis.title.x = element_blank())
+```
+
+## Viral load
+```{r viral_load}
+# Tabular summary
+data %>%
+    select(viral_load_copies.ml, sn_present) %>%  
+    group_by(sn_present) %>% 
+    skim()
+
+# 95% bootstrap confidence interval of the median viral load by SN status
+## Method = BCa, Resamples = 10000
+set.seed(1234)
+groupwiseMedian(viral_load_copies.ml ~ sn_present, 
+                data = data[!is.na(data$viral_load_copies.ml), ], # Remove <NA>
+                R = 10000,
+                boot = TRUE, 
+                bca = TRUE)[c(1:3, 5, 6, 7)]
+
+# Plot
+data %>%
+    filter(!is.na(viral_load_copies.ml)) %>%
+    ggplot(data = .) +
+    aes(y = viral_load_copies.ml, 
+        x = sn_present) +
+    geom_boxplot() +
+    geom_jitter(height = 0) +
+    labs(title = 'Viral load at recruitment',
+         subtitle = 'SN:yes vs SN:no',
+         x = 'SN present',
+         y = expression(paste('log' [10], ' viral load (copies.ml' ^-1, ')')))
+
+# Bootstrap 95% CI for the difference in median viral load
+## Resample: 10000
+set.seed(1234)
+boot_vl <- boot.ci(boot(data = data,
+                        statistic = boot_deltaMedian, 
+                        data_column = 'viral_load_copies.ml', 
+                        grouping_column = 'sn_present',
+                        R = 10000, 
+                        stype = 'i'),
+                   type = 'bca') %>%
+    data_frame(n = nrow(filter(data, !is.na(viral_load_copies.ml))), 
+               Median.difference = round(.$t0, 3), 
+               Conf.level = 0.95, 
+               Bca.lower = round(.$bca[[4]], 3),
+               Bca.upper = round(.$bca[[5]], 3),
+               Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
+                                      yes = 'yes',
+                                      no = 'no')) %>%
+    .[1, -1] %>% 
+    as.data.frame(); boot_vl
+
+ggplot(data = boot_vl) +
+    geom_hline(yintercept = 0,
+               linetype = 2) +
+    geom_point(aes(x = 'x',
+                   y = Median.difference),
+               size = 12) +
+    geom_errorbar(aes(x = 'x',
+                      ymin = Bca.lower,
+                      ymax = Bca.upper),
+                  width = 0.5,
+                  size = 1) +
+    geom_label(aes(x = 'x',
+                   y = Bca.lower,
+                   label = Bca.lower)) +
+    geom_label(aes(x = 'x',
+                   y = Median.difference,
+                   label = Median.difference)) +
+    geom_label(aes(x = 'x',
+                   y = Bca.upper,
+                   label = Bca.upper)) +
+    labs(title = 'Bootstrap 95% CI of the difference in median viral load',
+         subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 10000",
+         y = expression(paste('Difference in median log' [10], ' viral load (copies.ml' ^-1, ')'))) +
+    theme(axis.ticks.x = element_blank(),
+          axis.text.x = element_blank(),
+          axis.title.x = element_blank())
+```
+
+## Alcohol
+```{r alcohol}
+# Tabular summary
+data %>%
+    select(alcohol_units.week, sn_present) %>%
+    mutate(drinks_alcohol = case_when(
+        alcohol_units.week >= 1 ~ 'Yes',
+        alcohol_units.week == 0 ~ 'No'
+    )) %>% 
+    mutate(drinks_alcohol = factor(drinks_alcohol)) %>% 
+    group_by(sn_present, drinks_alcohol) %>% 
+    skim()
+
+# ALCOHOL DRINKERS ONLY
+## 95% bootstrap confidence interval of the median alcohol consumption by SN status
+### Method = BCa, Resamples = 10000
+set.seed(1234)
+groupwiseMedian(alcohol_units.week ~ sn_present, 
+                data = data[data$alcohol_units.week > 0, ], # Remove none drinkers
+                R = 10000, 
+                boot = TRUE, 
+                bca = TRUE)[c(1:3, 5, 6, 7)]
+
+# Plot
+data %>%
+    filter(alcohol_units.week > 0) %>% 
+    ggplot(data = .) +
+    aes(x = sn_present,
+        y = alcohol_units.week) +
+    geom_boxplot() +
+    geom_jitter(height = 0) +
+    labs(title = 'Alcohol consumption at recruitment',
+         subtitle = 'SN:yes vs SN:no',
+         x = 'SN present',
+         y = expression(paste('Alcohol consumption (units.week' ^-1, ')')))
+
+# With only two drinkers in the SN:yes group, we did not pursue additional exploration.
+```
+
+## TB
+_Note: Treatment policy was to start some patients, irrespective of TB diagnosis, on TB treatment. Therefore current TB infection and treatment for TB analysed separately._
+
+### Currently infected with TB
+```{r tb_current}
+# Tabular summary
+data %>%
+    select(TB_current, sn_present) %>%  
+    group_by(sn_present) %>% 
+    skim()
+
+# 95% bootstrap confidence interval of the proportion with current TB by SN status
+## Method = BCa, Resamples = 10000
+### SN:yes
+set.seed(1234)
+sn_yes <- boot.ci(boot(data = data[data$sn_present == 'yes', ], 
+                       statistic = function(d, i){
+                           mean(d[i, 'TB_current'] == 'yes')},
+                       R = 10000, 
+                       stype = 'i'), 
+                  type = 'bca') %>% 
+    data_frame(sn_present = 'yes',
+               n = nrow(filter(data, !is.na(TB_current) & 
+                                   sn_present == 'yes')), 
+               Proportion = round(.$t0, 3), 
+               Conf.level = 0.95, 
+               Bca.lower = round(.$bca[[4]], 3),
+               Bca.upper = round(.$bca[[5]], 3)) %>%
+    .[1, -1] %>% 
+    as.data.frame()
+
+### SN:no
+set.seed(1234)
+sn_no <- boot.ci(boot(data = data[data$sn_present == 'no', ], 
+                      statistic = function(d, i){
+                          mean(d[i, 'TB_current'] == 'yes')}, 
+                      R = 10000, 
+                      stype = 'i'), 
+                 type = 'bca') %>% 
+    data_frame(sn_present = 'no',
+               n = nrow(filter(data, !is.na(TB_current) & 
+                                   sn_present == 'no')), 
+               Proportion = round(.$t0, 3), 
+               Conf.level = 0.95, 
+               Bca.lower = round(.$bca[[4]], 3),
+               Bca.upper = round(.$bca[[5]], 3)) %>%
+    .[1, -1] %>% 
+    as.data.frame()
+
+### Put sn and sn_no together and print
+sn_yes %>% 
+    bind_rows(sn_no)
+
+# Plot
+data %>%
+    mutate(TB_current = str_to_title(TB_current)) %>% 
+    ggplot(data = .) +
+    aes(x = sn_present,
+        fill = TB_current) +
+    geom_bar(position = 'fill') + 
+    geom_hline(yintercept = 0.5,
+               linetype = 2) +
+    labs(title = 'Current TB at recruitment',
+         subtitle = 'SN:yes vs SN:no',
+         x = 'SN present',
+         y = 'Proportion') +
+    scale_fill_grey(name = 'Current\ninfection')
+
+# Bootstrap 95% CI for the odds ratio of current TB in SN:yes vs SN:no
+## Resample: 10000
+set.seed(1234)
+boot_tb <- boot.ci(boot(data = data,
+                        statistic = boot_OR, 
+                        data_column = 'TB_current', 
+                        grouping_column = 'sn_present',
+                        R = 10000, 
+                        stype = 'i'),
+                   type = 'bca') %>%
+    data_frame(n = nrow(filter(data, !is.na(TB_current))), 
+               Odds.ratio = round(.$t0, 3), 
+               Conf.level = 0.95, 
+               Bca.lower = round(.$bca[[4]], 3),
+               Bca.upper = round(.$bca[[5]], 3),
+               Includes.zero = ifelse(Bca.lower <= 1 & Bca.upper >= 1,
+                                      yes = 'yes',
+                                      no = 'no')) %>%
+    .[1, -1] %>% 
+    as.data.frame(); boot_tb
+
+ggplot(data = boot_tb) +
+    geom_hline(yintercept = 1,
+               linetype = 2) +
+    geom_point(aes(x = 'x',
+                   y = Odds.ratio),
+               size = 12) +
+    geom_errorbar(aes(x = 'x',
+                      ymin = Bca.lower,
+                      ymax = Bca.upper),
+                  width = 0.5,
+                  size = 1) +
+    geom_label(aes(x = 'x',
+                   y = Bca.lower,
+                   label = Bca.lower)) +
+    geom_label(aes(x = 'x',
+                   y = Odds.ratio,
+                   label = Odds.ratio)) +
+    geom_label(aes(x = 'x',
+                   y = Bca.upper,
+                   label = Bca.upper)) +
+    labs(title = 'Bootstrap 95% CI of the odds ratio for current TB',
+         subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 10000",
+         y = 'Odds ratio for current TB') +
+    theme(axis.ticks.x = element_blank(),
+          axis.text.x = element_blank(),
+          axis.title.x = element_blank())
+```
+
+### Currently receiving TB treatment?
+Treatment consisted of rifafour and pyridoxine (prophylaxis). Therefore only need to analyse rifafour data. Data coded as _'No'_ (not being treated), _'Yes'_ (being treated for active TB), and _'Prophylaxis'_ (being treated prophylactically for TB).
+```{r tb_rifafour}
+# Double-check matching between rifafour and pyridoxine columns 
+unique(data$rifafour_treatment == data$pyridoxine_prophylaxis)
+
+# Tabular summary
+data %>%
+    select(rifafour_treatment, pyridoxine_prophylaxis, sn_present) %>%  
+    group_by(pyridoxine_prophylaxis, sn_present) %>% 
+    skim()
+
+# Proportion on prophylaxis treatment
+## Too low to analyse separately
+round(mean(data$rifafour_treatment == 'prophylaxis'), 3)
+
+## ...so collapse 'yes' and 'prophylaxis'
+data_tb <- data %>% 
+    mutate(rifafour_treatment = fct_collapse(rifafour_treatment,
+                                             yes = c('yes', 'prophylaxis')))
+
+# 95% bootstrap confidence interval of the proportion with current TB treatment by SN status
+## Method = BCa, Resamples = 10000
+### SN:yes
+set.seed(1234)
+sn_yes <- boot.ci(boot(data = data_tb[data_tb$sn_present == 'yes', ], 
+                       statistic = function(d, i){
+                           mean(d[i, 'rifafour_treatment'] == 'yes')},
+                       R = 10000, 
+                       stype = 'i'), 
+                  type = 'bca') %>% 
+    data_frame(sn_present = 'yes',
+               n = nrow(filter(data_tb, !is.na(rifafour_treatment) & 
+                                   sn_present == 'yes')), 
+               Proportion = round(.$t0, 3), 
+               Conf.level = 0.95, 
+               Bca.lower = round(.$bca[[4]], 3),
+               Bca.upper = round(.$bca[[5]], 3)) %>%
+    .[1, -1] %>% 
+    as.data.frame()
+
+### SN:no
+set.seed(1234)
+sn_no <- boot.ci(boot(data = data_tb[data_tb$sn_present == 'no', ], 
+                      statistic = function(d, i){
+                          mean(d[i, 'rifafour_treatment'] == 'yes')}, 
+                      R = 10000, 
+                      stype = 'i'), 
+                 type = 'bca') %>% 
+    data_frame(sn_present = 'no',
+               n = nrow(filter(data_tb, !is.na(rifafour_treatment) & 
+                                   sn_present == 'no')), 
+               Proportion = round(.$t0, 3), 
+               Conf.level = 0.95, 
+               Bca.lower = round(.$bca[[4]], 3),
+               Bca.upper = round(.$bca[[5]], 3)) %>%
+    .[1, -1] %>% 
+    as.data.frame()
+
+### Put sn and sn_no together and print
+sn_yes %>% 
+    bind_rows(sn_no)
+
+# Plot
+data %>%
+    mutate(TB_current = str_to_title(rifafour_treatment)) %>% 
+    ggplot(data = .) +
+    aes(x = sn_present,
+        fill = rifafour_treatment) +
+    geom_bar(position = 'fill') + 
+    geom_hline(yintercept = 0.5,
+               linetype = 2) +
+    labs(title = 'Being treated for TB at recruitment',
+         subtitle = 'SN:yes vs SN:no',
+         x = 'SN present',
+         y = 'Proportion') +
+    scale_fill_grey(name = 'Currently\ntreated')
+
+# Bootstrap 95% CI for the odds ratio of current TB treatment by SN status
+## Resample: 10000
+set.seed(1234)
+boot_tb2 <- boot.ci(boot(data = data_tb,
+                         statistic = boot_OR, 
+                         data_column = 'rifafour_treatment', 
+                         grouping_column = 'sn_present',
+                         R = 10000, 
+                         stype = 'i'),
+                    type = 'bca') %>%
+    data_frame(n = nrow(filter(data_tb, !is.na(rifafour_treatment))), 
+               Odds.ratio = round(.$t0, 3), 
+               Conf.level = 0.95, 
+               Bca.lower = round(.$bca[[4]], 3),
+               Bca.upper = round(.$bca[[5]], 3),
+               Includes.zero = ifelse(Bca.lower <= 1 & Bca.upper >= 1,
+                                      yes = 'yes',
+                                      no = 'no')) %>%
+    .[1, -1] %>% 
+    as.data.frame(); boot_tb2
+
+ggplot(data = boot_tb2) +
+    geom_hline(yintercept = 1,
+               linetype = 2) +
+    geom_point(aes(x = 'x',
+                   y = Odds.ratio),
+               size = 12) +
+    geom_errorbar(aes(x = 'x',
+                      ymin = Bca.lower,
+                      ymax = Bca.upper),
+                  width = 0.5,
+                  size = 1) +
+    geom_label(aes(x = 'x',
+                   y = Bca.lower,
+                   label = Bca.lower)) +
+    geom_label(aes(x = 'x',
+                   y = Odds.ratio,
+                   label = Odds.ratio)) +
+    geom_label(aes(x = 'x',
+                   y = Bca.upper,
+                   label = Bca.upper)) +
+    labs(title = 'Bootstrap 95% CI of the odds ratio for current TB treatment',
+         subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 10000",
+         y = 'Odds ratio for current TB treatment') +
+    theme(axis.ticks.x = element_blank(),
+          axis.text.x = element_blank(),
+          axis.title.x = element_blank())
+```
+
+----
+
+# Session information
+```{r session_info}
+sessionInfo()
+```
+

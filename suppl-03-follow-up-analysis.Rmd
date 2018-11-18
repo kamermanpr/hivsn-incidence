@@ -1,0 +1,489 @@
+---
+title: "Supplement 3"
+subtitle: 'Descriptive statistics on participant follow-up'
+author: 'Peter Kamerman and Prinisha Pillay'
+date: "`r format(Sys.Date(), '%d %B %Y')`"
+---
+
+```{r setup, include = FALSE}
+# Load packages
+library(magrittr)
+library(tidyverse)
+library(patchwork)
+library(coin)
+library(lmerTest)
+library(car)
+
+# Set plot theme
+theme_set(new = theme_bw())
+
+# knitr options
+knitr::opts_chunk$set(warning = FALSE,
+                      message = FALSE, 
+                      fig.retina = 2,
+                      fig.align = 'center',
+                      fig.path = './figures/suppl-03-follow-up-analysis/')
+```
+
+----
+
+This analysis describes the follow-up pattern of participants in the study.
+
+----
+
+# Import data
+```{r import}
+data <- read_rds('data-clean/clean_data.rds') %>% 
+    # Select columns
+    select(ID, visit_number, visit_day, visit_months, hivsn_present)
+```
+
+# Process data
+Add a column indicating whether a participant developed SN at any time during the follow-up period.
+```{r process_data}
+# Identify andf extract information on SN development (at anytime) 
+# by looking at the presence of SN at the final visit
+data_sn <- data %>%
+    select(ID, visit_number, hivsn_present) %>%
+    group_by(ID) %>%
+    mutate(max_visit = max(visit_number)) %>%
+    filter(visit_number == max_visit) %>%
+    select(ID, hivsn_present) %>%
+    rename(sn = hivsn_present)
+
+# Join data_sn to data
+data %<>%
+    left_join(data_sn) 
+```
+
+# Inspect data
+```{r quick_look}
+# Dimensions 
+dim(data) 
+# Column names
+names(data)
+# Head and tail
+head(data)
+tail(data)
+# Data structure
+glimpse(data)
+```
+
+----
+
+# Clinic visits 
+
+## Whole cohort
+```{r visit_full, fig.height = 8}
+data %>%
+    # Process data for plotting
+    group_by(ID) %>%
+    mutate(visit = ifelse(visit_day > 0,
+                          yes = 1,
+                          no = 0),
+           visit_count = cumsum(visit),
+           max_visits = max(visit_count),
+           max_duration = max(visit_day)) %>%
+    ungroup() %>%
+    select(ID, visit_day, visit_months, 
+           visit_count, max_visits, 
+           max_duration) %>%
+    # Clean-up and order dataframe
+    arrange(max_duration, max_visits, desc(ID)) %>%
+    mutate(ID = as_factor(ID),
+           visit_count = as.character(visit_count)) %>%
+    complete(ID, visit_months) %>%
+    # Add a dummy variable for faceting
+    bind_cols(facet = c(rep('Panel 1', 420), rep('Panel 2', 832-420))) %>%
+    # Clean-up and order dataframe
+    filter(complete.cases(.)) %>%
+    # Plot
+    ggplot(data = .) +
+    aes(x = visit_day,
+        y = ID) +
+    geom_path(colour = '#888888') +
+    geom_point(aes(fill = visit_count),
+               shape = 21, 
+               size = 3) +
+    scale_x_continuous(breaks = seq(0, 250, 25)) +
+    scale_fill_viridis_d(name = 'Visit count: ',
+                         direction = -1) +
+    labs(title = 'Timing of clinic visits',
+         subtitle = 'Visit number coded by fill colour',
+         y = 'Participant ID',
+         x = 'Days') +
+    facet_wrap(~facet, 
+               ncol = 2, 
+               scales = 'free_y') +
+    theme(legend.position = 'top',
+          legend.margin = margin(t = -0.3, 
+                                 r = 0, 
+                                 b = -0.3, 
+                                 l = 0, 'lines'),
+          panel.grid = element_blank(),
+          strip.background = element_blank(),
+          strip.text = element_blank())
+```
+
+## By SN status
+```{r visit_sn, fig.height = 8}
+data_plot <- data %>%
+    # Process data for plotting
+    group_by(ID) %>%
+    mutate(visit = ifelse(visit_day > 0,
+                          yes = 1,
+                          no = 0),
+           visit_count = cumsum(visit),
+           max_visits = max(visit_count),
+           max_duration = max(visit_day)) %>%
+    ungroup() %>%
+    select(ID, hivsn_present, visit_day, visit_months, 
+           visit_count, max_visits, 
+           max_duration, sn) %>%
+    # Clean-up and order dataframe
+    arrange(max_duration, max_visits, desc(ID)) %>%
+    mutate(ID = as_factor(ID),
+           visit_count = as.character(visit_count)) %>%
+    complete(ID, visit_months) %>%
+    # Clean-up and order dataframe
+    filter(complete.cases(.)) %>%
+    # Recode facetting column
+    mutate(sn = as.character(sn),
+           sn = ifelse(sn == 'yes',
+                       yes = 'Neuropathy developed',
+                       no = 'No neuropathy'),
+           sn = factor(sn,
+                       levels = c('No neuropathy', 'Neuropathy developed'),
+                       ordered = TRUE)) %>% 
+    mutate(hivsn_present = str_to_title(hivsn_present))
+
+# Plot
+ggplot(data = data_plot) +
+    aes(x = visit_day,
+        y = ID) +
+    geom_path(colour = '#888888') +
+    geom_point(aes(fill = hivsn_present),
+               shape = 21, 
+               size = 3) +
+    labs(title = 'Timing of clinic visits, facetted by whether SN developed',
+         subtitle = 'Time-points were SN was present are coded by fill colour',
+         x = 'Days',
+         y = 'Participant ID') +
+    scale_x_continuous(breaks = seq(0, 250, 25)) +
+    scale_fill_manual(name = 'Neuropathy present: ',
+                      values = c('#FFFFFF', '#000000')) +
+    facet_wrap(~ sn, 
+               ncol = 2, 
+               scales = 'free_y') +
+    theme(legend.position = 'top',
+          legend.margin = margin(t = -0.3, 
+                                 r = 0, 
+                                 b = -0.3, 
+                                 l = 0, 'lines'),
+          panel.grid = element_blank())
+
+# Publication plot
+gg_plot <- data_plot %>% 
+    ggplot(data = .) +
+    aes(x = visit_day,
+        y = ID) +
+    geom_path(colour = '#888888') +
+    geom_point(aes(fill = hivsn_present),
+               shape = 21, 
+               size = 3) +
+    labs(x = 'Days',
+         y = 'Participant ID') +
+    scale_x_continuous(breaks = seq(0, 250, 25)) +
+    scale_fill_manual(name = 'Neuropathy present: ',
+                      values = c('#FFFFFF', '#000000')) +
+    facet_wrap(~ sn, 
+               ncol = 2, 
+               scales = 'free_y') +
+    theme(legend.position = 'top',
+          legend.text = element_text(size = 11),
+          legend.title = element_text(size = 11),
+          axis.text.y = element_text(colour = '#000000'),
+          axis.text.x = element_text(colour = '#000000',
+                                     size = 12),
+          axis.title = element_text(size = 14),
+          panel.grid = element_blank(),
+          panel.border = element_rect(size = 1),
+          strip.text = element_text(size = 12))
+
+ggsave(filename = 'followup.png', plot = gg_plot, width = 9, height = 8)
+```
+
+----
+
+# Analysis
+
+## Process data
+```{r visit_data}
+# Generate visit data
+data_v1 <- data %>%
+    # Calculations per individual
+    group_by(ID) %>%
+    mutate(# Extract the max number of visits
+           max_visits = max(visit_number), 
+           # Time from visit 1 to the last visit
+           max_duration = max(visit_day), 
+           # Time between successive visits
+           visit_break = visit_day - lag(visit_day),
+           # Running mean time (days) between visits
+           cummulative_mean = round(cummean(visit_day))) %>% 
+    ungroup() %>% 
+    # Select required columns
+    select(ID, visit_number, visit_day, visit_break, max_visits, 
+           max_duration, cummulative_mean) %>%
+    left_join(data_sn)
+
+# Filter based on maximum number of visits
+data_v2 <- data_v1 %>%
+    # Per individual
+    group_by(ID) %>%
+    # Get maximum number of visits
+    filter(visit_number == max_visits) %>%
+    ungroup()
+```
+
+## Number of clinic visits
+```{r n_visits}
+# Summary table
+data_v2 %>%
+    summarise(n = n(),
+              Median.visits = median(max_visits),
+              Q25 = quantile(max_visits, 0.25),
+              Q75 = quantile(max_visits, 0.75),
+              min = min(max_visits),
+              max = max(max_visits))
+
+# Summary table (conditioned on sn)
+data_v2 %>%
+    group_by(sn) %>%
+    summarise(n = n(),
+              Median.visits = median(max_visits),
+              Q25 = quantile(max_visits, 0.25),
+              Q75 = quantile(max_visits, 0.75),
+              min = min(max_visits),
+              max = max(max_visits))
+
+# Plots
+gg_v2a <- data_v2 %>%
+    group_by(max_visits) %>%
+    summarise(count = n()) %>%
+    mutate(visits = fct_relevel(factor(max_visits), '5', '4', '3')) %>%
+    ggplot(data = .) +
+    aes(y = count,
+        x = 'all',
+        fill = visits) +
+    geom_bar(stat = 'identity') +
+    scale_fill_grey() +
+    labs(title = 'Number of clinic visits (counts)',
+         subtitle = '(All participants)',
+         y = 'Count') +
+    theme(axis.title.x = element_blank(),
+          axis.text.x = element_blank())
+
+gg_v2b <- data_v2 %>%
+    group_by(max_visits) %>%
+    summarise(count = n()) %>%
+    mutate(visits = fct_relevel(factor(max_visits), '5', '4', '3')) %>%
+    ggplot(data = .) +
+    aes(y = count,
+        x = 'all',
+        fill = visits) +
+    geom_bar(stat = 'identity', 
+             position = position_fill()) +
+    scale_fill_grey() +
+    labs(title = 'Number of clinic visits (proportion)',
+         subtitle = '(All participants)',
+         y = 'Proportion') +
+    theme(axis.title.x = element_blank(),
+          axis.text.x = element_blank())
+
+# Plot next to each other using patchwork package
+gg_v2a + gg_v2b
+
+## Conditional on SN
+gg_v2c <- data_v2 %>%
+    group_by(sn, max_visits) %>%
+    summarise(count = n()) %>%
+    mutate(visits = fct_relevel(factor(max_visits), '5', '4', '3')) %>%
+    ggplot(data = .) +
+    aes(y = count,
+        x = sn,
+        fill = visits) +
+    geom_bar(stat = 'identity') +
+    scale_fill_grey() +
+    labs(title = 'Number of clinic visits (proportion)',
+         subtitle = '(All participants)',
+         y = 'Proportion') +
+    theme(axis.title.x = element_blank(),
+          axis.text.x = element_blank())
+
+gg_v2d <- data_v2 %>%
+    group_by(sn, max_visits) %>%
+    summarise(count = n()) %>%
+    mutate(visits = fct_relevel(factor(max_visits), '5', '4', '3')) %>%
+    ggplot(data = .) +
+    aes(y = count,
+        x = sn,
+        fill = visits) +
+    geom_bar(stat = 'identity', 
+             position = position_fill()) +
+    scale_fill_grey() +
+    labs(title = 'Number of clinic visits (proportion)',
+         subtitle = '(All participants)',
+         y = 'Proportion') +
+    theme(axis.title.x = element_blank(),
+          axis.text.x = element_blank())
+
+# Plot next to each other using patchwork package
+gg_v2c + gg_v2d
+
+# Stats
+chisq_test(xtabs(~ sn + visit_number, 
+                 data = data_v2),
+           distribution = approximate(B = 10000))
+```
+
+## Time between first and last visit
+```{r time_visits}
+# Summary table
+data_v2 %>%
+    summarise(n = n(),
+              Median.days = median(max_duration),
+              Q25 = quantile(max_duration, 0.25),
+              Q75 = quantile(max_duration, 0.75),
+              min = min(max_duration),
+              max = max(max_duration))
+
+# Summary table (conditioned on sn)
+data_v2 %>%
+    group_by(sn) %>% 
+    summarise(n = n(),
+              Median.days = median(max_duration),
+              Q25 = quantile(max_duration, 0.25),
+              Q75 = quantile(max_duration, 0.75),
+              min = min(max_duration),
+              max = max(max_duration))
+
+# Plots
+data_v2 %>%
+    ggplot(data = .) +
+    aes(y = max_duration, 
+        x = 'All patients') +
+    geom_boxplot() +
+    geom_jitter(height = 0) +
+    labs(title = 'Number of days of follow-up',
+         subtitle = '(All participants)',
+         y = 'Days') +
+    theme(axis.title.x = element_blank(),
+          axis.text.x = element_blank())
+
+## Conditional on SN
+data_v2 %>%
+    ggplot(data = .) +
+    aes(y = max_duration, 
+        x = sn) +
+    geom_boxplot() +
+    geom_jitter(height = 0) +
+    labs(title = 'Number of days of follow-up',
+         subtitle = 'SN:yes vs SN:no',
+         y = 'Days',
+         x = 'SN present')
+
+# Stats
+normal_test(max_duration ~ factor(sn),
+            data = data_v2,
+            distribution = approximate(B = 10000))
+```
+
+## Time between successive clinic visits
+```{r cummulative_visits}
+# Summary table
+data_v1 %>%
+    filter(visit_number != 1) %>%
+    group_by(visit_number) %>%
+    summarise(n = n(),
+              Mean.days = mean(visit_break),
+              Median.days = median(visit_break),
+              SD = sd(visit_break),
+              Q25 = quantile(visit_break, 0.25),
+              Q75 = quantile(visit_break, 0.75),
+              min = min(visit_break),
+              max = max(visit_break))
+
+# Summary table (conditioned on sn)
+data_v1 %>%
+    filter(visit_number != 1) %>%
+    group_by(visit_number, sn) %>%
+    summarise(n = n(),
+              Mean.days = mean(visit_break),
+              Median.days = median(visit_break),
+              SD = sd(visit_break),
+              Q25 = quantile(visit_break, 0.25),
+              Q75 = quantile(visit_break, 0.75),
+              min = min(visit_break),
+              max = max(visit_break))
+
+# Plots
+data_v1 %>%
+    filter(visit_number != 1) %>%
+    ggplot(data = .) +
+    aes(y = visit_break, 
+        x = factor(visit_number)) +
+    geom_boxplot() +
+    geom_jitter(height = 0) +
+    scale_x_discrete(labels = c('1 to 2', '2 to 3',
+                                '3 to 4', '4 to 5')) +
+    labs(title = 'Days between successive clinic visit ',
+         subtitle = '(All participants)',
+         y = 'Days',
+         x = 'Visit interval')
+
+## Conditional on SN
+data_v1 %>%
+    filter(visit_number != 1) %>%
+    ggplot(data = .) +
+    aes(y = visit_break, 
+        x = factor(visit_number),
+        fill = sn) +
+    geom_boxplot(alpha = 0.6) +
+    geom_point(position = position_jitterdodge(jitter.height = 0)) +
+    scale_x_discrete(labels = c('1 to 2', '2 to 3',
+                                '3 to 4', '4 to 5')) +
+    scale_fill_grey(name = 'Neuropathy\npresent') +
+    labs(title = 'Days between successive clinic visits',
+         subtitle = 'SN:yes vs SN:no',
+         y = 'Days',
+         x = 'Visit interval') 
+
+# Stats
+## Generate date
+data_lmer <- data_v1 %>%
+    filter(visit_number != 1) %>%
+    select(ID, visit_number, visit_break, sn) 
+
+## Generate model (ID included as random effects)
+mod <- lmer(visit_break ~ sn * visit_number + (1|ID), 
+            data = data_lmer)
+
+## Analysis of Deviance Table (Type II Wald F tests with Kenward-Roger df)
+Anova(mod = mod, 
+      type = 'II', 
+      test.statistic = 'F')
+
+## Basic diagnostics
+plot(mod, main = 'Residuals vs Fitted') 
+qqnorm(resid(mod))
+qqline(resid(mod))
+```
+
+----
+
+# Session information
+```{r session_info}
+sessionInfo()
+```
+

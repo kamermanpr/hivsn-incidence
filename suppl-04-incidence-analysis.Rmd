@@ -1,0 +1,766 @@
+---
+title: "Supplement 4"
+subtitle: 'HIV-SN incidence analysis'
+author: 'Peter Kamerman and Prinisha Pillay'
+date: "`r format(Sys.Date(), '%d %B %Y')`"
+---
+
+```{r setup, include = FALSE}
+# Load packages 
+library(magrittr)
+library(tidyverse)
+library(glmnetUtils)
+library(boot)
+library(car)
+library(survival)
+library(survminer)
+library(LogisticDx)
+
+# Set plot theme
+theme_set(new = theme_bw())
+
+# knitr options
+knitr::opts_chunk$set(warning = FALSE,
+                      message = FALSE, 
+                      fig.retina = 2,
+                      fig.align = 'center',
+                      fig.path = './figures/suppl-03-incidence-analysis/')
+```
+
+----
+
+# Import data
+```{r import}
+data <- read_rds('data-clean/clean_data.rds') %>% 
+    # Select columns 
+    select(ID, visit_number, visit_day, 
+           hivsn_present, pain) 
+```
+
+# Process data
+
+## Estimate SN onset date
+We estimated the date of SN onset (_'approximate day'_) as the mid-point between two successive visits when a participant was found to have transitioned between SN:no to SN:yes. Otherwise, _'approximate day'_ was taken to be the visit_day.
+```{r approximate_day}
+### Create filter of participants who developed SN 
+sn_filter <- unique(data$ID[data$hivsn_present == 'yes'])
+
+# SN:yes group
+approx_sn <- data %>%
+    # Filter for participants that developed SN
+    filter(ID %in% sn_filter) %>%
+    # Group by ID
+    group_by(ID) %>%
+    # Approximate days
+    mutate(approximate_day = ifelse(visit_number == 1,
+                                    yes = 0,
+                                    no = ifelse(hivsn_present == 'yes',
+                                                yes = (visit_day + lag(visit_day)) / 2,
+                                                no = visit_day)),
+           approximate_day = as.integer(round(approximate_day))) %>%
+    # Add person years
+    mutate(visit_year = visit_day / 365.25,
+           approximate_year = approximate_day / 365.25)
+
+# SN:no group
+approx_no_sn <- data %>%
+    # Filter for participants that did not develop SN
+    filter(!ID %in% sn_filter) %>%
+    # Group by ID
+    group_by(ID) %>%
+    # approximate days (because no SN developed, use visit_day)
+    mutate(approximate_day = visit_day,
+           approximate_day = as.integer(round(approximate_day))) %>%
+    # Add person years
+    mutate(visit_year = visit_day / 365.25,
+           approximate_year = approximate_day / 365.25)
+
+# Put approx_* data frames together
+data <- bind_rows(approx_sn, approx_no_sn)
+```
+
+## Cumulative incidence data
+Extract 3 and 6 month periods for cumulative incidence.  
+**Note: Data were censored at last screening within each 3/6 month period.**
+```{r cumulative_incidence}
+## Generate time filters
+months_6 <- round(lubridate::dyears(0.5) / lubridate::ddays(1)) 
+months_3 <- round(lubridate::dyears(0.25) / lubridate::ddays(1))
+    
+# Extract SN:yes within 6-month period
+data_6months <- data %>%
+    # Filter values within 6 months
+    filter(visit_day <= months_6) %>%
+    # Group by ID 
+    group_by(ID) %>%
+    # Filter max visit_day
+    filter(visit_day == max(visit_day))
+
+# Extract SN:yes within first 3-month period
+data_3months <- data %>%
+    # Filter values within 6 months
+    filter(visit_day <= months_3) %>%
+    # Group by ID 
+    group_by(ID) %>%
+    # Filter max visit_day
+    filter(visit_day == max(visit_day))
+
+# Extract SN:yes within second 3-month period
+data_3to6months <-  data_6months %>%
+    # Filter out those with SN with first 3 months
+    filter(!ID %in% data_3months[data_3months$hivsn_present == 'yes', ]$ID) 
+```
+
+## Incidence rate data
+Only need full 6-month period
+```{r incidence_rate}
+# Extract SN:yes for full period
+df_6months <- data %>%
+    # Group by ID 
+    group_by(ID) %>%
+    # Filter max visit_day
+    filter(visit_day == max(visit_day))
+```
+
+## Survival analysis data
+```{r survival_data}
+# Create a data frame of SN:yes patients
+data_sn.yes <- data %>%
+    # Select columns
+    select(ID, 
+           visit_number, 
+           visit_day, 
+           visit_year,
+           approximate_day,
+           approximate_year,
+           hivsn_present,
+           pain) %>%
+    # Add counting columns
+    ## SN:yes and SN:no
+    mutate(sn_count = ifelse(hivsn_present == 'yes',
+                             yes = 1,
+                             no = 0)) %>%
+    # Create counting index to identify when SN first develop
+    ## Sum sn_count
+    group_by(ID) %>%
+    mutate(sn_count = cumsum(sn_count)) %>%
+    # Filter by sn_count == 1 to get when SN first developed
+    filter(sn_count == 1) %>%
+    # Remove sn_count
+    select(-sn_count)
+
+# Create data frame of SN:no patients
+data_sn.no <- data %>%
+    # Select columns
+    select(ID, 
+           visit_number, 
+           visit_day, 
+           visit_year,
+           approximate_day,
+           approximate_year,
+           hivsn_present,
+           pain) %>%
+    # Filter out SN:yes patient with the filter created earlier
+    filter(!ID %in% sn_filter) %>%
+    # Filter out 'repeats' (only the data at the last visit)
+    group_by(ID) %>%
+    mutate(max_visits = max(visit_number)) %>%
+    filter(visit_number == max_visits) %>%
+    select(-max_visits) 
+
+# Merge the SN:yes and SN:no data frames
+data_surv <- data_sn.yes %>%
+    full_join(data_sn.no) %>%
+    # New column with recoded hivsn_present data for survival analysis
+    mutate(hivsn_coded = ifelse(hivsn_present == 'yes',
+                                yes = 1, # SN:yes
+                                no = 0)) # SN:no
+
+# Add a new column with painful SN (but only if they have SN)
+data_surv <- data_surv %>%
+    mutate(hivsn_painful = ifelse(hivsn_present == 'yes' & pain == 'yes',
+                                  yes = 'yes',
+                                  no = ifelse(hivsn_present == 'yes' &
+                                                  pain == 'no',
+                                              yes = 'no',
+                                              no = NA))) 
+```
+
+## Modelling data
+```{r model_sn}
+# Identify and extract information on SN development (at anytime) 
+# by looking at the presence of SN at the final visit
+data_model <- data %>%
+    select(ID, visit_number, hivsn_present) %>%
+    group_by(ID) %>%
+    mutate(max_visit = max(visit_number)) %>%
+    filter(visit_number == max_visit) %>%
+    select(ID, hivsn_present) %>%
+    rename(sn = hivsn_present)
+
+# Join data_sn to data
+data_model <- read_rds('data-clean/clean_data.rds') %>%
+    left_join(data_model) %>% 
+    select(-hivsn_present)
+
+# Restrict data to the baseline visit (visit 1)
+data_model %<>%
+    filter(visit_number == 1)
+
+# Clean-up df_model data frame for analyses
+## These data will be used for all the baseline charateristic analyses.
+data_model %<>%
+    # Recode rifafour 'prophylaxis' to 'yes'
+    mutate(rifafour_treatment = as.character(rifafour_treatment),
+           rifafour_treatment = ifelse(rifafour_treatment == 'prophylaxis',
+                                       yes = 'yes',
+                                       no = rifafour_treatment),
+           rifafour_treatment = factor(rifafour_treatment)) %>%
+    # Select data that will be modelled
+    select(sn, age_years, sex, mass_kg, height_m, CD4_cell.ul,
+           viral_load_copies.ml, alcohol_units.week, TB_current,
+           rifafour_treatment) 
+```
+---
+
+# Analysis
+
+## Cumulative incidence
+
+Cumulative incidence measures the number of new cases per person in the population over a defined period of time (i.e., a fixed follow-up period). Therefore, to calculate cumulative incidence we defined a fixed 6-month follow-up period, and also subdivided this period into a 1^st^ and 2^nd^ 3-month period of this follow-up. To standardize the periods of follow-up, data were cleaned such that only visits falling into the indicated periods ((0-3 months], (3-6 months], (0-6 months]) were used to define SN status. As such, participant's whose last clinic visit occurred after 91 days (end of first 3-month interval) or 182 days (end of 6-month interval), and who were found to have new-onset SN at this visit, were recorded as SN:no over the 3 or 6-month period of follow-up. This conservative strategy may have lead to a slight under-estimation of the cumulative incidence of SN.  
+
+## Boostrap function
+```{r incidence_bootstrap}
+## Formula for cases / person year
+cases_boot <- function(data, i){
+    foo <- data[i, ]
+    tab <- table(foo$hivsn_present)
+    prop <- round(prop.table(tab) * 100)
+    case <- prop * 10
+    case[2]
+}
+```
+
+### Full six-month period
+```{r six_months}
+# Tabulate SN:yes/SN:no
+tab_sn <- table(data_6months$hivsn_present)
+
+# Calculate proportions, convert to percent
+prop_sn <- round(prop.table(tab_sn) * 100) 
+
+# Bootstrap cases per 1000 patients
+## Method: BCa, resamples: 10000
+cases_ci <- boot.ci(boot.out = boot(data = data_6months, 
+                                    statistic = cases_boot, 
+                                    R = 10000, 
+                                    stype = 'i'),
+                    type = 'bca')
+
+# Create summary table
+as.data.frame(tab_sn) %>%
+    rename(Count = Freq) %>%
+    left_join(as.data.frame(prop_sn)) %>%
+    rename(Percentage = Freq,
+           sn_present = Var1) %>%
+    bind_cols(`Cases/1000 patients` = c('', paste(cases_ci$t0))) %>%
+    bind_cols(`Conf.interval` = c('', paste(cases_ci$bca[4],' - ', cases_ci$bca[5])))
+```
+
+### First 3-month period
+```{r zero_three_months}
+# Tabulate SN:yes/SN:no
+tab_sn <- table(data_3months$hivsn_present)
+
+# Calculate proportions, convert to percent
+prop_sn <- round(prop.table(tab_sn) * 100) 
+
+# Bootstrap cases per 1000 patients
+## Method: BCa, resamples: 10000
+cases_ci <- boot.ci(boot.out = boot(data = data_3months, 
+                                    statistic = cases_boot, 
+                                    R = 1000, 
+                                    stype = 'i'),
+                    type = 'bca')
+
+# Create summary table
+as.data.frame(tab_sn) %>%
+    rename(Count = Freq) %>%
+    left_join(as.data.frame(prop_sn)) %>%
+    rename(Percentage = Freq,
+           sn_present = Var1) %>%
+    bind_cols(`Cases/1000 patients` = c('', paste(cases_ci$t0))) %>%
+    bind_cols(`Conf.interval` = c('', paste0(cases_ci$bca[4],' to ', cases_ci$bca[5])))
+```
+
+## Second 3-month period
+```{r three_six_months}
+# Tabulate SN:yes/SN:no
+tab_sn <- table(data_3to6months$hivsn_present)
+
+# Calculate proportions, convert to percent
+prop_sn <- round(prop.table(tab_sn) * 100) 
+
+# Bootstrap cases per 1000 patients
+## Method: BCa, resamples: 10000
+cases_ci <- boot.ci(boot.out = boot(data = data_3to6months, 
+                                    statistic = cases_boot, 
+                                    R = 1000, 
+                                    stype = 'i'),
+                    type = 'bca')
+
+# Create summary table
+as.data.frame(tab_sn) %>%
+    rename(Count = Freq) %>%
+    left_join(as.data.frame(prop_sn)) %>%
+    rename(Percentage = Freq,
+           sn_present = Var1) %>%
+    bind_cols(`Cases/1000 patients` = c('', paste(cases_ci$t0))) %>%
+    bind_cols(`Conf.interval` = c('', paste0(cases_ci$bca[4],' to ', cases_ci$bca[5])))
+```
+
+# Incidence rate (person years)
+
+Incidence rate is a measure of the number of new cases per unit of time. We did not have extact dates of SN onset to define the per patient unit of time, and nor was there uniform spacing between clinic visits. We therefore chose to calculate an approximate SN onset time, arbitrarily defined as the number of days between the first neuropathy screening and the mid-point between the visit when neuropathy was detected and the preceeding visit. For participants who did not develop SN, the date of censoring was defined by the number of days between the first neuropathy screening and the last screening (study exit).
+
+## Boostrap function
+```{r py_bootstrap}
+## Formula for cases / person year
+boot_df <- function(data, i){
+    foo <- data[i, ]
+    cases <- sum(foo$hivsn_present == 'yes')
+    person_time <- sum(foo$approximate_year)
+    cases / person_time
+}
+```
+
+## Six-month period
+```{r py_six_months}
+# Bootstrap confidence intervals
+df_ci <- boot.ci(boot.out = boot(data = df_6months,
+                                 statistic = boot_df,
+                                 R = 1000,
+                                 stype = 'i'),
+                 type = 'bca')
+
+data_frame(`Cases/person.year` = round(df_ci$t0, 2),
+           Conf.interval = paste0(round(df_ci$bca[4], 2), ' to ',
+                                 round(df_ci$bca[5], 2)))
+```
+
+# Survival curves
+
+## Plot a basic Kaplan-Meyer survival curve
+```{r km_basic, fig.height = 9, width = 9}
+# Basic Kaplan-Meyer (KM)
+## No predictors (~ 1)
+km_basic <- survfit(Surv(time = approximate_day, 
+                         event = hivsn_coded) ~ 1, 
+                    data = data_surv)
+
+# Summary of KM fit
+km_basic
+summary(km_basic)
+
+# Plot
+ggsurvplot(km_basic,
+           conf.int = TRUE,
+           fun = 'event',
+           risk.table = 'abs_pct', 
+           cumcensor = TRUE,
+           cumevents = TRUE, 
+           ggtheme = theme_bw(), 
+           tables.theme = theme(plot.title = element_text(size = 12,
+                                                          face = 'bold'),
+                                panel.border = element_blank(),
+                                panel.grid.major.x = element_blank(),
+                                axis.title = element_blank(),
+                                axis.text.x = element_blank(),
+                                axis.ticks = element_blank()),
+           fontsize = 4,
+           tables.height = 0.1,
+           legend = 'none',
+           palette = '#0072B2', 
+           ylim = c(0, 1),
+           xlab = 'Days', 
+           title = 'Kaplan-Meier Survival Curve: SN vs Days')
+
+# Publication plot
+## New plot theme
+theme_new <- function(){
+  theme_bw(base_size = 18) +
+  theme(axis.text = element_text(size = 22,
+                                 colour = '#000000'),
+        axis.title = element_text(size = 24,
+                                  colour = '#000000'),
+        panel.grid.major.x = element_line(size = 1,
+                                          colour = '#CCCCCC'),
+        panel.border = element_rect(size = 1.5),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.minor.x = element_blank())
+    }
+
+## Plot
+gg_plot <- ggsurvplot(km_basic,
+                      fun = 'event',
+                      conf.int = TRUE,
+                      conf.int.fill = '#666666',
+                      risk.table = 'abs_pct', 
+                      cumcensor = TRUE,
+                      cumevents = TRUE,
+                      tables.theme = theme(plot.title = element_text(size = 22,
+                                                                     face = 'bold'),
+                                           panel.border = element_blank(),
+                                           panel.grid.major.x = element_blank(),
+                                           axis.title = element_blank(),
+                                           axis.text = element_blank(),
+                                           axis.ticks = element_blank()),
+                      fontsize = 7,
+                      risk.table.height = 0.08,
+                      cumevents.height = 0.08,
+                      cumcensor.height = 0.08,
+                      xlab = 'Days', 
+                      ylab = 'Cumulative proportion\n',
+                      ylim = c(0, 1),
+                      palette = c('#000000'),
+                      legend = 'none',
+                      ggtheme = theme_new())
+
+## Save
+ggsave(filename = 'survival-curve.png', 
+       plot = print(gg_plot), 
+       width = 12.7, 
+       height = 12)
+```
+
+## Plot a basic KM curve conditioned on painful SN
+In addition we performed a log-rank test to asssess for differences between painful and non-painful SN strata. 
+```{r km_pain, fig.height = 9, width = 9}
+# Incidence ~ pain
+km_pain <- survfit(Surv(time = approximate_day, 
+                        event = hivsn_coded) ~ pain,
+                   data = data_surv)
+
+# Summary
+km_pain
+summary(km_pain)
+
+# Log-rank test
+survdiff(Surv(time = visit_day, 
+              event = hivsn_coded) ~ pain,
+         data = data_surv)
+
+# Plot
+ggsurvplot(km_pain,
+           conf.int = TRUE,
+           fun = 'event',
+           risk.table = 'abs_pct', 
+           cumcensor = TRUE,
+           cumevents = TRUE, 
+           surv.median.line = 'hv', 
+           pval = TRUE, 
+           ggtheme = theme_bw(), 
+           tables.theme = theme(plot.title = element_text(size = 12,
+                                                          face = 'bold'),
+                                panel.border = element_blank(),
+                                panel.grid.major.x = element_blank(),
+                                axis.title = element_blank(),
+                                axis.text.x = element_blank(),
+                                axis.ticks = element_blank()),
+           fontsize = 4,
+           tables.height = 0.14,
+           legend = 'none',
+           legend.labs = c('Non-painful SN', 'Painful SN'), 
+           palette = c('#0072B2', '#D55E00'), 
+           ylim = c(0, 1),
+           xlab = 'Days', 
+           title = 'Kaplan-Meier Survival Curve: SN vs Days')
+```
+
+# Multivariate modeling
+
+In an exploratory analysis using Cox proportional hazard models (not shown here) various predictors violated assumptions of the model (e.g., proportional hazard, linearity, no influence points). Therefore we used logistic regression modelling, with visit 1 charateristics as predictors of SN onset. 
+
+**Note: Only complete datasets used (n = 77)**
+
+## Model data
+
+The model does not include:
+
+1. `diabetes_hba1c` because nobody had HbA1c > 7%.  
+
+2. `vitaminB12_deficiency` because only one individual had a deficiency.  
+
+3. `mass_kg` because it is likely to be co-linear with `height_m`.  
+
+4. `consumes_alcohol` because this information was deemed to be encoded in `alcohol_units.week`.
+
+## Model selection
+
+### Check height vs mass assumption
+```{r model_selection}
+# Double-check presumed 'mass_kg' vs 'height_m' relationship before proceeding
+ggplot(data = data_model) +
+    aes(x = height_m,
+        y = mass_kg,
+        colour = sex) +
+    geom_point() +
+    geom_smooth(method = 'lm') +
+    scale_colour_manual(values = c('#000000', '#999999')) +
+    labs(title = 'Relationship between body mass and height') +
+    theme_bw()
+
+# Males
+with(data_model[data_model$sex == 'M', ], cor.test(height_m, mass_kg))
+
+# Females
+with(data_model[data_model$sex == 'F', ], cor.test(height_m, mass_kg))
+```
+
+The two variables are related in females, but not in males. We decided to omit `weight_kg` in favour of `height_m` because of this relationship, and the stronger historical association between height and SN.
+
+## Lasso regression
+
+We chose to use LASSO (least absolute shrinkage and selection operator) for variable selection. LASSO is a regression analysis method that performs both variable selection and regularization in order to enhance the prediction accuracy and interpretability of the statistical model it produces.
+
+The process involves performing a 10-fold cross validation to find the optimal _lambda_ (penalization parameter). And then running the analysis and extracting the model based on the best _lambda_. 
+
+### Cross-validation to estimate alpha and lambda
+```{r cv_lamda}
+# Remove mass_kg
+data_model %<>%
+    select(-mass_kg)
+
+cvafit <- cva.glmnet(sn ~ ., 
+                     data = data_model, 
+                     family = 'binomial')
+
+# Print CVA object
+print(cvafit)
+
+# Plot CVA object log(lambda) vs CV loss (deviance) for each value of alpha
+plot(cvafit)
+
+# Plot minimum CV loss (deviance) for each value of alpha
+minlossplot(cvafit)
+
+# Print model at each of the four lowest CV loss alphas
+## alpha = 0.216
+plot(cvafit$modlist[[7]])
+title('alpha = 0.216', line = 2.5)
+
+## alpha = 0.343
+plot(cvafit$modlist[[8]])
+title('alpha = 0.343', line = 2.5)
+
+## alpha = 0.512
+plot(cvafit$modlist[[9]])
+title('alpha = 0.512', line = 2.5)
+
+## Alpha = 0.729
+plot(cvafit$modlist[[10]])
+title('alpha = 0.729', line = 2.5)
+
+## and alpha = 1
+plot(cvafit$modlist[[11]])
+title('alpha = 1.0', line = 2.5)
+
+# Extract best lambda for each alpha (lambda.1se)
+## alpha = 0.216
+a216 <- cvafit$modlist[[7]]$lambda.1se
+## alpha = 0.343
+a343 <- cvafit$modlist[[8]]$lambda.1se
+## alpha = 0.512
+a512 <- cvafit$modlist[[9]]$lambda.1se
+## Alpha = 0.729
+a729 <- cvafit$modlist[[10]]$lambda.1se
+## and alpha = 1
+a100 <- cvafit$modlist[[11]]$lambda.1se
+```
+
+### Fit the models using CV alphas and best lambdas
+```{r model_fit}
+# Fit the models for each alpha
+## alpha = 0.216
+model_a216 <- glmnet(sn ~ .,
+                     data = data_model, 
+                     alpha = 0.216,
+                     family = 'binomial')
+
+## alpha = 0.343
+model_a343 <- glmnet(sn ~ .,
+                     data = data_model, 
+                     alpha = 0.343,
+                     family = 'binomial')
+
+## alpha = 0.512
+model_a512 <- glmnet(sn ~ .,
+                     data = data_model, 
+                     alpha = 0.512,
+                     family = 'binomial')
+
+## alpha = 0.729
+model_a729 <- glmnet(sn ~ .,
+                     data = data_model, 
+                     alpha = 0.729,
+                     family = 'binomial')
+
+## alpha = 1.0
+model_a100 <- glmnet(sn ~ .,
+                     data = data_model, 
+                     alpha = 1,
+                     family = 'binomial')
+
+# Plot and get coefficients for each model
+## alpha = 0.216
+plot(model_a216,
+     xvar = 'lambda',
+     label = TRUE)
+abline(v = log(a216))
+title('alpha = 0.216', line = 2.5)
+coef(model_a216, s = a216)
+
+## alpha = 0.343
+plot(model_a343,
+     xvar = 'lambda',
+     label = TRUE)
+abline(v = log(a343))
+title('alpha = 0.343', line = 2.5)
+coef(model_a343, s = a343)
+
+## alpha = 0.512
+plot(model_a512,
+     xvar = 'lambda',
+     label = TRUE)
+abline(v = log(a512))
+title('alpha = 0.512', line = 2.5)
+coef(model_a512, s = a512)
+
+## alpha = 0.729
+plot(model_a729,
+     xvar = 'lambda',
+     label = TRUE)
+abline(v = log(a729))
+title('alpha = 0.729', line = 2.5)
+coef(model_a729, s = a729)
+
+## alpha = 1.0
+plot(model_a100,
+     xvar = 'lambda',
+     label = TRUE)
+abline(v = log(a100))
+title('alpha = 1.0', line = 2.5)
+coef(model_a100, s = a100)
+```
+
+Across all alphas, and best lambdas, the output shows the best model includes `height_m` and `TB_current`. 
+
+Fit trimmed model using selected variables
+```{r final_model}
+mod_final <- glm(sn ~ height_m + TB_current,
+               data = data_model, 
+               family = binomial(link = 'logit'))
+
+## Generate model summaries
+### (Type II SS ANOVA shows significant effect for height_m, TB_current)
+### (NOTE: CI of odds ratios for height_m and TB_current are wide)
+print(mod_final)
+car::Anova(mod_final)
+summary(mod_final)
+OR(mod_final, what = 'all')[1:3, c(1, 2, 6:8)] 
+```
+
+## Model diagnostics
+```{r model_diagnostics}
+# Diagnostic measures for a binary regression model by covariate pattern
+data_dx <- dx(mod_final, byCov = TRUE)
+
+# Outliers and leverage
+## Plot 'dChisq' for each probability (P).
+### 'DChisq' gives the change in the Pearson chi-square statistic with 
+### observation i removed.
+### Values should be < 4 if the observation has little influence on the model.
+(gg_out <- ggplot(data = data_dx) +
+    aes(x = P,
+        y = dChisq) +
+    geom_point(shape = 21,
+               size = 2,
+               fill = '#FFFFFF') +
+    geom_hline(yintercept = 4,
+               linetype =2))
+### Label dodgy point with height and TB info
+gg_out + 
+    geom_label(label = data_dx %>% 
+                   filter(dChisq == max(dChisq)) %>% 
+                   mutate(new = str_glue('height_m: {height_m}, TB(yes): {TB_currentyes}')) %>% 
+                   .$new,
+               x = data_dx %>% 
+                   filter(dChisq == max(dChisq)) %>% 
+                   .$P,
+               y = data_dx %>% 
+                   filter(dChisq == max(dChisq)) %>% 
+                   .$dChisq,
+              hjust = -0.1)
+
+### Influence plot
+influenceIndexPlot(mod_final, 
+                   id.n = 3, 
+                   id.col = 'red')
+influencePlot(mod_final, 
+              id.col = 'red')
+
+### Remove influence points one at a time
+mod_influence6 <- update(mod_final, 
+                         subset = c(-6))
+mod_influence46 <- update(mod_final, 
+                          subset = c(-46))
+mod_influence58 <- update(mod_final, 
+                          subset = c(-58))
+
+### Compare coefficients with and without influence points
+compareCoefs(mod_final, mod_influence6)
+compareCoefs(mod_final, mod_influence46)
+compareCoefs(mod_final, mod_influence58)
+
+## Check '6' and '46' for anything strange 
+data_model %>%
+    select(sn, height_m, TB_current) %>%
+    .[6, ]
+data_model %>%
+    select(sn, height_m, TB_current) %>%
+    .[46, ]
+
+# Test for multicolinearity using variance inflation factor (vif)
+## Rule of thumb: values > 4 are a problem
+vif(mod_final) 
+
+# Test for correlated residuals 
+## p-vale > 0.05: no correlation between residuals
+durbinWatsonTest(mod_final)
+
+# Plot 'dBhat' for each probability (P).
+## 'dBhat' is the change in beta coefficient with observation i excluded.
+## 'dBhat' should be < 1 if the i has little influence on the coefficients.
+ggplot(data = data_dx) +
+    aes(x = P,
+        y = dBhat) +
+    geom_point(shape = 21,
+               size = 2,
+               fill = '#FFFFFF') +
+    geom_hline(yintercept = 1,
+               linetype =2)
+
+# Check goodness of fit (Hosmer-Lemeshow goodness of fit test)
+## Significant p-values indicate a poor fit
+## ROC 0.7 < auc < 0.8 indicates acceptable discrimination 
+gof(mod_final, g = 8)
+```
+
+----
+
+# Session information
+```{r session_info}
+sessionInfo()
+```
+
