@@ -1,0 +1,8 @@
+pdf_document:
+    latex_engine: xerlatex
+    highlight: pygments
+    toc: true
+    toc_depth: 4
+mainfont: Helvetica
+papersize: a4
+geometry: margin=15mm
