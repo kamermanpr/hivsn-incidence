@@ -324,7 +324,7 @@ as.data.frame(tab_sn) %>%
 ```
 ##   sn_present Count Percentage Cases/1000 patients Conf.interval
 ## 1         no    66         87                                  
-## 2        yes    10         13                 130     50 to 210
+## 2        yes    10         13                 130     70 to 210
 ```
 
 # Incidence rate (person years)
@@ -362,7 +362,7 @@ data_frame(`Cases/person.year` = round(df_ci$t0, 2),
 ## # A tibble: 1 x 2
 ##   `Cases/person.year` Conf.interval
 ##                 <dbl> <chr>        
-## 1                0.47 0.29 to 0.69
+## 1                0.47 0.3 to 0.69
 ```
 
 # Survival curves
@@ -830,18 +830,18 @@ coef(model_a216, s = a216)
 
 ```
 ## 12 x 1 sparse Matrix of class "dgCMatrix"
-##                                  1
-## (Intercept)           -5.868271933
-## age_years              0.005959892
-## sexF                   .          
-## sexM                   .          
-## height_m               2.884865711
-## CD4_cell.ul            .          
-## viral_load_copies.ml   .          
-## alcohol_units.week    -0.006712765
-## TB_currentno          -0.332727110
-## TB_currentyes          0.332745908
-## rifafour_treatmentno   .          
+##                                1
+## (Intercept)           -2.8808213
+## age_years              .        
+## sexF                   .        
+## sexM                   .        
+## height_m               1.1289812
+## CD4_cell.ul            .        
+## viral_load_copies.ml   .        
+## alcohol_units.week     .        
+## TB_currentno          -0.1299469
+## TB_currentyes          0.1300469
+## rifafour_treatmentno   .        
 ## rifafour_treatmentyes  .
 ```
 
@@ -862,18 +862,18 @@ coef(model_a343, s = a343)
 
 ```
 ## 12 x 1 sparse Matrix of class "dgCMatrix"
-##                                  1
-## (Intercept)           -6.874854081
-## age_years              0.005083932
-## sexF                   .          
-## sexM                   .          
-## height_m               3.519414238
-## CD4_cell.ul            .          
-## viral_load_copies.ml   .          
-## alcohol_units.week    -0.006075501
-## TB_currentno          -0.342617370
-## TB_currentyes          0.342512903
-## rifafour_treatmentno   .          
+##                                1
+## (Intercept)           -3.1867149
+## age_years              .        
+## sexF                   .        
+## sexM                   .        
+## height_m               1.3110726
+## CD4_cell.ul            .        
+## viral_load_copies.ml   .        
+## alcohol_units.week     .        
+## TB_currentno          -0.1165068
+## TB_currentyes          0.1165095
+## rifafour_treatmentno   .        
 ## rifafour_treatmentyes  .
 ```
 
@@ -894,18 +894,18 @@ coef(model_a512, s = a512)
 
 ```
 ## 12 x 1 sparse Matrix of class "dgCMatrix"
-##                                  1
-## (Intercept)           -7.727807354
-## age_years              0.003078953
-## sexF                   .          
-## sexM                   .          
-## height_m               4.079043177
-## CD4_cell.ul            .          
-## viral_load_copies.ml   .          
-## alcohol_units.week    -0.003859431
-## TB_currentno          -0.334707205
-## TB_currentyes          0.334470861
-## rifafour_treatmentno   .          
+##                                 1
+## (Intercept)           -3.33963435
+## age_years              .         
+## sexF                   .         
+## sexM                   .         
+## height_m               1.39138832
+## CD4_cell.ul            .         
+## viral_load_copies.ml   .         
+## alcohol_units.week     .         
+## TB_currentno          -0.08030742
+## TB_currentyes          0.08035108
+## rifafour_treatmentno   .         
 ## rifafour_treatmentyes  .
 ```
 
@@ -926,18 +926,18 @@ coef(model_a729, s = a729)
 
 ```
 ## 12 x 1 sparse Matrix of class "dgCMatrix"
-##                                   1
-## (Intercept)           -8.411396e+00
-## age_years              7.211446e-18
-## sexF                   .           
-## sexM                   .           
-## height_m               4.556000e+00
-## CD4_cell.ul            .           
-## viral_load_copies.ml   .           
-## alcohol_units.week    -1.690991e-17
-## TB_currentno          -3.166942e-01
-## TB_currentyes          3.116287e-01
-## rifafour_treatmentno   .           
+##                                 1
+## (Intercept)           -3.29018555
+## age_years              .         
+## sexF                   .         
+## sexM                   .         
+## height_m               1.33944233
+## CD4_cell.ul            .         
+## viral_load_copies.ml   .         
+## alcohol_units.week     .         
+## TB_currentno          -0.02155518
+## TB_currentyes          0.02146926
+## rifafour_treatmentno   .         
 ## rifafour_treatmentyes  .
 ```
 
@@ -958,18 +958,18 @@ coef(model_a100, s = a100)
 
 ```
 ## 12 x 1 sparse Matrix of class "dgCMatrix"
-##                                   1
-## (Intercept)           -8.796416e+00
-## age_years              .           
-## sexF                   .           
-## sexM                   .           
-## height_m               4.945696e+00
-## CD4_cell.ul            .           
-## viral_load_copies.ml   .           
-## alcohol_units.week     .           
-## TB_currentno          -5.581879e-01
-## TB_currentyes          5.350501e-15
-## rifafour_treatmentno   .           
+##                               1
+## (Intercept)           -1.116004
+## age_years              .       
+## sexF                   .       
+## sexM                   .       
+## height_m               .       
+## CD4_cell.ul            .       
+## viral_load_copies.ml   .       
+## alcohol_units.week     .       
+## TB_currentno           .       
+## TB_currentyes          .       
+## rifafour_treatmentno   .       
 ## rifafour_treatmentyes  .
 ```
 
@@ -1248,7 +1248,7 @@ durbinWatsonTest(mod_final)
 
 ```
 ##  lag Autocorrelation D-W Statistic p-value
-##    1       -0.056383      2.105132   0.646
+##    1       -0.056383      2.105132    0.69
 ##  Alternative hypothesis: rho != 0
 ```
 
