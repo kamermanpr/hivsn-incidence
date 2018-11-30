@@ -31,18 +31,18 @@ For reproducibility, we have created a [_Docker_](https://www.docker.com) image 
 - **MRAN packages:**  
     - boot
     - car 
-	  - coin 
-	  - ggplot2 
-	  - glmnetUtils 
-	  - knitr 
-	  - lmerTest 
-	  - LogisticDx 
-	  - lubridate 
+    - coin 
+    - ggplot2 
+    - glmnetUtils 
+    - knitr
+    - lmerTest 
+    - LogisticDx 
+    - lubridate 
     - magrittr 
-	  - readxl 
-	  - rcompanion 
-	  - skimr 
-	  - survival 
+    - readxl 
+    - rcompanion 
+    - skimr 
+    - survival 
     - survminer
 - **LaTex:**   
     - TinyTex
