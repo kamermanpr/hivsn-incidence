@@ -140,6 +140,6 @@ df <- df %>%
 
 # Export data to rds and csv
 readr::write_csv(x = df, 
-                 path = './data-clean/clean_data.csv')
+                 path = './data-cleaned/clean_data.csv')
 readr::write_rds(x = df,
-                 path = './data-clean/clean_data.rds')
+                 path = './data-cleaned/clean_data.rds')

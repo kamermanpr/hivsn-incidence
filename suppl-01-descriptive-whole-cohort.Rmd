@@ -19,11 +19,10 @@ theme_set(new = theme_bw(base_size = 14))
 # knitr options
 knitr::opts_chunk$set(warning = FALSE,
                       message = FALSE, 
-                      fig.retina = 2,
                       fig.width = 5,
                       fig.height = 6,
                       fig.align = 'center',
-                      fig.path = './figures/suppl-01-descriptive-whole-cohort/')
+                      fig.path = 'figures/suppl-01-descriptive-whole-cohort/')
 ```
 
 ----
@@ -44,7 +43,7 @@ The following data columns were not analysed:
 
 # Import data
 ```{r import}
-data <- read_rds('data-clean/clean_data.rds') %>% 
+data <- read_rds('data-cleaned/clean_data.rds') %>% 
     # Filter for visit one
     filter(visit_number == 1) %>% 
     # Remove columns that won't be analysed
@@ -78,11 +77,11 @@ data %>%
     skim()
 
 # 95% bootstrap confidence interval of the mean age
-## Method = BCa, Resamples = 10000
+## Method = BCa, Resamples = 1999
 set.seed(1234)
 groupwiseMean(age_years ~ 1, 
               data = data, 
-              R = 10000, 
+              R = 1999, 
               traditional = FALSE, 
               boot = TRUE, 
               bca = TRUE)[c(2:3, 5, 6, 7)]
@@ -108,11 +107,11 @@ data %>%
     skim()
 
 # 95% bootstrap confidence interval of thew mean age
-## Method = BCa, Resamples = 10000
+## Method = BCa, Resamples = 1999
 set.seed(1234)
 groupwiseMean(mass_kg ~ 1, 
               data = data, 
-              R = 10000, 
+              R = 1999, 
               traditional = FALSE, 
               boot = TRUE, 
               bca = TRUE)[c(2:3, 5, 6, 7)]
@@ -139,11 +138,11 @@ data %>%
     skim()
 
 # 95% bootstrap confidence interval of the mean height
-## Method = BCa, Resamples = 10000
+## Method = BCa, Resamples = 1999
 set.seed(1234)
 groupwiseMean(age_years ~ sex, 
               data = data, 
-              R = 10000, 
+              R = 1999, 
               traditional = FALSE, 
               boot = TRUE, 
               bca = TRUE)[c(1:3, 5, 6, 7)]
@@ -168,11 +167,11 @@ data %>%
     skim()
 
 # 95% bootstrap confidence interval of the proportion of females
-## Method = BCa, Resamples = 10000
+## Method = BCa, Resamples = 1999
 set.seed(1234)
 boot.ci(boot(data = data, 
              statistic = function(d, i){mean(d[i, 'sex'] == 'F')}, 
-             R = 10000, 
+             R = 1999, 
              stype = 'i'), 
         type = 'bca') %>% 
     data_frame(n = nrow(filter(data, !is.na(sex))), 
@@ -206,11 +205,11 @@ data %>%
     skim()
 
 # 95% bootstrap confidence interval of the median CD4 T-cell count
-## Method = BCa, Resamples = 10000
+## Method = BCa, Resamples = 1999
 set.seed(1234)
 groupwiseMedian(CD4_cell.ul ~ 1, 
                 data = data, 
-                R = 10000,
+                R = 1999,
                 boot = TRUE, 
                 bca = TRUE)[c(2:3, 5, 6, 7)]
 # Plot
@@ -233,11 +232,11 @@ data %>%
     skim()
 
 # 95% bootstrap confidence interval of the median viral load
-## Method = BCa, Resamples = 10000
+## Method = BCa, Resamples = 1999
 set.seed(1234)
 groupwiseMedian(viral_load_copies.ml ~ 1, 
                 data = data[!is.na(data$viral_load_copies.ml), ], # Remove <NA>
-                R = 10000,
+                R = 1999,
                 boot = TRUE, 
                 bca = TRUE)[c(2:3, 5, 6, 7)]
 
@@ -268,11 +267,11 @@ data %>%
     skim()
 
 # 95% bootstrap confidence interval of the median alcohol consumption
-## Method = BCa, Resamples = 10000
+## Method = BCa, Resamples = 1999
 set.seed(1234)
 groupwiseMedian(alcohol_units.week ~ 1, 
                 data = data[data$alcohol_units.week > 0, ], # Remove none drinkers
-                R = 10000, 
+                R = 1999, 
                 boot = TRUE, 
                 bca = TRUE)[c(2:3, 5, 6, 7)]
 
@@ -300,11 +299,11 @@ data %>%
     skim()
 
 # 95% bootstrap confidence interval of the proportion with TB
-## Method = BCa, Resamples = 10000
+## Method = BCa, Resamples = 1999
 set.seed(1234)
 boot.ci(boot(data = data, 
              statistic = function(d, i){mean(d[i, 'TB_current'] == 'yes')}, 
-             R = 10000, 
+             R = 1999, 
              stype = 'i'), 
         type = 'bca') %>% 
     data_frame(n = nrow(filter(data, !is.na(TB_current))),
@@ -352,11 +351,11 @@ data_tb <- data %>%
                                              yes = c('yes', 'prophylaxis')))
 
 # 95% bootstrap confidence interval of the proportion on TB treatment
-## Method = BCa, Resamples = 10000
+## Method = BCa, Resamples = 1999
 set.seed(1234)
 boot.ci(boot(data = data_tb, 
              statistic = function(d, i){mean(d[i, 'rifafour_treatment'] == 'yes')}, 
-             R = 10000, 
+             R = 1999, 
              stype = 'i'), 
         type = 'bca') %>% 
     data_frame(n = nrow(filter(data_tb, !is.na(rifafour_treatment))), 

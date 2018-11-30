@@ -19,11 +19,10 @@ theme_set(new = theme_bw(base_size = 14))
 # knitr options
 knitr::opts_chunk$set(warning = FALSE,
                       message = FALSE, 
-                      fig.retina = 2,
                       fig.width = 6,
                       fig.height = 7,
                       fig.align = 'center',
-                      fig.path = './figures/suppl-02-descriptive-by-SN-status/')
+                      fig.path = 'figures/suppl-02-descriptive-by-SN-status/')
 ```
 
 ----
@@ -109,7 +108,7 @@ boot_OR <- function(d, i, data_column = NULL, grouping_column = NULL){
 
 # Import data
 ```{r import}
-data <- read_rds('data-clean/clean_data.rds') %>% 
+data <- read_rds('data-cleaned/clean_data.rds') %>% 
     # Remove columns that won't be analysed
     select(-starts_with('pain'), -ends_with('_record'), 
            -starts_with('vitaminB12'), -visit_months, 
@@ -170,11 +169,11 @@ data %>%
     skim()
 
 # 95% bootstrap confidence interval of the mean age by SN status
-## Method = BCa, Resamples = 10000
+## Method = BCa, Resamples = 1999
 set.seed(1234)
 groupwiseMean(age_years ~ sn_present, 
               data = data, 
-              R = 10000, 
+              R = 1999, 
               traditional = FALSE, 
               boot = TRUE, 
               bca = TRUE)[c(1:3, 5, 6, 7)]
@@ -192,13 +191,13 @@ data %>%
          x = 'SN present')
 
 # Bootstrap 95% CI for the difference in mean age
-## Resample: 10000
+## Resample: 1999
 set.seed(1234)
 boot_age <- boot.ci(boot(data = data,
                          statistic = boot_deltaMean, 
                          data_column = 'age_years', 
                          grouping_column = 'sn_present',
-                         R = 10000, 
+                         R = 1999, 
                          stype = 'i'),
                     type = 'bca') %>%
     data_frame(n = nrow(filter(data, !is.na(age_years))), 
@@ -233,7 +232,7 @@ ggplot(data = boot_age) +
                    y = Bca.upper,
                    label = Bca.upper)) +
     labs(title = 'Bootstrap 95% CI of the difference between mean age',
-         subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 10000",
+         subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 1999",
          y = 'Difference in age (years)') +
     theme(axis.ticks.x = element_blank(),
           axis.text.x = element_blank(),
@@ -249,11 +248,11 @@ data %>%
     skim()
 
 # 95% bootstrap confidence interval of the mean body mass by SN status
-## Method = BCa, Resamples = 10000
+## Method = BCa, Resamples = 1999
 set.seed(1234)
 groupwiseMean(mass_kg ~ sn_present, 
               data = data, 
-              R = 10000, 
+              R = 1999, 
               traditional = FALSE, 
               boot = TRUE, 
               bca = TRUE)[c(1:3, 5, 6, 7)]
@@ -271,13 +270,13 @@ data %>%
          x = 'SN present')
 
 # Bootstrap 95% CI for the difference in mean mass
-## Resample: 10000
+## Resample: 1999
 set.seed(1234)
 boot_mass <- boot.ci(boot(data = data,
                           statistic = boot_deltaMean, 
                           data_column = 'mass_kg', 
                           grouping_column = 'sn_present',
-                          R = 10000, 
+                          R = 1999, 
                           stype = 'i'),
                      type = 'bca') %>%
     data_frame(n = nrow(filter(data, !is.na(mass_kg))), 
@@ -312,7 +311,7 @@ ggplot(data = boot_mass) +
                    y = Bca.upper,
                    label = Bca.upper)) +
     labs(title = 'Bootstrap 95% CI of the difference in mean mass',
-         subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 10000",
+         subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 1999",
          y = 'Difference in mass (kg)') +
     theme(axis.ticks.x = element_blank(),
           axis.text.x = element_blank(),
@@ -329,11 +328,11 @@ data %>%
     skim()
 
 # 95% bootstrap confidence interval of the mean height by SN status
-## Method = BCa, Resamples = 10000
+## Method = BCa, Resamples = 1999
 set.seed(1234)
 groupwiseMean(height_m ~ sn_present + sex, 
               data = data, 
-              R = 10000, 
+              R = 1999, 
               traditional = FALSE, 
               boot = TRUE, 
               bca = TRUE)[c(1:3, 5, 6:8)]
@@ -355,13 +354,13 @@ data %>%
 
 # MALES ONLY
 ## Bootstrap 95% CI for the difference in mean height
-### Resample: 10000
+### Resample: 1999
 set.seed(1234)
 boot_hm <- boot.ci(boot(data = data[data$sex == 'M', ],
                         statistic = boot_deltaMean, 
                         data_column = 'height_m', 
                         grouping_column = 'sn_present',
-                        R = 10000, 
+                        R = 1999, 
                         stype = 'i'),
                    type = 'bca') %>%
     data_frame(n = nrow(filter(data, !is.na(height_m) & sex == 'M')), 
@@ -396,7 +395,7 @@ ggplot(data = boot_hm) +
                    y = Bca.upper,
                    label = Bca.upper)) +
     labs(title = 'Males: Bootstrap 95% CI of the difference in mean height',
-         subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 10000",
+         subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 1999",
          y = 'Difference in height (m)') +
     theme(axis.ticks.x = element_blank(),
           axis.text.x = element_blank(),
@@ -404,13 +403,13 @@ ggplot(data = boot_hm) +
 
 # FEMALES ONLY
 ## Bootstrap 95% CI for the difference in mean height
-### Resample: 9000 (10000 gives a wierd error)
+### Resample: 9000 (1999 gives a wierd error)
 set.seed(1234)
 boot_hf <- boot.ci(boot(data = data[data$sex == 'F', ],
                         statistic = boot_deltaMean, 
                         data_column = 'height_m', 
                         grouping_column = 'sn_present',
-                        R = 10000, 
+                        R = 1999, 
                         stype = 'i'),
                    type = 'bca') %>%
     data_frame(n = nrow(filter(data, !is.na(height_m) & sex == 'F')), 
@@ -445,7 +444,7 @@ ggplot(data = boot_hf) +
                    y = Bca.upper,
                    label = Bca.upper)) +
     labs(title = 'Females: Bootstrap 95% CI of the  difference in mean height',
-         subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 10000",
+         subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 1999",
          y = 'Difference in height (m)') +
     theme(axis.ticks.x = element_blank(),
           axis.text.x = element_blank(),
@@ -461,13 +460,13 @@ data %>%
     skim()
 
 # 95% bootstrap confidence interval of the proportion of females by SN status
-## Method = BCa, Resamples = 10000
+## Method = BCa, Resamples = 1999
 ### SN:yes
 set.seed(1234)
 sn_yes <- boot.ci(boot(data = data[data$sn_present == 'yes', ], 
                        statistic = function(d, i){
                            mean(d[i, 'sex'] == 'F')}, 
-                       R = 10000, 
+                       R = 1999, 
                        stype = 'i'), 
                   type = 'bca') %>% 
     data_frame(sn_present = 'yes',
@@ -485,7 +484,7 @@ set.seed(1234)
 sn_no <- boot.ci(boot(data = data[data$sn_present == 'no', ], 
                       statistic = function(d, i){
                           mean(d[i, 'sex'] == 'F')}, 
-                      R = 10000, 
+                      R = 1999, 
                       stype = 'i'), 
                  type = 'bca') %>% 
     data_frame(sn_present = 'no',
@@ -517,13 +516,13 @@ data %>%
     scale_fill_grey(name = 'Sex') 
 
 # Bootstrap 95% CI for the odds ratio of SN:yes vs SN:no
-## Resample: 10000
+## Resample: 1999
 set.seed(1234)
 boot_sex <- boot.ci(boot(data = data, 
                          statistic = boot_OR, 
                          data_column = 'sex',
                          grouping_column = 'sn_present',
-                         R = 10000, 
+                         R = 1999, 
                          stype = 'i'),
                     type = 'bca') %>%
     data_frame(n = nrow(filter(data, !is.na(sex))), 
@@ -558,7 +557,7 @@ ggplot(data = boot_sex) +
                    y = Bca.upper,
                    label = Bca.upper)) +
     labs(title = 'Bootstrap 95% CI of the odds ratio for being female',
-         subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 10000",
+         subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 1999",
          y = 'Odds ratio') +
     theme(axis.ticks.x = element_blank(),
           axis.text.x = element_blank(),
@@ -574,11 +573,11 @@ data %>%
     skim()
 
 # 95% bootstrap confidence interval of the median CD4 T-cell count by SN status
-## Method = BCa, Resamples = 10000
+## Method = BCa, Resamples = 1999
 set.seed(1234)
 groupwiseMedian(CD4_cell.ul ~ sn_present, 
                 data = data, 
-                R = 10000,
+                R = 1999,
                 boot = TRUE, 
                 bca = TRUE)[c(1:3, 5, 6, 7)]
 # Plot
@@ -594,13 +593,13 @@ data %>%
          x = 'SN present') 
 
 # Bootstrap 95% CI for the difference in median CD4 T-cell count
-## Resample: 10000
+## Resample: 1999
 set.seed(1234)
 boot_cd4 <- boot.ci(boot(data = data,
                          statistic = boot_deltaMedian, 
                          data_column = 'CD4_cell.ul', 
                          grouping_column = 'sn_present',
-                         R = 10000, 
+                         R = 1999, 
                          stype = 'i'),
                     type = 'bca') %>%
     data_frame(n = nrow(filter(data, !is.na(CD4_cell.ul))), 
@@ -635,7 +634,7 @@ ggplot(data = boot_cd4) +
                    y = Bca.upper,
                    label = Bca.upper)) +
    labs(title = 'Bootstrap 95% CI of the difference in median CD4 T-cell count',
-         subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 10000",
+         subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 1999",
          y = expression(paste('Difference CD4 T-cell count (cells.', mu, l^-1, ')'))) +
     theme(axis.ticks.x = element_blank(),
           axis.text.x = element_blank(),
@@ -651,11 +650,11 @@ data %>%
     skim()
 
 # 95% bootstrap confidence interval of the median viral load by SN status
-## Method = BCa, Resamples = 10000
+## Method = BCa, Resamples = 1999
 set.seed(1234)
 groupwiseMedian(viral_load_copies.ml ~ sn_present, 
                 data = data[!is.na(data$viral_load_copies.ml), ], # Remove <NA>
-                R = 10000,
+                R = 1999,
                 boot = TRUE, 
                 bca = TRUE)[c(1:3, 5, 6, 7)]
 
@@ -673,13 +672,13 @@ data %>%
          y = expression(paste('log' [10], ' viral load (copies.ml' ^-1, ')')))
 
 # Bootstrap 95% CI for the difference in median viral load
-## Resample: 10000
+## Resample: 1999
 set.seed(1234)
 boot_vl <- boot.ci(boot(data = data,
                         statistic = boot_deltaMedian, 
                         data_column = 'viral_load_copies.ml', 
                         grouping_column = 'sn_present',
-                        R = 10000, 
+                        R = 1999, 
                         stype = 'i'),
                    type = 'bca') %>%
     data_frame(n = nrow(filter(data, !is.na(viral_load_copies.ml))), 
@@ -714,7 +713,7 @@ ggplot(data = boot_vl) +
                    y = Bca.upper,
                    label = Bca.upper)) +
     labs(title = 'Bootstrap 95% CI of the difference in median viral load',
-         subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 10000",
+         subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 1999",
          y = expression(paste('Difference in median log' [10], ' viral load (copies.ml' ^-1, ')'))) +
     theme(axis.ticks.x = element_blank(),
           axis.text.x = element_blank(),
@@ -736,11 +735,11 @@ data %>%
 
 # ALCOHOL DRINKERS ONLY
 ## 95% bootstrap confidence interval of the median alcohol consumption by SN status
-### Method = BCa, Resamples = 10000
+### Method = BCa, Resamples = 1999
 set.seed(1234)
 groupwiseMedian(alcohol_units.week ~ sn_present, 
                 data = data[data$alcohol_units.week > 0, ], # Remove none drinkers
-                R = 10000, 
+                R = 1999, 
                 boot = TRUE, 
                 bca = TRUE)[c(1:3, 5, 6, 7)]
 
@@ -772,13 +771,13 @@ data %>%
     skim()
 
 # 95% bootstrap confidence interval of the proportion with current TB by SN status
-## Method = BCa, Resamples = 10000
+## Method = BCa, Resamples = 1999
 ### SN:yes
 set.seed(1234)
 sn_yes <- boot.ci(boot(data = data[data$sn_present == 'yes', ], 
                        statistic = function(d, i){
                            mean(d[i, 'TB_current'] == 'yes')},
-                       R = 10000, 
+                       R = 1999, 
                        stype = 'i'), 
                   type = 'bca') %>% 
     data_frame(sn_present = 'yes',
@@ -796,7 +795,7 @@ set.seed(1234)
 sn_no <- boot.ci(boot(data = data[data$sn_present == 'no', ], 
                       statistic = function(d, i){
                           mean(d[i, 'TB_current'] == 'yes')}, 
-                      R = 10000, 
+                      R = 1999, 
                       stype = 'i'), 
                  type = 'bca') %>% 
     data_frame(sn_present = 'no',
@@ -829,13 +828,13 @@ data %>%
     scale_fill_grey(name = 'Current\ninfection')
 
 # Bootstrap 95% CI for the odds ratio of current TB in SN:yes vs SN:no
-## Resample: 10000
+## Resample: 1999
 set.seed(1234)
 boot_tb <- boot.ci(boot(data = data,
                         statistic = boot_OR, 
                         data_column = 'TB_current', 
                         grouping_column = 'sn_present',
-                        R = 10000, 
+                        R = 1999, 
                         stype = 'i'),
                    type = 'bca') %>%
     data_frame(n = nrow(filter(data, !is.na(TB_current))), 
@@ -870,7 +869,7 @@ ggplot(data = boot_tb) +
                    y = Bca.upper,
                    label = Bca.upper)) +
     labs(title = 'Bootstrap 95% CI of the odds ratio for current TB',
-         subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 10000",
+         subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 1999",
          y = 'Odds ratio for current TB') +
     theme(axis.ticks.x = element_blank(),
           axis.text.x = element_blank(),
@@ -899,13 +898,13 @@ data_tb <- data %>%
                                              yes = c('yes', 'prophylaxis')))
 
 # 95% bootstrap confidence interval of the proportion with current TB treatment by SN status
-## Method = BCa, Resamples = 10000
+## Method = BCa, Resamples = 1999
 ### SN:yes
 set.seed(1234)
 sn_yes <- boot.ci(boot(data = data_tb[data_tb$sn_present == 'yes', ], 
                        statistic = function(d, i){
                            mean(d[i, 'rifafour_treatment'] == 'yes')},
-                       R = 10000, 
+                       R = 1999, 
                        stype = 'i'), 
                   type = 'bca') %>% 
     data_frame(sn_present = 'yes',
@@ -923,7 +922,7 @@ set.seed(1234)
 sn_no <- boot.ci(boot(data = data_tb[data_tb$sn_present == 'no', ], 
                       statistic = function(d, i){
                           mean(d[i, 'rifafour_treatment'] == 'yes')}, 
-                      R = 10000, 
+                      R = 1999, 
                       stype = 'i'), 
                  type = 'bca') %>% 
     data_frame(sn_present = 'no',
@@ -956,13 +955,13 @@ data %>%
     scale_fill_grey(name = 'Currently\ntreated')
 
 # Bootstrap 95% CI for the odds ratio of current TB treatment by SN status
-## Resample: 10000
+## Resample: 1999
 set.seed(1234)
 boot_tb2 <- boot.ci(boot(data = data_tb,
                          statistic = boot_OR, 
                          data_column = 'rifafour_treatment', 
                          grouping_column = 'sn_present',
-                         R = 10000, 
+                         R = 1999, 
                          stype = 'i'),
                     type = 'bca') %>%
     data_frame(n = nrow(filter(data_tb, !is.na(rifafour_treatment))), 
@@ -997,7 +996,7 @@ ggplot(data = boot_tb2) +
                    y = Bca.upper,
                    label = Bca.upper)) +
     labs(title = 'Bootstrap 95% CI of the odds ratio for current TB treatment',
-         subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 10000",
+         subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 1999",
          y = 'Odds ratio for current TB treatment') +
     theme(axis.ticks.x = element_blank(),
           axis.text.x = element_blank(),

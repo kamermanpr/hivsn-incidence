@@ -22,16 +22,15 @@ theme_set(new = theme_bw())
 # knitr options
 knitr::opts_chunk$set(warning = FALSE,
                       message = FALSE, 
-                      fig.retina = 2,
                       fig.align = 'center',
-                      fig.path = './figures/suppl-03-incidence-analysis/')
+                      fig.path = 'figures/suppl-04-incidence-analysis/')
 ```
 
 ----
 
 # Import data
 ```{r import}
-data <- read_rds('data-clean/clean_data.rds') %>% 
+data <- read_rds('data-cleaned/clean_data.rds') %>% 
     # Select columns 
     select(ID, visit_number, visit_day, 
            hivsn_present, pain) 
@@ -199,7 +198,7 @@ data_model <- data %>%
     rename(sn = hivsn_present)
 
 # Join data_sn to data
-data_model <- read_rds('data-clean/clean_data.rds') %>%
+data_model <- read_rds('data-cleaned/clean_data.rds') %>%
     left_join(data_model) %>% 
     select(-hivsn_present)
 
@@ -250,10 +249,10 @@ tab_sn <- table(data_6months$hivsn_present)
 prop_sn <- round(prop.table(tab_sn) * 100) 
 
 # Bootstrap cases per 1000 patients
-## Method: BCa, resamples: 10000
+## Method: BCa, resamples: 1999
 cases_ci <- boot.ci(boot.out = boot(data = data_6months, 
                                     statistic = cases_boot, 
-                                    R = 10000, 
+                                    R = 1999, 
                                     stype = 'i'),
                     type = 'bca')
 
@@ -276,10 +275,10 @@ tab_sn <- table(data_3months$hivsn_present)
 prop_sn <- round(prop.table(tab_sn) * 100) 
 
 # Bootstrap cases per 1000 patients
-## Method: BCa, resamples: 10000
+## Method: BCa, resamples: 1999
 cases_ci <- boot.ci(boot.out = boot(data = data_3months, 
                                     statistic = cases_boot, 
-                                    R = 1000, 
+                                    R = 1999, 
                                     stype = 'i'),
                     type = 'bca')
 
@@ -302,10 +301,10 @@ tab_sn <- table(data_3to6months$hivsn_present)
 prop_sn <- round(prop.table(tab_sn) * 100) 
 
 # Bootstrap cases per 1000 patients
-## Method: BCa, resamples: 10000
+## Method: BCa, resamples: 1999
 cases_ci <- boot.ci(boot.out = boot(data = data_3to6months, 
                                     statistic = cases_boot, 
-                                    R = 1000, 
+                                    R = 1999, 
                                     stype = 'i'),
                     type = 'bca')
 
@@ -339,7 +338,7 @@ boot_df <- function(data, i){
 # Bootstrap confidence intervals
 df_ci <- boot.ci(boot.out = boot(data = df_6months,
                                  statistic = boot_df,
-                                 R = 1000,
+                                 R = 1999,
                                  stype = 'i'),
                  type = 'bca')
 
@@ -428,7 +427,7 @@ gg_plot <- ggsurvplot(km_basic,
                       ggtheme = theme_new())
 
 ## Save
-ggsave(filename = 'survival-curve.png', 
+ggsave(filename = 'figures/survival-curve.png', 
        plot = print(gg_plot), 
        width = 12.7, 
        height = 12)
@@ -478,7 +477,7 @@ ggsurvplot(km_pain,
            title = 'Kaplan-Meier Survival Curve: SN vs Days')
 ```
 
-# Multivariate modeling
+# Multivariable modeling
 
 In an exploratory analysis using Cox proportional hazard models (not shown here) various predictors violated assumptions of the model (e.g., proportional hazard, linearity, no influence points). Therefore we used logistic regression modelling, with visit 1 charateristics as predictors of SN onset. 
 
