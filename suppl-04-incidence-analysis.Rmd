@@ -9,6 +9,7 @@ date: "`r format(Sys.Date(), '%d %B %Y')`"
 # Load packages 
 library(magrittr)
 library(tidyverse)
+library(lubridate)
 library(glmnetUtils)
 library(boot)
 library(car)
@@ -83,8 +84,8 @@ Extract 3 and 6 month periods for cumulative incidence.
 **Note: Data were censored at last screening within each 3/6 month period.**
 ```{r cumulative_incidence}
 ## Generate time filters
-months_6 <- round(lubridate::dyears(0.5) / lubridate::ddays(1)) 
-months_3 <- round(lubridate::dyears(0.25) / lubridate::ddays(1))
+months_6 <- round(dyears(0.5) / ddays(1)) 
+months_3 <- round(dyears(0.25) / ddays(1))
     
 # Extract SN:yes within 6-month period
 data_6months <- data %>%
@@ -665,7 +666,7 @@ mod_final <- glm(sn ~ height_m + TB_current,
 ### (Type II SS ANOVA shows significant effect for height_m, TB_current)
 ### (NOTE: CI of odds ratios for height_m and TB_current are wide)
 print(mod_final)
-car::Anova(mod_final)
+Anova(mod_final)
 summary(mod_final)
 OR(mod_final, what = 'all')[1:3, c(1, 2, 6:8)] 
 ```
