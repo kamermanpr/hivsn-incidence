@@ -9,3 +9,6 @@ icon?
 figures/
 data-clean/
 data-original/
+*.xlsx
+*.rds
+*.csv
