@@ -7,7 +7,7 @@
 library(tidyverse)
 
 # Load raw data
-raw <- readxl::read_excel('data-original/deidentified-data-august-2017.xlsx')
+raw <- readxl::read_excel('data-original/deidentified-data-august-2017.120.xlsx')
 
 # Quick view
 dim(raw)
@@ -68,6 +68,7 @@ df <- raw %>%
     # Fix column classes
     mutate(visit_number = as.integer(visit_number),
            visit_day = as.integer(visit_day),
+           mass_kg = round(as.numeric(mass_kg), 2),
            sex = factor(sex),
            hivsn_present = fct_recode(as_factor(hivsn_present),
                                       yes = '1',

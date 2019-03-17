@@ -2,7 +2,7 @@
 title: "Supplement 3"
 subtitle: 'Descriptive statistics on participant follow-up'
 author: 'Peter Kamerman and Prinisha Pillay'
-date: "30 November 2018"
+date: "17 March 2019"
 ---
 
 
@@ -48,7 +48,7 @@ dim(data)
 ```
 
 ```
-## [1] 273   6
+## [1] 371   6
 ```
 
 ```r
@@ -86,12 +86,12 @@ tail(data)
 ## # A tibble: 6 x 6
 ##   ID    visit_number visit_day visit_months hivsn_present sn   
 ##   <chr>        <int>     <int>        <dbl> <fct>         <fct>
-## 1 082              1         0            0 no            no   
-## 2 082              2        77            3 no            no   
-## 3 082              3       186            6 no            no   
-## 4 083              1         0            0 no            no   
-## 5 083              2        75            2 no            no   
-## 6 083              3       169            6 no            no
+## 1 119              1         0            0 no            no   
+## 2 119              2        72            2 no            no   
+## 3 119              3       132            4 no            no   
+## 4 120              1         0            0 no            no   
+## 5 120              2        88            3 no            no   
+## 6 120              3       124            4 no            no
 ```
 
 ```r
@@ -100,14 +100,14 @@ glimpse(data)
 ```
 
 ```
-## Observations: 273
+## Observations: 371
 ## Variables: 6
-## $ ID            <chr> "001", "001", "001", "002", "002", "002", "003",...
-## $ visit_number  <int> 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, ...
-## $ visit_day     <int> 0, 40, 210, 0, 71, 191, 0, 57, 207, 0, 84, 189, ...
-## $ visit_months  <dbl> 0, 1, 7, 0, 2, 6, 0, 2, 7, 0, 3, 6, 0, 2, 6, 0, ...
-## $ hivsn_present <fct> no, no, no, no, no, no, no, no, no, no, no, no, ...
-## $ sn            <fct> no, no, no, no, no, no, no, no, no, no, no, no, ...
+## $ ID            <chr> "001", "001", "001", "002", "002", "002", "003", "…
+## $ visit_number  <int> 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2,…
+## $ visit_day     <int> 0, 40, 210, 0, 71, 191, 0, 57, 207, 0, 84, 189, 0,…
+## $ visit_months  <dbl> 0, 1, 7, 0, 2, 6, 0, 2, 7, 0, 3, 6, 0, 2, 6, 0, 2,…
+## $ hivsn_present <fct> no, no, no, no, no, no, no, no, no, no, no, no, no…
+## $ sn            <fct> no, no, no, no, no, no, no, no, no, no, no, no, no…
 ```
 
 ----
@@ -136,7 +136,7 @@ data %>%
            visit_count = as.character(visit_count)) %>%
     complete(ID, visit_months) %>%
     # Add a dummy variable for faceting
-    bind_cols(facet = c(rep('Panel 1', 420), rep('Panel 2', 832-420))) %>%
+    bind_cols(facet = c(rep('Panel 1', 600), rep('Panel 2', 1202-600))) %>%
     # Clean-up and order dataframe
     filter(complete.cases(.)) %>%
     # Plot
@@ -148,8 +148,7 @@ data %>%
                shape = 21, 
                size = 3) +
     scale_x_continuous(breaks = seq(0, 250, 25)) +
-    scale_fill_viridis_d(name = 'Visit count: ',
-                         direction = -1) +
+    scale_fill_manual(name = 'Visit count: ', values = grey_pal) +
     labs(title = 'Timing of clinic visits',
          subtitle = 'Visit number coded by fill colour',
          y = 'Participant ID',
@@ -262,7 +261,7 @@ gg_plot <- data_plot %>%
 ggsave(filename = 'figures/follow-up.png', 
        plot = gg_plot, 
        width = 9, 
-       height = 8)
+       height = 11)
 ```
 
 ----
@@ -316,7 +315,7 @@ data_v2 %>%
 ## # A tibble: 1 x 6
 ##       n Median.visits   Q25   Q75   min   max
 ##   <int>         <dbl> <dbl> <dbl> <dbl> <dbl>
-## 1    83             3     3     3     3     5
+## 1   120             3     3     3     2     5
 ```
 
 ```r
@@ -335,7 +334,7 @@ data_v2 %>%
 ## # A tibble: 2 x 7
 ##   sn        n Median.visits   Q25   Q75   min   max
 ##   <fct> <int>         <dbl> <dbl> <dbl> <dbl> <dbl>
-## 1 no       63             3     3  3        3     5
+## 1 no      100             3     3  3        2     5
 ## 2 yes      20             3     3  3.25     3     5
 ```
 
@@ -385,7 +384,9 @@ gg_v2a + gg_v2b
 gg_v2c <- data_v2 %>%
     group_by(sn, max_visits) %>%
     summarise(count = n()) %>%
-    mutate(visits = fct_relevel(factor(max_visits), '5', '4', '3')) %>%
+    mutate(visits = factor(max_visits,
+                           levels = c('5', '4', '3', '2'),
+                           ordered = TRUE)) %>%
     ggplot(data = .) +
     aes(y = count,
         x = sn,
@@ -401,7 +402,9 @@ gg_v2c <- data_v2 %>%
 gg_v2d <- data_v2 %>%
     group_by(sn, max_visits) %>%
     summarise(count = n()) %>%
-    mutate(visits = fct_relevel(factor(max_visits), '5', '4', '3')) %>%
+    mutate(visits = factor(max_visits,
+                           levels = c('5', '4', '3', '2'),
+                           ordered = TRUE)) %>%
     ggplot(data = .) +
     aes(y = count,
         x = sn,
@@ -433,7 +436,7 @@ chisq_test(xtabs(~ sn + visit_number,
 ## 	Approximative Pearson Chi-Squared Test
 ## 
 ## data:  visit_number by sn (no, yes)
-## chi-squared = 0.33484, p-value = 0.9009
+## chi-squared = 4.3515, p-value = 0.22
 ```
 
 ## Time between first and last visit
@@ -453,7 +456,7 @@ data_v2 %>%
 ## # A tibble: 1 x 6
 ##       n Median.days   Q25   Q75   min   max
 ##   <int>       <dbl> <dbl> <dbl> <dbl> <dbl>
-## 1    83         196   185   209   166   263
+## 1   120         186  140.  201.    39   263
 ```
 
 ```r
@@ -472,7 +475,7 @@ data_v2 %>%
 ## # A tibble: 2 x 7
 ##   sn        n Median.days   Q25   Q75   min   max
 ##   <fct> <int>       <dbl> <dbl> <dbl> <dbl> <dbl>
-## 1 no       63         197  186.  209    169   263
+## 1 no      100         184  133.  199.    39   263
 ## 2 yes      20         195  182.  208.   166   243
 ```
 
@@ -521,7 +524,7 @@ normal_test(max_duration ~ factor(sn),
 ## 	Approximative Two-Sample van der Waerden (Normal Quantile) Test
 ## 
 ## data:  max_duration by factor(sn) (no, yes)
-## Z = 0.91044, p-value = 0.3704
+## Z = -2.103, p-value = 0.0349
 ## alternative hypothesis: true mu is not equal to 0
 ```
 
@@ -545,11 +548,11 @@ data_v1 %>%
 ```
 ## # A tibble: 4 x 9
 ##   visit_number     n Mean.days Median.days    SD   Q25   Q75   min   max
-##          <int> <int>     <dbl>       <int> <dbl> <dbl> <dbl> <dbl> <dbl>
-## 1            2    83      69.6          62  28.5  54    90.5    14   146
-## 2            3    83     112.          112  41.5  88   140      14   204
-## 3            4    17      58.7          60  34.4  28    82       9   132
-## 4            5     7      57.7          61  21.8  46.5  63      28    96
+##          <int> <int>     <dbl>       <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+## 1            2   120      72.4        69.5  27.1  55    89      14   151
+## 2            3   105     100.        102    44.4  60   135      14   204
+## 3            4    19      54.9        50    34.4  27.5  80.5     9   132
+## 4            5     7      57.7        61    21.8  46.5  63      28    96
 ```
 
 ```r
@@ -569,18 +572,18 @@ data_v1 %>%
 
 ```
 ## # A tibble: 8 x 10
-## # Groups:   visit_number [?]
+## # Groups:   visit_number [4]
 ##   visit_number sn        n Mean.days Median.days    SD   Q25   Q75   min
 ##          <int> <fct> <int>     <dbl>       <dbl> <dbl> <dbl> <dbl> <dbl>
-## 1            2 no       63      67.0        61    26.7  54.5  83      14
+## 1            2 no      100      71.4        69.5  25.8  56    87.2    14
 ## 2            2 yes      20      77.6        69    33.1  52   104.     28
-## 3            3 no       63     116.        114    37.6  90.5 142      47
+## 3            3 no       85     100.        102    43.1  60   138      26
 ## 4            3 yes      20      99.2       102.   50.7  66.8 120.     14
-## 5            4 no       12      58.8        62    29.0  39    79.8     9
+## 5            4 no       14      53.6        55    29.8  29.2  75.5     9
 ## 6            4 yes       5      58.6        28    49.2  27    87      19
 ## 7            5 no        5      62.6        61    21.3  56    63      37
 ## 8            5 yes       2      45.5        45.5  24.7  36.8  54.2    28
-## # ... with 1 more variable: max <dbl>
+## # … with 1 more variable: max <dbl>
 ```
 
 ```r
@@ -625,13 +628,13 @@ data_v1 %>%
 
 ```r
 # Stats
-## Generate date
+## Generate data
 data_lmer <- data_v1 %>%
     filter(visit_number != 1) %>%
     select(ID, visit_number, visit_break, sn) 
 
 ## Generate model (ID included as random effects)
-mod <- lmer(visit_break ~ sn * visit_number + (1|ID), 
+mod <- lm(visit_break ~ sn + visit_number, 
             data = data_lmer)
 
 ## Analysis of Deviance Table (Type II Wald F tests with Kenward-Roger df)
@@ -641,30 +644,26 @@ Anova(mod = mod,
 ```
 
 ```
-## Analysis of Deviance Table (Type II Wald F tests with Kenward-Roger df)
+## Anova Table (Type II tests)
 ## 
 ## Response: visit_break
-##                      F Df  Df.res  Pr(>F)  
-## sn              0.3907  1  73.194 0.53387  
-## visit_number    3.2803  1 170.193 0.07188 .
-## sn:visit_number 2.6095  1 169.954 0.10808  
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+##              Sum Sq  Df F value Pr(>F)
+## sn               43   1  0.0280 0.8673
+## visit_number    730   1  0.4767 0.4906
+## Residuals    379751 248
 ```
 
 ```r
 ## Basic diagnostics
-plot(mod, main = 'Residuals vs Fitted') 
+par(mfrow = c(2, 2))
+plot(mod) 
 ```
 
 <img src="figures/suppl-03-follow-up-analysis/cummulative_visits-3.png" style="display: block; margin: auto;" />
 
 ```r
-qqnorm(resid(mod))
-qqline(resid(mod))
+par(mfrow = c(1, 1))
 ```
-
-<img src="figures/suppl-03-follow-up-analysis/cummulative_visits-4.png" style="display: block; margin: auto;" />
 
 ----
 
@@ -675,51 +674,50 @@ sessionInfo()
 ```
 
 ```
-## R version 3.5.1 (2018-07-02)
+## R version 3.5.2 (2018-12-20)
 ## Platform: x86_64-apple-darwin15.6.0 (64-bit)
-## Running under: macOS  10.14.1
+## Running under: macOS Mojave 10.14.3
 ## 
 ## Matrix products: default
 ## BLAS: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRblas.0.dylib
 ## LAPACK: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRlapack.dylib
 ## 
 ## locale:
-## [1] en_GB.UTF-8/en_GB.UTF-8/en_GB.UTF-8/C/en_GB.UTF-8/en_GB.UTF-8
+## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
 ## 
 ## attached base packages:
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] bindrcpp_0.2.2  car_3.0-2       carData_3.0-2   lmerTest_3.0-1 
-##  [5] lme4_1.1-19     Matrix_1.2-15   coin_1.2-2      survival_2.43-3
-##  [9] patchwork_0.0.1 forcats_0.3.0   stringr_1.3.1   dplyr_0.7.8    
-## [13] purrr_0.2.5     readr_1.2.1     tidyr_0.8.2     tibble_1.4.2   
-## [17] ggplot2_3.1.0   tidyverse_1.2.1 magrittr_1.5   
+##  [1] car_3.0-2       carData_3.0-2   lmerTest_3.1-0  lme4_1.1-20    
+##  [5] Matrix_1.2-15   coin_1.2-2      survival_2.43-3 patchwork_0.0.1
+##  [9] forcats_0.4.0   stringr_1.4.0   dplyr_0.8.0.1   purrr_0.3.1    
+## [13] readr_1.3.1     tidyr_0.8.3     tibble_2.0.1    ggplot2_3.1.0  
+## [17] tidyverse_1.2.1 magrittr_1.5   
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] httr_1.3.1        viridisLite_0.3.0 jsonlite_1.5     
-##  [4] splines_3.5.1     modelr_0.1.2      assertthat_0.2.0 
-##  [7] stats4_3.5.1      cellranger_1.1.0  yaml_2.2.0       
-## [10] numDeriv_2016.8-1 pillar_1.3.0      backports_1.1.2  
-## [13] lattice_0.20-38   glue_1.3.0        digest_0.6.18    
-## [16] rvest_0.3.2       minqa_1.2.4       colorspace_1.3-2 
-## [19] sandwich_2.5-0    htmltools_0.3.6   plyr_1.8.4       
-## [22] pkgconfig_2.0.2   broom_0.5.0       haven_2.0.0      
-## [25] mvtnorm_1.0-8     scales_1.0.0      openxlsx_4.1.0   
-## [28] rio_0.5.16        TH.data_1.0-9     withr_2.1.2.9000 
-## [31] lazyeval_0.2.1    pbkrtest_0.4-7    cli_1.0.1        
-## [34] crayon_1.3.4      readxl_1.1.0      evaluate_0.12    
+##  [1] httr_1.4.0        jsonlite_1.6      splines_3.5.2    
+##  [4] modelr_0.1.4      assertthat_0.2.0  stats4_3.5.2     
+##  [7] cellranger_1.1.0  yaml_2.2.0        numDeriv_2016.8-1
+## [10] pillar_1.3.1      backports_1.1.3   lattice_0.20-38  
+## [13] glue_1.3.0        digest_0.6.18     rvest_0.3.2      
+## [16] minqa_1.2.4       colorspace_1.4-0  sandwich_2.5-0   
+## [19] htmltools_0.3.6   plyr_1.8.4        pkgconfig_2.0.2  
+## [22] broom_0.5.1       haven_2.1.0       mvtnorm_1.0-9    
+## [25] scales_1.0.0      openxlsx_4.1.0    rio_0.5.16       
+## [28] generics_0.0.2    ellipsis_0.1.0    TH.data_1.0-10   
+## [31] withr_2.1.2.9000  lazyeval_0.2.1    cli_1.0.1        
+## [34] crayon_1.3.4      readxl_1.3.0      evaluate_0.13    
 ## [37] fansi_0.4.0       nlme_3.1-137      MASS_7.3-51.1    
-## [40] xml2_1.2.0        foreign_0.8-71    tools_3.5.1      
-## [43] data.table_1.11.8 hms_0.4.2         multcomp_1.4-8   
-## [46] munsell_0.5.0     zip_1.0.0         compiler_3.5.1   
-## [49] rlang_0.3.0.1     grid_3.5.1        nloptr_1.2.1     
-## [52] rstudioapi_0.8    labeling_0.3      rmarkdown_1.10   
-## [55] gtable_0.2.0      codetools_0.2-15  abind_1.4-5      
-## [58] curl_3.2          R6_2.3.0          zoo_1.8-4        
-## [61] lubridate_1.7.4   knitr_1.20        utf8_1.1.4       
-## [64] bindr_0.1.1       rprojroot_1.3-2   modeltools_0.2-22
-## [67] stringi_1.2.4     parallel_3.5.1    Rcpp_1.0.0       
-## [70] tidyselect_0.2.5
+## [40] xml2_1.2.0        foreign_0.8-71    tools_3.5.2      
+## [43] data.table_1.12.0 hms_0.4.2         multcomp_1.4-8   
+## [46] munsell_0.5.0     zip_2.0.0         compiler_3.5.2   
+## [49] rlang_0.3.1       grid_3.5.2        nloptr_1.2.1     
+## [52] rstudioapi_0.9.0  labeling_0.3      rmarkdown_1.11   
+## [55] gtable_0.2.0      codetools_0.2-16  abind_1.4-5      
+## [58] curl_3.3          R6_2.4.0          zoo_1.8-4        
+## [61] lubridate_1.7.4   knitr_1.21        utf8_1.1.4       
+## [64] modeltools_0.2-22 stringi_1.3.1     Rcpp_1.0.0       
+## [67] tidyselect_0.2.5  xfun_0.5
 ```
 

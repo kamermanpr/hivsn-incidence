@@ -2,7 +2,7 @@
 title: "Supplement 1"
 subtitle: "Descriptive statistics for the whole cohort"
 author: "Peter Kamerman and Prinisha Pillay"
-date: "30 November 2018"
+date: "17 March 2019"
 ---
 
 
@@ -43,7 +43,7 @@ dim(data)
 ```
 
 ```
-## [1] 83 17
+## [1] 120  17
 ```
 
 ```r
@@ -78,9 +78,8 @@ head(data)
 ## 4 004           0        26    68.8     1.74 M     no           
 ## 5 005           0        37   107       1.6  F     no           
 ## 6 006           0        34    85.5     1.53 F     no           
-## # ... with 10 more variables: CD4_cell.ul <dbl>,
-## #   viral_load_copies.ml <dbl>, consumes_alcohol <fct>,
-## #   alcohol_units.week <int>, TB_current <fct>,
+## # … with 10 more variables: CD4_cell.ul <dbl>, viral_load_copies.ml <dbl>,
+## #   consumes_alcohol <fct>, alcohol_units.week <int>, TB_current <fct>,
 ## #   pyridoxine_prophylaxis <fct>, rifafour_treatment <fct>,
 ## #   ARV_regimen <fct>, diabetic_hba1c <fct>, vitaminB12_deficiency <fct>
 ```
@@ -93,15 +92,14 @@ tail(data)
 ## # A tibble: 6 x 17
 ##   ID    visit_day age_years mass_kg height_m sex   hivsn_present
 ##   <chr>     <int>     <dbl>   <dbl>    <dbl> <fct> <fct>        
-## 1 078           0        29    54       1.53 F     no           
-## 2 079           0        44    58.8     1.52 F     no           
-## 3 080           0        50    53.2     1.51 F     no           
-## 4 081           0        43    49.5     1.62 F     no           
-## 5 082           0        40    82.8     1.62 F     no           
-## 6 083           0        46    73.3     1.66 F     no           
-## # ... with 10 more variables: CD4_cell.ul <dbl>,
-## #   viral_load_copies.ml <dbl>, consumes_alcohol <fct>,
-## #   alcohol_units.week <int>, TB_current <fct>,
+## 1 115           0        29    55.1     1.66 M     no           
+## 2 116           0        30    93.7     1.55 F     no           
+## 3 117           0        30    58.2     1.6  F     no           
+## 4 118           0        30    61.2     1.64 F     no           
+## 5 119           0        22    62.7     1.63 F     no           
+## 6 120           0        58    71.2     1.74 M     no           
+## # … with 10 more variables: CD4_cell.ul <dbl>, viral_load_copies.ml <dbl>,
+## #   consumes_alcohol <fct>, alcohol_units.week <int>, TB_current <fct>,
 ## #   pyridoxine_prophylaxis <fct>, rifafour_treatment <fct>,
 ## #   ARV_regimen <fct>, diabetic_hba1c <fct>, vitaminB12_deficiency <fct>
 ```
@@ -112,25 +110,25 @@ glimpse(data)
 ```
 
 ```
-## Observations: 83
+## Observations: 120
 ## Variables: 17
-## $ ID                     <chr> "001", "002", "003", "004", "005", "006...
-## $ visit_day              <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
-## $ age_years              <dbl> 59, 23, 27, 26, 37, 34, 44, 34, 32, 29,...
-## $ mass_kg                <dbl> 41.4, 70.2, 75.0, 68.8, 107.0, 85.5, 12...
-## $ height_m               <dbl> 1.56, 1.56, 1.64, 1.74, 1.60, 1.53, 1.6...
-## $ sex                    <fct> F, F, M, M, F, F, F, F, F, M, M, M, M, ...
-## $ hivsn_present          <fct> no, no, no, no, no, no, no, no, no, no,...
-## $ CD4_cell.ul            <dbl> 35, 285, 28, 270, 310, 247, 439, 311, 1...
-## $ viral_load_copies.ml   <dbl> 6.103804, 5.041393, 5.181844, 2.484300,...
-## $ consumes_alcohol       <fct> no, no, no, no, yes, no, no, no, no, no...
-## $ alcohol_units.week     <int> 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 6, 9,...
-## $ TB_current             <fct> no, no, yes, no, no, no, no, no, no, no...
-## $ pyridoxine_prophylaxis <fct> no, no, yes, no, no, no, no, no, no, no...
-## $ rifafour_treatment     <fct> no, no, yes, no, no, no, no, no, no, no...
-## $ ARV_regimen            <fct> TDF_FTC_EFV, TDF_FTC_EFV, TDF_FTC_EFV, ...
-## $ diabetic_hba1c         <fct> no, no, no, no, no, no, no, no, no, no,...
-## $ vitaminB12_deficiency  <fct> no, no, no, no, no, no, no, no, no, no,...
+## $ ID                     <chr> "001", "002", "003", "004", "005", "006",…
+## $ visit_day              <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+## $ age_years              <dbl> 59, 23, 27, 26, 37, 34, 44, 34, 32, 29, 2…
+## $ mass_kg                <dbl> 41.4, 70.2, 75.0, 68.8, 107.0, 85.5, 121.…
+## $ height_m               <dbl> 1.56, 1.56, 1.64, 1.74, 1.60, 1.53, 1.69,…
+## $ sex                    <fct> F, F, M, M, F, F, F, F, F, M, M, M, M, F,…
+## $ hivsn_present          <fct> no, no, no, no, no, no, no, no, no, no, n…
+## $ CD4_cell.ul            <dbl> 35, 285, 28, 270, 310, 247, 439, 311, 130…
+## $ viral_load_copies.ml   <dbl> 6.103804, 5.041393, 5.181844, 2.484300, 3…
+## $ consumes_alcohol       <fct> no, no, no, no, yes, no, no, no, no, no, …
+## $ alcohol_units.week     <int> 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 6, 9, 0…
+## $ TB_current             <fct> no, no, yes, no, no, no, no, no, no, no, …
+## $ pyridoxine_prophylaxis <fct> no, no, yes, no, no, no, no, no, no, no, …
+## $ rifafour_treatment     <fct> no, no, yes, no, no, no, no, no, no, no, …
+## $ ARV_regimen            <fct> TDF_FTC_EFV, TDF_FTC_EFV, TDF_FTC_EFV, TD…
+## $ diabetic_hba1c         <fct> no, no, no, no, no, no, no, no, no, no, n…
+## $ vitaminB12_deficiency  <fct> no, no, no, no, no, no, no, no, no, no, n…
 ```
 
 ----
@@ -148,12 +146,12 @@ data %>%
 
 ```
 ## Skim summary statistics
-##  n obs: 83 
+##  n obs: 120 
 ##  n variables: 1 
 ## 
-## ── Variable type:numeric ──────────────────────────────────
-##   variable missing complete  n  mean   sd p0 p25 p50 p75 p100     hist
-##  age_years       0       83 83 38.67 9.09 21  32  39  44   59 ▂▅▇▆▇▃▂▂
+## ── Variable type:numeric ─────────────────────────────────────────────────────────────────────────────
+##   variable missing complete   n  mean   sd p0   p25 p50 p75 p100     hist
+##  age_years       0      120 120 37.77 9.36 21 30.75  37  44   59 ▃▆▇▆▇▃▂▂
 ```
 
 ```r
@@ -169,8 +167,8 @@ groupwiseMean(age_years ~ 1,
 ```
 
 ```
-##    n Mean Conf.level Bca.lower Bca.upper
-## 1 83 38.7       0.95      36.8      40.7
+##     n Mean Conf.level Bca.lower Bca.upper
+## 1 120 37.8       0.95        36      39.5
 ```
 
 ```r
@@ -200,14 +198,14 @@ data %>%
 
 ```
 ## Skim summary statistics
-##  n obs: 83 
+##  n obs: 120 
 ##  n variables: 1 
 ## 
-## ── Variable type:numeric ──────────────────────────────────
-##  variable missing complete  n  mean    sd   p0 p25  p50   p75  p100
-##   mass_kg       0       83 83 66.11 15.97 41.4  54 64.2 75.85 121.4
+## ── Variable type:numeric ─────────────────────────────────────────────────────────────────────────────
+##  variable missing complete   n  mean    sd   p0  p25   p50  p75  p100
+##   mass_kg       0      120 120 65.02 14.71 41.4 54.4 62.85 72.5 121.4
 ##      hist
-##  ▆▇▆▅▃▁▁▁
+##  ▅▇▇▃▂▁▁▁
 ```
 
 ```r
@@ -223,8 +221,8 @@ groupwiseMean(mass_kg ~ 1,
 ```
 
 ```
-##    n Mean Conf.level Bca.lower Bca.upper
-## 1 83 66.1       0.95      62.7      69.8
+##     n Mean Conf.level Bca.lower Bca.upper
+## 1 120   65       0.95      62.8      67.7
 ```
 
 ```r
@@ -255,17 +253,17 @@ data %>%
 
 ```
 ## Skim summary statistics
-##  n obs: 83 
+##  n obs: 120 
 ##  n variables: 2 
 ##  group variables: sex 
 ## 
-## ── Variable type:numeric ──────────────────────────────────
+## ── Variable type:numeric ─────────────────────────────────────────────────────────────────────────────
 ##  sex variable missing complete  n mean    sd   p0  p25  p50  p75 p100
-##    F height_m       0       46 46 1.58 0.072 1.46 1.53 1.56 1.63 1.76
-##    M height_m       0       37 37 1.7  0.046 1.63 1.65 1.71 1.74 1.79
+##    F height_m       0       66 66 1.58 0.065 1.46 1.53 1.57 1.62 1.76
+##    M height_m       0       54 54 1.7  0.05  1.58 1.67 1.7  1.74 1.82
 ##      hist
-##  ▃▇▅▂▅▃▂▁
-##  ▇▁▆▃▅▃▃▁
+##  ▃▇▇▅▇▃▂▁
+##  ▁▃▂▇▅▆▂▁
 ```
 
 ```r
@@ -282,8 +280,8 @@ groupwiseMean(age_years ~ sex,
 
 ```
 ##   sex  n Mean Conf.level Bca.lower Bca.upper
-## 1   F 46 37.7       0.95      35.1      40.5
-## 2   M 37 39.9       0.95      37.1      42.5
+## 1   F 66 36.0       0.95      33.8      38.5
+## 2   M 54 39.9       0.95      37.7      42.2
 ```
 
 ```r
@@ -312,12 +310,12 @@ data %>%
 
 ```
 ## Skim summary statistics
-##  n obs: 83 
+##  n obs: 120 
 ##  n variables: 1 
 ## 
-## ── Variable type:factor ───────────────────────────────────
-##  variable missing complete  n n_unique          top_counts ordered
-##       sex       0       83 83        2 F: 46, M: 37, NA: 0   FALSE
+## ── Variable type:factor ──────────────────────────────────────────────────────────────────────────────
+##  variable missing complete   n n_unique          top_counts ordered
+##       sex       0      120 120        2 F: 66, M: 54, NA: 0   FALSE
 ```
 
 ```r
@@ -329,7 +327,7 @@ boot.ci(boot(data = data,
              R = 1999, 
              stype = 'i'), 
         type = 'bca') %>% 
-    data_frame(n = nrow(filter(data, !is.na(sex))), 
+    tibble(n = nrow(filter(data, !is.na(sex))), 
       Proportion = round(.$t0, 3), 
       Conf.level = 0.95, 
       Bca.lower = round(.$bca[[4]], 3),
@@ -339,8 +337,8 @@ boot.ci(boot(data = data,
 ```
 
 ```
-##    n Proportion Conf.level Bca.lower Bca.upper
-## 1 83      0.554       0.95     0.434     0.639
+##     n Proportion Conf.level Bca.lower Bca.upper
+## 1 120       0.55       0.95     0.458     0.633
 ```
 
 ```r
@@ -372,12 +370,14 @@ data %>%
 
 ```
 ## Skim summary statistics
-##  n obs: 83 
+##  n obs: 120 
 ##  n variables: 1 
 ## 
-## ── Variable type:numeric ──────────────────────────────────
-##     variable missing complete  n   mean    sd p0 p25 p50 p75 p100     hist
-##  CD4_cell.ul       0       83 83 243.46 180.9  1 122 234 317  867 ▇▇▇▃▂▁▁▁
+## ── Variable type:numeric ─────────────────────────────────────────────────────────────────────────────
+##     variable missing complete   n   mean     sd p0   p25 p50 p75 p100
+##  CD4_cell.ul       1      119 120 265.87 224.75  1 119.5 221 345 1347
+##      hist
+##  ▇▇▃▁▁▁▁▁
 ```
 
 ```r
@@ -385,20 +385,21 @@ data %>%
 ## Method = BCa, Resamples = 1999
 set.seed(1234)
 groupwiseMedian(CD4_cell.ul ~ 1, 
-                data = data, 
+                data = data[!is.na(data$CD4_cell.ul), ], 
                 R = 1999,
                 boot = TRUE, 
                 bca = TRUE)[c(2:3, 5, 6, 7)]
 ```
 
 ```
-##    n Median Conf.level Bca.lower Bca.upper
-## 1 83    234       0.95       151       285
+##     n Median Conf.level Bca.lower Bca.upper
+## 1 119    221       0.95       172       283
 ```
 
 ```r
 # Plot
-data %>%
+data %>% 
+    filter(!is.na(CD4_cell.ul)) %>%
     ggplot(data = .) +
     aes(y = CD4_cell.ul, 
         x = 'All patients') +
@@ -422,14 +423,14 @@ data %>%
 
 ```
 ## Skim summary statistics
-##  n obs: 83 
+##  n obs: 120 
 ##  n variables: 1 
 ## 
-## ── Variable type:numeric ──────────────────────────────────
-##              variable missing complete  n mean   sd  p0  p25  p50  p75
-##  viral_load_copies.ml       6       77 83 3.42 1.35 1.7 2.21 3.02 4.23
+## ── Variable type:numeric ─────────────────────────────────────────────────────────────────────────────
+##              variable missing complete   n mean   sd  p0  p25  p50  p75
+##  viral_load_copies.ml      12      108 120 3.47 1.31 1.7 2.52 3.14 4.26
 ##  p100     hist
-##  6.51 ▇▅▆▂▅▂▁▂
+##  6.51 ▇▆▇▃▅▃▁▃
 ```
 
 ```r
@@ -444,8 +445,8 @@ groupwiseMedian(viral_load_copies.ml ~ 1,
 ```
 
 ```
-##    n Median Conf.level Bca.lower Bca.upper
-## 1 77   3.02       0.95      2.75      3.38
+##     n Median Conf.level Bca.lower Bca.upper
+## 1 108   3.14       0.95      2.93       3.5
 ```
 
 ```r
@@ -481,17 +482,17 @@ data %>%
 
 ```
 ## Skim summary statistics
-##  n obs: 83 
+##  n obs: 120 
 ##  n variables: 2 
 ##  group variables: drinks_alcohol 
 ## 
-## ── Variable type:integer ──────────────────────────────────
-##  drinks_alcohol           variable missing complete  n  mean   sd p0 p25
-##              No alcohol_units.week       0       67 67  0    0     0   0
-##             Yes alcohol_units.week       0       16 16 10.56 7.58  3   4
-##  p50 p75 p100     hist
-##    0   0    0 ▁▁▁▇▁▁▁▁
-##    9  15   29 ▇▃▂▂▁▁▁▁
+## ── Variable type:integer ─────────────────────────────────────────────────────────────────────────────
+##  drinks_alcohol           variable missing complete  n  mean    sd p0 p25
+##              No alcohol_units.week       0       93 93  0     0     0   0
+##             Yes alcohol_units.week       0       27 27 23.67 25.43  3   8
+##  p50  p75 p100     hist
+##    0  0      0 ▁▁▁▇▁▁▁▁
+##   15 25.5   95 ▇▅▂▁▁▁▁▁
 ```
 
 ```r
@@ -507,7 +508,7 @@ groupwiseMedian(alcohol_units.week ~ 1,
 
 ```
 ##    n Median Conf.level Bca.lower Bca.upper
-## 1 16      9       0.95         4        12
+## 1 27     15       0.95         6        18
 ```
 
 ```r
@@ -540,12 +541,12 @@ data %>%
 
 ```
 ## Skim summary statistics
-##  n obs: 83 
+##  n obs: 120 
 ##  n variables: 1 
 ## 
-## ── Variable type:factor ───────────────────────────────────
-##    variable missing complete  n n_unique             top_counts ordered
-##  TB_current       0       83 83        2 no: 67, yes: 16, NA: 0   FALSE
+## ── Variable type:factor ──────────────────────────────────────────────────────────────────────────────
+##    variable missing complete   n n_unique              top_counts ordered
+##  TB_current       0      120 120        2 no: 100, yes: 20, NA: 0   FALSE
 ```
 
 ```r
@@ -557,18 +558,18 @@ boot.ci(boot(data = data,
              R = 1999, 
              stype = 'i'), 
         type = 'bca') %>% 
-    data_frame(n = nrow(filter(data, !is.na(TB_current))),
-      Proportion = round(.$t0, 3), 
-      Conf.level = 0.95, 
-      Bca.lower = round(.$bca[[4]], 3),
-      Bca.upper = round(.$bca[[5]], 3)) %>%
+    tibble(n = nrow(filter(data, !is.na(TB_current))),
+           Proportion = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3)) %>%
     .[1, -1] %>% 
     as.data.frame()
 ```
 
 ```
-##    n Proportion Conf.level Bca.lower Bca.upper
-## 1 83      0.193       0.95     0.108     0.277
+##     n Proportion Conf.level Bca.lower Bca.upper
+## 1 120      0.167       0.95     0.108     0.233
 ```
 
 ```r
@@ -611,19 +612,19 @@ data %>%
 
 ```
 ## Skim summary statistics
-##  n obs: 83 
+##  n obs: 120 
 ##  n variables: 2 
 ##  group variables: pyridoxine_prophylaxis 
 ## 
-## ── Variable type:factor ───────────────────────────────────
+## ── Variable type:factor ──────────────────────────────────────────────────────────────────────────────
 ##  pyridoxine_prophylaxis           variable missing complete  n n_unique
-##                      no rifafour_treatment       0       66 66        1
-##                     yes rifafour_treatment       0       15 15        1
-##             prophylaxis rifafour_treatment       0        2  2        1
+##                      no rifafour_treatment       0       87 87        1
+##                     yes rifafour_treatment       0       19 19        1
+##             prophylaxis rifafour_treatment       0       14 14        1
 ##                     top_counts ordered
-##  no: 66, yes: 0, pro: 0, NA: 0   FALSE
-##  yes: 15, no: 0, pro: 0, NA: 0   FALSE
-##   pro: 2, no: 0, yes: 0, NA: 0   FALSE
+##  no: 87, yes: 0, pro: 0, NA: 0   FALSE
+##  yes: 19, no: 0, pro: 0, NA: 0   FALSE
+##  pro: 14, no: 0, yes: 0, NA: 0   FALSE
 ```
 
 ```r
@@ -633,7 +634,7 @@ round(mean(data$rifafour_treatment == 'prophylaxis'), 3)
 ```
 
 ```
-## [1] 0.024
+## [1] 0.117
 ```
 
 ```r
@@ -650,18 +651,18 @@ boot.ci(boot(data = data_tb,
              R = 1999, 
              stype = 'i'), 
         type = 'bca') %>% 
-    data_frame(n = nrow(filter(data_tb, !is.na(rifafour_treatment))), 
-      Proportion = round(.$t0, 3), 
-      Conf.level = 0.95, 
-      Bca.lower = round(.$bca[[4]], 3),
-      Bca.upper = round(.$bca[[5]], 3)) %>%
+    tibble(n = nrow(filter(data_tb, !is.na(rifafour_treatment))), 
+           Proportion = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3)) %>%
     .[1, -1] %>% 
     as.data.frame()
 ```
 
 ```
-##    n Proportion Conf.level Bca.lower Bca.upper
-## 1 83      0.205       0.95      0.12     0.289
+##     n Proportion Conf.level Bca.lower Bca.upper
+## 1 120      0.275       0.95     0.195     0.358
 ```
 
 ```r
@@ -698,12 +699,14 @@ data %>%
 
 ```
 ## Skim summary statistics
-##  n obs: 83 
+##  n obs: 120 
 ##  n variables: 1 
 ## 
-## ── Variable type:factor ───────────────────────────────────
-##        variable missing complete  n n_unique            top_counts ordered
-##  diabetic_hba1c       2       81 83        1 no: 81, NA: 2, yes: 0   FALSE
+## ── Variable type:factor ──────────────────────────────────────────────────────────────────────────────
+##        variable missing complete   n n_unique             top_counts
+##  diabetic_hba1c       9      111 120        1 no: 111, NA: 9, yes: 0
+##  ordered
+##    FALSE
 ```
 
 ## Vitamin B12 deficiency
@@ -718,14 +721,14 @@ data %>%
 
 ```
 ## Skim summary statistics
-##  n obs: 83 
+##  n obs: 120 
 ##  n variables: 1 
 ## 
-## ── Variable type:factor ───────────────────────────────────
-##               variable missing complete  n n_unique            top_counts
-##  vitaminB12_deficiency       3       80 83        2 no: 79, NA: 3, yes: 1
-##  ordered
-##    FALSE
+## ── Variable type:factor ──────────────────────────────────────────────────────────────────────────────
+##               variable missing complete   n n_unique
+##  vitaminB12_deficiency      19      101 120        2
+##               top_counts ordered
+##  no: 100, NA: 19, yes: 1   FALSE
 ```
 
 ----
@@ -737,48 +740,48 @@ sessionInfo()
 ```
 
 ```
-## R version 3.5.1 (2018-07-02)
+## R version 3.5.2 (2018-12-20)
 ## Platform: x86_64-apple-darwin15.6.0 (64-bit)
-## Running under: macOS  10.14.1
+## Running under: macOS Mojave 10.14.3
 ## 
 ## Matrix products: default
 ## BLAS: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRblas.0.dylib
 ## LAPACK: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRlapack.dylib
 ## 
 ## locale:
-## [1] en_GB.UTF-8/en_GB.UTF-8/en_GB.UTF-8/C/en_GB.UTF-8/en_GB.UTF-8
+## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
 ## 
 ## attached base packages:
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] bindrcpp_0.2.2   skimr_1.0.3      boot_1.3-20      rcompanion_2.0.3
-##  [5] forcats_0.3.0    stringr_1.3.1    dplyr_0.7.8      purrr_0.2.5     
-##  [9] readr_1.2.1      tidyr_0.8.2      tibble_1.4.2     ggplot2_3.1.0   
-## [13] tidyverse_1.2.1  magrittr_1.5    
+##  [1] skimr_1.0.5      boot_1.3-20      rcompanion_2.1.1 forcats_0.4.0   
+##  [5] stringr_1.4.0    dplyr_0.8.0.1    purrr_0.3.1      readr_1.3.1     
+##  [9] tidyr_0.8.3      tibble_2.0.1     ggplot2_3.1.0    tidyverse_1.2.1 
+## [13] magrittr_1.5    
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] httr_1.3.1         jsonlite_1.5       splines_3.5.1     
-##  [4] modelr_0.1.2       assertthat_0.2.0   expm_0.999-3      
-##  [7] stats4_3.5.1       coin_1.2-2         cellranger_1.1.0  
-## [10] yaml_2.2.0         pillar_1.3.0       backports_1.1.2   
-## [13] lattice_0.20-38    glue_1.3.0         digest_0.6.18     
-## [16] rvest_0.3.2        colorspace_1.3-2   sandwich_2.5-0    
-## [19] htmltools_0.3.6    Matrix_1.2-15      plyr_1.8.4        
-## [22] pkgconfig_2.0.2    broom_0.5.0        haven_2.0.0       
-## [25] EMT_1.1            mvtnorm_1.0-8      scales_1.0.0      
-## [28] manipulate_1.0.1   TH.data_1.0-9      withr_2.1.2.9000  
-## [31] lazyeval_0.2.1     cli_1.0.1          survival_2.43-3   
-## [34] crayon_1.3.4       readxl_1.1.0       evaluate_0.12     
-## [37] fansi_0.4.0        nlme_3.1-137       MASS_7.3-51.1     
-## [40] xml2_1.2.0         foreign_0.8-71     tools_3.5.1       
-## [43] hms_0.4.2          multcomp_1.4-8     munsell_0.5.0     
-## [46] compiler_3.5.1     multcompView_0.1-7 rlang_0.3.0.1     
-## [49] grid_3.5.1         rstudioapi_0.8     labeling_0.3      
-## [52] rmarkdown_1.10     DescTools_0.99.26  gtable_0.2.0      
-## [55] codetools_0.2-15   R6_2.3.0           zoo_1.8-4         
-## [58] lubridate_1.7.4    knitr_1.20         utf8_1.1.4        
-## [61] bindr_0.1.1        nortest_1.0-4      rprojroot_1.3-2   
-## [64] modeltools_0.2-22  stringi_1.2.4      Rcpp_1.0.0        
-## [67] tidyselect_0.2.5   lmtest_0.9-36
+##  [1] Rcpp_1.0.0         lubridate_1.7.4    mvtnorm_1.0-9     
+##  [4] lattice_0.20-38    multcompView_0.1-7 zoo_1.8-4         
+##  [7] utf8_1.1.4         lmtest_0.9-36      assertthat_0.2.0  
+## [10] digest_0.6.18      R6_2.4.0           cellranger_1.1.0  
+## [13] plyr_1.8.4         backports_1.1.3    EMT_1.1           
+## [16] stats4_3.5.2       evaluate_0.13      httr_1.4.0        
+## [19] pillar_1.3.1       rlang_0.3.1        lazyeval_0.2.1    
+## [22] multcomp_1.4-8     readxl_1.3.0       rstudioapi_0.9.0  
+## [25] Matrix_1.2-15      rmarkdown_1.11     labeling_0.3      
+## [28] splines_3.5.2      foreign_0.8-71     munsell_0.5.0     
+## [31] broom_0.5.1        compiler_3.5.2     modelr_0.1.4      
+## [34] xfun_0.5           pkgconfig_2.0.2    manipulate_1.0.1  
+## [37] DescTools_0.99.27  htmltools_0.3.6    tidyselect_0.2.5  
+## [40] expm_0.999-3       coin_1.2-2         codetools_0.2-16  
+## [43] fansi_0.4.0        crayon_1.3.4       withr_2.1.2.9000  
+## [46] MASS_7.3-51.1      grid_3.5.2         nlme_3.1-137      
+## [49] jsonlite_1.6       gtable_0.2.0       scales_1.0.0      
+## [52] cli_1.0.1          stringi_1.3.1      xml2_1.2.0        
+## [55] generics_0.0.2     nortest_1.0-4      sandwich_2.5-0    
+## [58] TH.data_1.0-10     tools_3.5.2        glue_1.3.0        
+## [61] hms_0.4.2          survival_2.43-3    yaml_2.2.0        
+## [64] colorspace_1.4-0   rvest_0.3.2        knitr_1.21        
+## [67] haven_2.1.0        modeltools_0.2-22
 ```

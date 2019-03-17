@@ -2,7 +2,7 @@
 title: "Supplement 2"
 subtitle: "Descriptive statistics of baseline variables: SN:yes vs SN:no"
 author: "Peter Kamerman and Prinisha Pillay"
-date: "30 November 2018"
+date: "17 March 2019"
 ---
 
 
@@ -136,7 +136,7 @@ dim(data)
 ```
 
 ```
-## [1] 83 17
+## [1] 120  17
 ```
 
 ```r
@@ -171,7 +171,7 @@ head(data)
 ## 4 004              1         0        26    68.8     1.74 M    
 ## 5 005              1         0        37   107       1.6  F    
 ## 6 006              1         0        34    85.5     1.53 F    
-## # ... with 10 more variables: hivsn_present <fct>, CD4_cell.ul <dbl>,
+## # … with 10 more variables: hivsn_present <fct>, CD4_cell.ul <dbl>,
 ## #   viral_load_copies.ml <dbl>, consumes_alcohol <fct>,
 ## #   alcohol_units.week <int>, TB_current <fct>,
 ## #   pyridoxine_prophylaxis <fct>, rifafour_treatment <fct>,
@@ -186,13 +186,13 @@ tail(data)
 ## # A tibble: 6 x 17
 ##   ID    visit_number visit_day age_years mass_kg height_m sex  
 ##   <chr>        <int>     <int>     <dbl>   <dbl>    <dbl> <fct>
-## 1 078              1         0        29    54       1.53 F    
-## 2 079              1         0        44    58.8     1.52 F    
-## 3 080              1         0        50    53.2     1.51 F    
-## 4 081              1         0        43    49.5     1.62 F    
-## 5 082              1         0        40    82.8     1.62 F    
-## 6 083              1         0        46    73.3     1.66 F    
-## # ... with 10 more variables: hivsn_present <fct>, CD4_cell.ul <dbl>,
+## 1 115              1         0        29    55.1     1.66 M    
+## 2 116              1         0        30    93.7     1.55 F    
+## 3 117              1         0        30    58.2     1.6  F    
+## 4 118              1         0        30    61.2     1.64 F    
+## 5 119              1         0        22    62.7     1.63 F    
+## 6 120              1         0        58    71.2     1.74 M    
+## # … with 10 more variables: hivsn_present <fct>, CD4_cell.ul <dbl>,
 ## #   viral_load_copies.ml <dbl>, consumes_alcohol <fct>,
 ## #   alcohol_units.week <int>, TB_current <fct>,
 ## #   pyridoxine_prophylaxis <fct>, rifafour_treatment <fct>,
@@ -205,25 +205,25 @@ glimpse(data)
 ```
 
 ```
-## Observations: 83
+## Observations: 120
 ## Variables: 17
-## $ ID                     <chr> "001", "002", "003", "004", "005", "006...
-## $ visit_number           <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...
-## $ visit_day              <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
-## $ age_years              <dbl> 59, 23, 27, 26, 37, 34, 44, 34, 32, 29,...
-## $ mass_kg                <dbl> 41.4, 70.2, 75.0, 68.8, 107.0, 85.5, 12...
-## $ height_m               <dbl> 1.56, 1.56, 1.64, 1.74, 1.60, 1.53, 1.6...
-## $ sex                    <fct> F, F, M, M, F, F, F, F, F, M, M, M, M, ...
-## $ hivsn_present          <fct> no, no, no, no, no, no, no, no, no, no,...
-## $ CD4_cell.ul            <dbl> 35, 285, 28, 270, 310, 247, 439, 311, 1...
-## $ viral_load_copies.ml   <dbl> 6.103804, 5.041393, 5.181844, 2.484300,...
-## $ consumes_alcohol       <fct> no, no, no, no, yes, no, no, no, no, no...
-## $ alcohol_units.week     <int> 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 6, 9,...
-## $ TB_current             <fct> no, no, yes, no, no, no, no, no, no, no...
-## $ pyridoxine_prophylaxis <fct> no, no, yes, no, no, no, no, no, no, no...
-## $ rifafour_treatment     <fct> no, no, yes, no, no, no, no, no, no, no...
-## $ ARV_regimen            <fct> TDF_FTC_EFV, TDF_FTC_EFV, TDF_FTC_EFV, ...
-## $ sn_present             <ord> no, no, no, no, no, yes, yes, no, no, n...
+## $ ID                     <chr> "001", "002", "003", "004", "005", "006",…
+## $ visit_number           <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+## $ visit_day              <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+## $ age_years              <dbl> 59, 23, 27, 26, 37, 34, 44, 34, 32, 29, 2…
+## $ mass_kg                <dbl> 41.4, 70.2, 75.0, 68.8, 107.0, 85.5, 121.…
+## $ height_m               <dbl> 1.56, 1.56, 1.64, 1.74, 1.60, 1.53, 1.69,…
+## $ sex                    <fct> F, F, M, M, F, F, F, F, F, M, M, M, M, F,…
+## $ hivsn_present          <fct> no, no, no, no, no, no, no, no, no, no, n…
+## $ CD4_cell.ul            <dbl> 35, 285, 28, 270, 310, 247, 439, 311, 130…
+## $ viral_load_copies.ml   <dbl> 6.103804, 5.041393, 5.181844, 2.484300, 3…
+## $ consumes_alcohol       <fct> no, no, no, no, yes, no, no, no, no, no, …
+## $ alcohol_units.week     <int> 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 6, 9, 0…
+## $ TB_current             <fct> no, no, yes, no, no, no, no, no, no, no, …
+## $ pyridoxine_prophylaxis <fct> no, no, yes, no, no, no, no, no, no, no, …
+## $ rifafour_treatment     <fct> no, no, yes, no, no, no, no, no, no, no, …
+## $ ARV_regimen            <fct> TDF_FTC_EFV, TDF_FTC_EFV, TDF_FTC_EFV, TD…
+## $ sn_present             <ord> no, no, no, no, no, yes, yes, no, no, no,…
 ```
 
 ----
@@ -242,17 +242,17 @@ data %>%
 
 ```
 ## Skim summary statistics
-##  n obs: 83 
+##  n obs: 120 
 ##  n variables: 2 
 ##  group variables: sn_present 
 ## 
-## ── Variable type:numeric ──────────────────────────────────
-##  sn_present  variable missing complete  n  mean   sd p0  p25  p50   p75
-##         yes age_years       0       20 20 41.8  8.47 26 36.5 40.5 46.75
-##          no age_years       0       63 63 37.68 9.11 21 31   37   43.5 
+## ── Variable type:numeric ─────────────────────────────────────────────────────────────────────────────
+##  sn_present  variable missing complete   n  mean   sd p0   p25  p50   p75
+##         yes age_years       0       20  20 41.8  8.47 26 36.5  40.5 46.75
+##          no age_years       0      100 100 36.96 9.36 21 29.75 36   43   
 ##  p100     hist
 ##    59 ▂▅▅▇▅▂▃▃
-##    59 ▃▅▆▅▇▂▁▂
+##    59 ▃▆▇▅▇▂▂▂
 ```
 
 ```r
@@ -268,9 +268,9 @@ groupwiseMean(age_years ~ sn_present,
 ```
 
 ```
-##   sn_present  n Mean Conf.level Bca.lower Bca.upper
-## 1        yes 20 41.8       0.95      38.4      45.4
-## 2         no 63 37.7       0.95      35.5      39.9
+##   sn_present   n Mean Conf.level Bca.lower Bca.upper
+## 1        yes  20 41.8       0.95      38.5      45.4
+## 2         no 100 37.0       0.95      35.2      38.8
 ```
 
 ```r
@@ -300,21 +300,21 @@ boot_age <- boot.ci(boot(data = data,
                          R = 1999, 
                          stype = 'i'),
                     type = 'bca') %>%
-    data_frame(n = nrow(filter(data, !is.na(age_years))), 
-               Mean.difference = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3),
-               Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
-                                      yes = 'yes',
-                                      no = 'no')) %>%
+    tibble(n = nrow(filter(data, !is.na(age_years))), 
+           Mean.difference = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3),
+           Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
+                                  yes = 'yes',
+                                  no = 'no')) %>%
     .[1, -1] %>% 
     as.data.frame(); boot_age
 ```
 
 ```
-##    n Mean.difference Conf.level Bca.lower Bca.upper Includes.zero
-## 1 83           4.117       0.95    -0.044     8.764           yes
+##     n Mean.difference Conf.level Bca.lower Bca.upper Includes.zero
+## 1 120            4.84       0.95     0.651     9.181            no
 ```
 
 ```r
@@ -360,17 +360,17 @@ data %>%
 
 ```
 ## Skim summary statistics
-##  n obs: 83 
+##  n obs: 120 
 ##  n variables: 2 
 ##  group variables: sn_present 
 ## 
-## ── Variable type:numeric ──────────────────────────────────
-##  sn_present variable missing complete  n  mean    sd   p0   p25   p50
-##         yes  mass_kg       0       20 20 72.97 18.05 47.6 59.48 69.45
-##          no  mass_kg       0       63 63 63.93 14.75 41.4 52.8  63   
+## ── Variable type:numeric ─────────────────────────────────────────────────────────────────────────────
+##  sn_present variable missing complete   n  mean    sd   p0   p25   p50
+##         yes  mass_kg       0       20  20 72.97 18.05 47.6 59.48 69.45
+##          no  mass_kg       0      100 100 63.43 13.5  41.4 53.98 62.1 
 ##    p75  p100     hist
 ##  84.15 121.4 ▇▅▆▅▅▂▁▂
-##  73.4  107   ▇▇▆▇▅▃▁▁
+##  71.58 107   ▆▇▇▆▃▂▁▁
 ```
 
 ```r
@@ -386,9 +386,9 @@ groupwiseMean(mass_kg ~ sn_present,
 ```
 
 ```
-##   sn_present  n Mean Conf.level Bca.lower Bca.upper
-## 1        yes 20 73.0       0.95      66.2      82.0
-## 2         no 63 63.9       0.95      60.7      67.7
+##   sn_present   n Mean Conf.level Bca.lower Bca.upper
+## 1        yes  20 73.0       0.95      65.9      82.1
+## 2         no 100 63.4       0.95      61.0      66.2
 ```
 
 ```r
@@ -418,21 +418,21 @@ boot_mass <- boot.ci(boot(data = data,
                           R = 1999, 
                           stype = 'i'),
                      type = 'bca') %>%
-    data_frame(n = nrow(filter(data, !is.na(mass_kg))), 
-               Mean.difference = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3),
-               Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
-                                      yes = 'yes',
-                                      no = 'no')) %>%
+    tibble(n = nrow(filter(data, !is.na(mass_kg))), 
+           Mean.difference = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3),
+           Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
+                                  yes = 'yes',
+                                  no = 'no')) %>%
     .[1, -1] %>% 
     as.data.frame(); boot_mass
 ```
 
 ```
-##    n Mean.difference Conf.level Bca.lower Bca.upper Includes.zero
-## 1 83           9.035       0.95     0.526    18.004            no
+##     n Mean.difference Conf.level Bca.lower Bca.upper Includes.zero
+## 1 120           9.535       0.95     1.946    18.972            no
 ```
 
 ```r
@@ -479,21 +479,21 @@ data %>%
 
 ```
 ## Skim summary statistics
-##  n obs: 83 
+##  n obs: 120 
 ##  n variables: 3 
 ##  group variables: sn_present, sex 
 ## 
-## ── Variable type:numeric ──────────────────────────────────
+## ── Variable type:numeric ─────────────────────────────────────────────────────────────────────────────
 ##  sn_present sex variable missing complete  n mean    sd   p0  p25  p50
 ##         yes   F height_m       0        8  8 1.64 0.087 1.53 1.58 1.66
 ##         yes   M height_m       0       12 12 1.72 0.045 1.65 1.69 1.73
-##          no   F height_m       0       38 38 1.57 0.061 1.46 1.52 1.56
-##          no   M height_m       0       25 25 1.69 0.044 1.63 1.64 1.69
+##          no   F height_m       0       58 58 1.57 0.056 1.46 1.53 1.57
+##          no   M height_m       0       42 42 1.7  0.051 1.58 1.66 1.7 
 ##   p75 p100     hist
 ##  1.7  1.76 ▇▁▃▃▁▇▃▃
 ##  1.75 1.79 ▇▃▃▇▃▇▇▃
-##  1.62 1.68 ▂▇▇▇▃▇▅▅
-##  1.72 1.77 ▇▁▁▇▃▃▃▂
+##  1.62 1.68 ▂▆▇▆▅▇▆▃
+##  1.72 1.82 ▁▅▂▇▅▅▁▁
 ```
 
 ```r
@@ -510,10 +510,10 @@ groupwiseMean(height_m ~ sn_present + sex,
 
 ```
 ##   sn_present sex  n Boot.mean Conf.level Bca.lower Bca.upper
-## 1        yes   F  8      1.64       0.95      1.58      1.70
+## 1        yes   F  8      1.64       0.95      1.58      1.69
 ## 2        yes   M 12      1.72       0.95      1.69      1.74
-## 3         no   F 38      1.57       0.95      1.55      1.58
-## 4         no   M 25      1.69       0.95      1.67      1.71
+## 3         no   F 58      1.57       0.95      1.56      1.58
+## 4         no   M 42      1.70       0.95      1.68      1.71
 ```
 
 ```r
@@ -547,21 +547,21 @@ boot_hm <- boot.ci(boot(data = data[data$sex == 'M', ],
                         R = 1999, 
                         stype = 'i'),
                    type = 'bca') %>%
-    data_frame(n = nrow(filter(data, !is.na(height_m) & sex == 'M')), 
-               Mean.difference = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3),
-               Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
-                                      yes = 'yes',
-                                      no = 'no')) %>%
+    tibble(n = nrow(filter(data, !is.na(height_m) & sex == 'M')), 
+           Mean.difference = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3),
+           Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
+                                  yes = 'yes',
+                                  no = 'no')) %>%
     .[1, -1] %>% 
     as.data.frame(); boot_hm
 ```
 
 ```
 ##    n Mean.difference Conf.level Bca.lower Bca.upper Includes.zero
-## 1 37           0.028       0.95    -0.007     0.056           yes
+## 1 54           0.025       0.95    -0.005     0.054           yes
 ```
 
 ```r
@@ -607,26 +607,26 @@ boot_hf <- boot.ci(boot(data = data[data$sex == 'F', ],
                         R = 1999, 
                         stype = 'i'),
                    type = 'bca') %>%
-    data_frame(n = nrow(filter(data, !is.na(height_m) & sex == 'F')), 
-               Mean.difference = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3),
-               Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
-                                      yes = 'yes',
-                                      no = 'no')) %>%
+    tibble(n = nrow(filter(data, !is.na(height_m) & sex == 'F')), 
+           Mean.difference = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3),
+           Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
+                                  yes = 'yes',
+                                  no = 'no')) %>%
     .[1, -1] %>% 
     as.data.frame(); boot_hf
 ```
 
 ```
 ##    n Mean.difference Conf.level Bca.lower Bca.upper Includes.zero
-## 1 46           0.078       0.95     0.005     0.139            no
+## 1 66           0.072       0.95      0.01     0.131            no
 ```
 
 ```r
 ggplot(data = boot_hf) +
-     geom_hline(yintercept = 0,
+    geom_hline(yintercept = 0,
                linetype = 2) +
     geom_point(aes(x = 'x',
                    y = Mean.difference),
@@ -667,14 +667,14 @@ data %>%
 
 ```
 ## Skim summary statistics
-##  n obs: 83 
+##  n obs: 120 
 ##  n variables: 2 
 ##  group variables: sn_present 
 ## 
-## ── Variable type:factor ───────────────────────────────────
-##  sn_present variable missing complete  n n_unique          top_counts
-##         yes      sex       0       20 20        2  M: 12, F: 8, NA: 0
-##          no      sex       0       63 63        2 F: 38, M: 25, NA: 0
+## ── Variable type:factor ──────────────────────────────────────────────────────────────────────────────
+##  sn_present variable missing complete   n n_unique          top_counts
+##         yes      sex       0       20  20        2  M: 12, F: 8, NA: 0
+##          no      sex       0      100 100        2 F: 58, M: 42, NA: 0
 ##  ordered
 ##    FALSE
 ##    FALSE
@@ -691,13 +691,13 @@ sn_yes <- boot.ci(boot(data = data[data$sn_present == 'yes', ],
                        R = 1999, 
                        stype = 'i'), 
                   type = 'bca') %>% 
-    data_frame(sn_present = 'yes',
-               n = nrow(filter(data, !is.na(sex) & 
-                                   sn_present == 'yes')), 
-               Proportion = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3)) %>%
+    tibble(sn_present = 'yes',
+           n = nrow(filter(data, !is.na(sex) & 
+                                sn_present == 'yes')), 
+           Proportion = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3)) %>%
     .[1, -1] %>% 
     as.data.frame()
 
@@ -709,13 +709,13 @@ sn_no <- boot.ci(boot(data = data[data$sn_present == 'no', ],
                       R = 1999, 
                       stype = 'i'), 
                  type = 'bca') %>% 
-    data_frame(sn_present = 'no',
-               n = nrow(filter(data, !is.na(sex) & 
-                                   sn_present == 'yes')), 
-               Proportion = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3)) %>%
+    tibble(sn_present = 'no',
+           n = nrow(filter(data, !is.na(sex) & 
+                                sn_present == 'yes')), 
+           Proportion = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3)) %>%
     .[1, -1] %>% 
     as.data.frame()
 
@@ -726,8 +726,8 @@ sn_yes %>%
 
 ```
 ##   sn_present  n Proportion Conf.level Bca.lower Bca.upper
-## 1        yes 20      0.400       0.95      0.15     0.600
-## 2         no 20      0.603       0.95      0.46     0.698
+## 1        yes 20       0.40       0.95      0.15      0.60
+## 2         no 20       0.58       0.95      0.47      0.66
 ```
 
 ```r
@@ -759,21 +759,21 @@ boot_sex <- boot.ci(boot(data = data,
                          R = 1999, 
                          stype = 'i'),
                     type = 'bca') %>%
-    data_frame(n = nrow(filter(data, !is.na(sex))), 
-               Odds.ratio = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3),
-               Includes.one = ifelse(Bca.lower <= 1 & Bca.upper >= 1,
-                                      yes = 'yes',
-                                      no = 'no')) %>%
+    tibble(n = nrow(filter(data, !is.na(sex))), 
+           Odds.ratio = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3),
+           Includes.one = ifelse(Bca.lower <= 1 & Bca.upper >= 1,
+                                 yes = 'yes',
+                                 no = 'no')) %>%
     .[1, -1] %>% 
     as.data.frame(); boot_sex
 ```
 
 ```
-##    n Odds.ratio Conf.level Bca.lower Bca.upper Includes.one
-## 1 83      0.443       0.95      0.13     1.303          yes
+##     n Odds.ratio Conf.level Bca.lower Bca.upper Includes.one
+## 1 120      0.486       0.95      0.15     1.374          yes
 ```
 
 ```r
@@ -819,17 +819,17 @@ data %>%
 
 ```
 ## Skim summary statistics
-##  n obs: 83 
+##  n obs: 120 
 ##  n variables: 2 
 ##  group variables: sn_present 
 ## 
-## ── Variable type:numeric ──────────────────────────────────
-##  sn_present    variable missing complete  n   mean     sd p0   p25   p50
-##         yes CD4_cell.ul       0       20 20 223.55 176.37  4  71.5 200.5
-##          no CD4_cell.ul       0       63 63 249.78 183.25  1 127   235  
+## ── Variable type:numeric ─────────────────────────────────────────────────────────────────────────────
+##  sn_present    variable missing complete   n   mean     sd p0   p25   p50
+##         yes CD4_cell.ul       0       20  20 223.55 176.37  4  71.5 200.5
+##          no CD4_cell.ul       1       99 100 274.41 233.13  1 123   234  
 ##     p75 p100     hist
 ##  308.25  673 ▇▃▃▃▂▂▁▁
-##  317     867 ▅▇▇▃▁▁▁▁
+##  345    1347 ▇▇▃▁▁▁▁▁
 ```
 
 ```r
@@ -837,7 +837,7 @@ data %>%
 ## Method = BCa, Resamples = 1999
 set.seed(1234)
 groupwiseMedian(CD4_cell.ul ~ sn_present, 
-                data = data, 
+                data = data %>% filter(!is.na(CD4_cell.ul)), 
                 R = 1999,
                 boot = TRUE, 
                 bca = TRUE)[c(1:3, 5, 6, 7)]
@@ -845,8 +845,8 @@ groupwiseMedian(CD4_cell.ul ~ sn_present,
 
 ```
 ##   sn_present  n Median Conf.level Bca.lower Bca.upper
-## 1        yes 20    200       0.95      74.4       292
-## 2         no 63    235       0.95     149.0       285
+## 1        yes 20    200       0.95        74       290
+## 2         no 99    234       0.95       163       285
 ```
 
 ```r
@@ -876,21 +876,21 @@ boot_cd4 <- boot.ci(boot(data = data,
                          R = 1999, 
                          stype = 'i'),
                     type = 'bca') %>%
-    data_frame(n = nrow(filter(data, !is.na(CD4_cell.ul))), 
-               Median.difference = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3),
-               Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
-                                      yes = 'yes',
-                                      no = 'no')) %>%
+    tibble(n = nrow(filter(data, !is.na(CD4_cell.ul))), 
+           Median.difference = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3),
+           Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
+                                  yes = 'yes',
+                                  no = 'no')) %>%
     .[1, -1] %>% 
     as.data.frame(); boot_cd4 
 ```
 
 ```
-##    n Median.difference Conf.level Bca.lower Bca.upper Includes.zero
-## 1 83             -34.5       0.95  -181.037   108.777           yes
+##     n Median.difference Conf.level Bca.lower Bca.upper Includes.zero
+## 1 119             -33.5       0.95      -180        87           yes
 ```
 
 ```r
@@ -936,17 +936,17 @@ data %>%
 
 ```
 ## Skim summary statistics
-##  n obs: 83 
+##  n obs: 120 
 ##  n variables: 2 
 ##  group variables: sn_present 
 ## 
-## ── Variable type:numeric ──────────────────────────────────
-##  sn_present             variable missing complete  n mean   sd   p0  p25
-##         yes viral_load_copies.ml       1       19 20 3.59 1.59 1.83 2.22
-##          no viral_load_copies.ml       5       58 63 3.37 1.28 1.7  2.25
+## ── Variable type:numeric ─────────────────────────────────────────────────────────────────────────────
+##  sn_present             variable missing complete   n mean   sd   p0  p25
+##         yes viral_load_copies.ml       1       19  20 3.59 1.59 1.83 2.22
+##          no viral_load_copies.ml      11       89 100 3.45 1.26 1.7  2.63
 ##   p50  p75 p100     hist
 ##  3    4.73 6.45 ▇▃▂▃▁▁▂▃
-##  3.13 4.22 6.51 ▇▅▆▂▅▂▁▂
+##  3.16 4.26 6.51 ▇▆▇▂▅▅▁▂
 ```
 
 ```r
@@ -963,7 +963,7 @@ groupwiseMedian(viral_load_copies.ml ~ sn_present,
 ```
 ##   sn_present  n Median Conf.level Bca.lower Bca.upper
 ## 1        yes 19   3.00       0.95      2.08      4.08
-## 2         no 58   3.13       0.95      2.76      3.52
+## 2         no 89   3.16       0.95      2.90      3.34
 ```
 
 ```r
@@ -994,21 +994,21 @@ boot_vl <- boot.ci(boot(data = data,
                         R = 1999, 
                         stype = 'i'),
                    type = 'bca') %>%
-    data_frame(n = nrow(filter(data, !is.na(viral_load_copies.ml))), 
-               Median.difference = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3),
-               Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
-                                      yes = 'yes',
-                                      no = 'no')) %>%
+    tibble(n = nrow(filter(data, !is.na(viral_load_copies.ml))), 
+           Median.difference = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3),
+           Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
+                                  yes = 'yes',
+                                  no = 'no')) %>%
     .[1, -1] %>% 
     as.data.frame(); boot_vl
 ```
 
 ```
-##    n Median.difference Conf.level Bca.lower Bca.upper Includes.zero
-## 1 77            -0.132       0.95    -1.176      0.95           yes
+##     n Median.difference Conf.level Bca.lower Bca.upper Includes.zero
+## 1 108             -0.16       0.95    -1.164     1.044           yes
 ```
 
 ```r
@@ -1059,21 +1059,21 @@ data %>%
 
 ```
 ## Skim summary statistics
-##  n obs: 83 
+##  n obs: 120 
 ##  n variables: 3 
 ##  group variables: sn_present, drinks_alcohol 
 ## 
-## ── Variable type:integer ──────────────────────────────────
-##  sn_present drinks_alcohol           variable missing complete  n mean
-##         yes             No alcohol_units.week       0       18 18  0  
-##         yes            Yes alcohol_units.week       0        2  2  7.5
-##          no             No alcohol_units.week       0       49 49  0  
-##          no            Yes alcohol_units.week       0       14 14 11  
-##    sd p0  p25 p50   p75 p100     hist
-##  0     0 0    0    0       0 ▁▁▁▇▁▁▁▁
-##  4.95  4 5.75 7.5  9.25   11 ▇▁▁▁▁▁▁▇
-##  0     0 0    0    0       0 ▁▁▁▇▁▁▁▁
-##  7.92  3 4.5  9   15      29 ▇▅▂▃▂▂▁▂
+## ── Variable type:integer ─────────────────────────────────────────────────────────────────────────────
+##  sn_present drinks_alcohol           variable missing complete  n  mean
+##         yes             No alcohol_units.week       0       18 18  0   
+##         yes            Yes alcohol_units.week       0        2  2  7.5 
+##          no             No alcohol_units.week       0       75 75  0   
+##          no            Yes alcohol_units.week       0       25 25 24.96
+##     sd p0  p25  p50   p75 p100     hist
+##   0     0 0     0    0       0 ▁▁▁▇▁▁▁▁
+##   4.95  4 5.75  7.5  9.25   11 ▇▁▁▁▁▁▁▇
+##   0     0 0     0    0       0 ▁▁▁▇▁▁▁▁
+##  26     3 9    15   29      95 ▇▆▂▁▁▁▁▂
 ```
 
 ```r
@@ -1083,15 +1083,15 @@ data %>%
 set.seed(1234)
 groupwiseMedian(alcohol_units.week ~ sn_present, 
                 data = data[data$alcohol_units.week > 0, ], # Remove none drinkers
-                R = 1999, 
+                R = 100000, # Had to increase this one to avoid extreme zero-order stats
                 boot = TRUE, 
                 bca = TRUE)[c(1:3, 5, 6, 7)]
 ```
 
 ```
 ##   sn_present  n Median Conf.level Bca.lower Bca.upper
-## 1        yes  2    7.5       0.95      4.00       7.5
-## 2         no 14    9.0       0.95      3.13      15.0
+## 1        yes  2    7.5       0.95         4       7.5
+## 2         no 25   15.0       0.95         4      15.0
 ```
 
 ```r
@@ -1130,17 +1130,17 @@ data %>%
 
 ```
 ## Skim summary statistics
-##  n obs: 83 
+##  n obs: 120 
 ##  n variables: 2 
 ##  group variables: sn_present 
 ## 
-## ── Variable type:factor ───────────────────────────────────
-##  sn_present   variable missing complete  n n_unique            top_counts
-##         yes TB_current       0       20 20        2 no: 11, yes: 9, NA: 0
-##          no TB_current       0       63 63        2 no: 56, yes: 7, NA: 0
-##  ordered
-##    FALSE
-##    FALSE
+## ── Variable type:factor ──────────────────────────────────────────────────────────────────────────────
+##  sn_present   variable missing complete   n n_unique
+##         yes TB_current       0       20  20        2
+##          no TB_current       0      100 100        2
+##              top_counts ordered
+##   no: 11, yes: 9, NA: 0   FALSE
+##  no: 89, yes: 11, NA: 0   FALSE
 ```
 
 ```r
@@ -1154,13 +1154,13 @@ sn_yes <- boot.ci(boot(data = data[data$sn_present == 'yes', ],
                        R = 1999, 
                        stype = 'i'), 
                   type = 'bca') %>% 
-    data_frame(sn_present = 'yes',
-               n = nrow(filter(data, !is.na(TB_current) & 
-                                   sn_present == 'yes')), 
-               Proportion = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3)) %>%
+    tibble(sn_present = 'yes',
+           n = nrow(filter(data, !is.na(TB_current) & 
+                               sn_present == 'yes')),
+           Proportion = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3)) %>%
     .[1, -1] %>% 
     as.data.frame()
 
@@ -1172,13 +1172,13 @@ sn_no <- boot.ci(boot(data = data[data$sn_present == 'no', ],
                       R = 1999, 
                       stype = 'i'), 
                  type = 'bca') %>% 
-    data_frame(sn_present = 'no',
-               n = nrow(filter(data, !is.na(TB_current) & 
-                                   sn_present == 'no')), 
-               Proportion = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3)) %>%
+    tibble(sn_present = 'no',
+           n = nrow(filter(data, !is.na(TB_current) & 
+                               sn_present == 'no')), 
+           Proportion = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3)) %>%
     .[1, -1] %>% 
     as.data.frame()
 
@@ -1188,9 +1188,9 @@ sn_yes %>%
 ```
 
 ```
-##   sn_present  n Proportion Conf.level Bca.lower Bca.upper
-## 1        yes 20      0.450       0.95     0.200      0.60
-## 2         no 63      0.111       0.95     0.032      0.19
+##   sn_present   n Proportion Conf.level Bca.lower Bca.upper
+## 1        yes  20       0.45       0.95      0.20      0.60
+## 2         no 100       0.11       0.95      0.05      0.17
 ```
 
 ```r
@@ -1223,21 +1223,21 @@ boot_tb <- boot.ci(boot(data = data,
                         R = 1999, 
                         stype = 'i'),
                    type = 'bca') %>%
-    data_frame(n = nrow(filter(data, !is.na(TB_current))), 
-               Odds.ratio = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3),
-               Includes.zero = ifelse(Bca.lower <= 1 & Bca.upper >= 1,
-                                      yes = 'yes',
-                                      no = 'no')) %>%
+    tibble(n = nrow(filter(data, !is.na(TB_current))), 
+           Odds.ratio = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3),
+           Includes.zero = ifelse(Bca.lower <= 1 & Bca.upper >= 1,
+                                  yes = 'yes',
+                                  no = 'no')) %>%
     .[1, -1] %>% 
     as.data.frame(); boot_tb
 ```
 
 ```
-##    n Odds.ratio Conf.level Bca.lower Bca.upper Includes.zero
-## 1 83      0.157       0.95     0.046     0.586            no
+##     n Odds.ratio Conf.level Bca.lower Bca.upper Includes.zero
+## 1 120      0.155       0.95     0.051      0.47            no
 ```
 
 ```r
@@ -1293,23 +1293,23 @@ data %>%
 
 ```
 ## Skim summary statistics
-##  n obs: 83 
+##  n obs: 120 
 ##  n variables: 3 
 ##  group variables: pyridoxine_prophylaxis, sn_present 
 ## 
-## ── Variable type:factor ───────────────────────────────────
+## ── Variable type:factor ──────────────────────────────────────────────────────────────────────────────
 ##  pyridoxine_prophylaxis sn_present           variable missing complete  n
 ##                      no        yes rifafour_treatment       0       12 12
-##                      no         no rifafour_treatment       0       54 54
+##                      no         no rifafour_treatment       0       75 75
 ##                     yes        yes rifafour_treatment       0        8  8
-##                     yes         no rifafour_treatment       0        7  7
-##             prophylaxis         no rifafour_treatment       0        2  2
+##                     yes         no rifafour_treatment       0       11 11
+##             prophylaxis         no rifafour_treatment       0       14 14
 ##  n_unique                    top_counts ordered
 ##         1 no: 12, yes: 0, pro: 0, NA: 0   FALSE
-##         1 no: 54, yes: 0, pro: 0, NA: 0   FALSE
+##         1 no: 75, yes: 0, pro: 0, NA: 0   FALSE
 ##         1  yes: 8, no: 0, pro: 0, NA: 0   FALSE
-##         1  yes: 7, no: 0, pro: 0, NA: 0   FALSE
-##         1  pro: 2, no: 0, yes: 0, NA: 0   FALSE
+##         1 yes: 11, no: 0, pro: 0, NA: 0   FALSE
+##         1 pro: 14, no: 0, yes: 0, NA: 0   FALSE
 ```
 
 ```r
@@ -1319,7 +1319,7 @@ round(mean(data$rifafour_treatment == 'prophylaxis'), 3)
 ```
 
 ```
-## [1] 0.024
+## [1] 0.117
 ```
 
 ```r
@@ -1338,13 +1338,13 @@ sn_yes <- boot.ci(boot(data = data_tb[data_tb$sn_present == 'yes', ],
                        R = 1999, 
                        stype = 'i'), 
                   type = 'bca') %>% 
-    data_frame(sn_present = 'yes',
-               n = nrow(filter(data_tb, !is.na(rifafour_treatment) & 
-                                   sn_present == 'yes')), 
-               Proportion = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3)) %>%
+    tibble(sn_present = 'yes',
+           n = nrow(filter(data_tb, !is.na(rifafour_treatment) & 
+                               sn_present == 'yes')), 
+           Proportion = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3)) %>%
     .[1, -1] %>% 
     as.data.frame()
 
@@ -1356,13 +1356,13 @@ sn_no <- boot.ci(boot(data = data_tb[data_tb$sn_present == 'no', ],
                       R = 1999, 
                       stype = 'i'), 
                  type = 'bca') %>% 
-    data_frame(sn_present = 'no',
-               n = nrow(filter(data_tb, !is.na(rifafour_treatment) & 
-                                   sn_present == 'no')), 
-               Proportion = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3)) %>%
+    tibble(sn_present = 'no',
+           n = nrow(filter(data_tb, !is.na(rifafour_treatment) & 
+                               sn_present == 'no')), 
+           Proportion = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3)) %>%
     .[1, -1] %>% 
     as.data.frame()
 
@@ -1372,9 +1372,9 @@ sn_yes %>%
 ```
 
 ```
-##   sn_present  n Proportion Conf.level Bca.lower Bca.upper
-## 1        yes 20      0.400       0.95     0.150     0.550
-## 2         no 63      0.143       0.95     0.063     0.222
+##   sn_present   n Proportion Conf.level Bca.lower Bca.upper
+## 1        yes  20       0.40       0.95      0.15      0.55
+## 2         no 100       0.25       0.95      0.16      0.33
 ```
 
 ```r
@@ -1407,21 +1407,21 @@ boot_tb2 <- boot.ci(boot(data = data_tb,
                          R = 1999, 
                          stype = 'i'),
                     type = 'bca') %>%
-    data_frame(n = nrow(filter(data_tb, !is.na(rifafour_treatment))), 
-               Odds.ratio = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3),
-               Includes.zero = ifelse(Bca.lower <= 1 & Bca.upper >= 1,
-                                      yes = 'yes',
-                                      no = 'no')) %>%
+    tibble(n = nrow(filter(data_tb, !is.na(rifafour_treatment))), 
+           Odds.ratio = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3),
+           Includes.zero = ifelse(Bca.lower <= 1 & Bca.upper >= 1,
+                                  yes = 'yes',
+                                  no = 'no')) %>%
     .[1, -1] %>% 
     as.data.frame(); boot_tb2
 ```
 
 ```
-##    n Odds.ratio Conf.level Bca.lower Bca.upper Includes.zero
-## 1 83      0.255       0.95      0.08     0.943            no
+##     n Odds.ratio Conf.level Bca.lower Bca.upper Includes.zero
+## 1 120      0.503       0.95     0.168     1.456           yes
 ```
 
 ```r
@@ -1464,49 +1464,49 @@ sessionInfo()
 ```
 
 ```
-## R version 3.5.1 (2018-07-02)
+## R version 3.5.2 (2018-12-20)
 ## Platform: x86_64-apple-darwin15.6.0 (64-bit)
-## Running under: macOS  10.14.1
+## Running under: macOS Mojave 10.14.3
 ## 
 ## Matrix products: default
 ## BLAS: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRblas.0.dylib
 ## LAPACK: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRlapack.dylib
 ## 
 ## locale:
-## [1] en_GB.UTF-8/en_GB.UTF-8/en_GB.UTF-8/C/en_GB.UTF-8/en_GB.UTF-8
+## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
 ## 
 ## attached base packages:
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] bindrcpp_0.2.2   skimr_1.0.3      rcompanion_2.0.3 boot_1.3-20     
-##  [5] forcats_0.3.0    stringr_1.3.1    dplyr_0.7.8      purrr_0.2.5     
-##  [9] readr_1.2.1      tidyr_0.8.2      tibble_1.4.2     ggplot2_3.1.0   
-## [13] tidyverse_1.2.1  magrittr_1.5    
+##  [1] skimr_1.0.5      rcompanion_2.1.1 boot_1.3-20      forcats_0.4.0   
+##  [5] stringr_1.4.0    dplyr_0.8.0.1    purrr_0.3.1      readr_1.3.1     
+##  [9] tidyr_0.8.3      tibble_2.0.1     ggplot2_3.1.0    tidyverse_1.2.1 
+## [13] magrittr_1.5    
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] httr_1.3.1         jsonlite_1.5       splines_3.5.1     
-##  [4] modelr_0.1.2       assertthat_0.2.0   expm_0.999-3      
-##  [7] stats4_3.5.1       coin_1.2-2         cellranger_1.1.0  
-## [10] yaml_2.2.0         pillar_1.3.0       backports_1.1.2   
-## [13] lattice_0.20-38    glue_1.3.0         digest_0.6.18     
-## [16] rvest_0.3.2        colorspace_1.3-2   sandwich_2.5-0    
-## [19] htmltools_0.3.6    Matrix_1.2-15      plyr_1.8.4        
-## [22] pkgconfig_2.0.2    broom_0.5.0        haven_2.0.0       
-## [25] EMT_1.1            mvtnorm_1.0-8      scales_1.0.0      
-## [28] manipulate_1.0.1   TH.data_1.0-9      withr_2.1.2.9000  
-## [31] lazyeval_0.2.1     cli_1.0.1          survival_2.43-3   
-## [34] crayon_1.3.4       readxl_1.1.0       evaluate_0.12     
-## [37] fansi_0.4.0        nlme_3.1-137       MASS_7.3-51.1     
-## [40] xml2_1.2.0         foreign_0.8-71     tools_3.5.1       
-## [43] hms_0.4.2          multcomp_1.4-8     munsell_0.5.0     
-## [46] compiler_3.5.1     multcompView_0.1-7 rlang_0.3.0.1     
-## [49] grid_3.5.1         rstudioapi_0.8     labeling_0.3      
-## [52] rmarkdown_1.10     DescTools_0.99.26  gtable_0.2.0      
-## [55] codetools_0.2-15   R6_2.3.0           zoo_1.8-4         
-## [58] lubridate_1.7.4    knitr_1.20         utf8_1.1.4        
-## [61] bindr_0.1.1        nortest_1.0-4      rprojroot_1.3-2   
-## [64] modeltools_0.2-22  stringi_1.2.4      Rcpp_1.0.0        
-## [67] tidyselect_0.2.5   lmtest_0.9-36
+##  [1] Rcpp_1.0.0         lubridate_1.7.4    mvtnorm_1.0-9     
+##  [4] lattice_0.20-38    multcompView_0.1-7 zoo_1.8-4         
+##  [7] utf8_1.1.4         lmtest_0.9-36      assertthat_0.2.0  
+## [10] digest_0.6.18      R6_2.4.0           cellranger_1.1.0  
+## [13] plyr_1.8.4         backports_1.1.3    EMT_1.1           
+## [16] stats4_3.5.2       evaluate_0.13      httr_1.4.0        
+## [19] pillar_1.3.1       rlang_0.3.1        lazyeval_0.2.1    
+## [22] multcomp_1.4-8     readxl_1.3.0       rstudioapi_0.9.0  
+## [25] Matrix_1.2-15      rmarkdown_1.11     labeling_0.3      
+## [28] splines_3.5.2      foreign_0.8-71     munsell_0.5.0     
+## [31] broom_0.5.1        compiler_3.5.2     modelr_0.1.4      
+## [34] xfun_0.5           pkgconfig_2.0.2    manipulate_1.0.1  
+## [37] DescTools_0.99.27  htmltools_0.3.6    tidyselect_0.2.5  
+## [40] expm_0.999-3       coin_1.2-2         codetools_0.2-16  
+## [43] fansi_0.4.0        crayon_1.3.4       withr_2.1.2.9000  
+## [46] MASS_7.3-51.1      grid_3.5.2         nlme_3.1-137      
+## [49] jsonlite_1.6       gtable_0.2.0       scales_1.0.0      
+## [52] cli_1.0.1          stringi_1.3.1      xml2_1.2.0        
+## [55] generics_0.0.2     nortest_1.0-4      sandwich_2.5-0    
+## [58] TH.data_1.0-10     tools_3.5.2        glue_1.3.0        
+## [61] hms_0.4.2          survival_2.43-3    yaml_2.2.0        
+## [64] colorspace_1.4-0   rvest_0.3.2        knitr_1.21        
+## [67] haven_2.1.0        modeltools_0.2-22
 ```
 

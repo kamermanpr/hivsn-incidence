@@ -200,14 +200,14 @@ boot_age <- boot.ci(boot(data = data,
                          R = 1999, 
                          stype = 'i'),
                     type = 'bca') %>%
-    data_frame(n = nrow(filter(data, !is.na(age_years))), 
-               Mean.difference = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3),
-               Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
-                                      yes = 'yes',
-                                      no = 'no')) %>%
+    tibble(n = nrow(filter(data, !is.na(age_years))), 
+           Mean.difference = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3),
+           Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
+                                  yes = 'yes',
+                                  no = 'no')) %>%
     .[1, -1] %>% 
     as.data.frame(); boot_age
 
@@ -279,14 +279,14 @@ boot_mass <- boot.ci(boot(data = data,
                           R = 1999, 
                           stype = 'i'),
                      type = 'bca') %>%
-    data_frame(n = nrow(filter(data, !is.na(mass_kg))), 
-               Mean.difference = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3),
-               Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
-                                      yes = 'yes',
-                                      no = 'no')) %>%
+    tibble(n = nrow(filter(data, !is.na(mass_kg))), 
+           Mean.difference = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3),
+           Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
+                                  yes = 'yes',
+                                  no = 'no')) %>%
     .[1, -1] %>% 
     as.data.frame(); boot_mass
 
@@ -363,14 +363,14 @@ boot_hm <- boot.ci(boot(data = data[data$sex == 'M', ],
                         R = 1999, 
                         stype = 'i'),
                    type = 'bca') %>%
-    data_frame(n = nrow(filter(data, !is.na(height_m) & sex == 'M')), 
-               Mean.difference = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3),
-               Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
-                                      yes = 'yes',
-                                      no = 'no')) %>%
+    tibble(n = nrow(filter(data, !is.na(height_m) & sex == 'M')), 
+           Mean.difference = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3),
+           Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
+                                  yes = 'yes',
+                                  no = 'no')) %>%
     .[1, -1] %>% 
     as.data.frame(); boot_hm
 
@@ -412,19 +412,19 @@ boot_hf <- boot.ci(boot(data = data[data$sex == 'F', ],
                         R = 1999, 
                         stype = 'i'),
                    type = 'bca') %>%
-    data_frame(n = nrow(filter(data, !is.na(height_m) & sex == 'F')), 
-               Mean.difference = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3),
-               Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
-                                      yes = 'yes',
-                                      no = 'no')) %>%
+    tibble(n = nrow(filter(data, !is.na(height_m) & sex == 'F')), 
+           Mean.difference = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3),
+           Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
+                                  yes = 'yes',
+                                  no = 'no')) %>%
     .[1, -1] %>% 
     as.data.frame(); boot_hf
 
 ggplot(data = boot_hf) +
-     geom_hline(yintercept = 0,
+    geom_hline(yintercept = 0,
                linetype = 2) +
     geom_point(aes(x = 'x',
                    y = Mean.difference),
@@ -469,13 +469,13 @@ sn_yes <- boot.ci(boot(data = data[data$sn_present == 'yes', ],
                        R = 1999, 
                        stype = 'i'), 
                   type = 'bca') %>% 
-    data_frame(sn_present = 'yes',
-               n = nrow(filter(data, !is.na(sex) & 
-                                   sn_present == 'yes')), 
-               Proportion = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3)) %>%
+    tibble(sn_present = 'yes',
+           n = nrow(filter(data, !is.na(sex) & 
+                                sn_present == 'yes')), 
+           Proportion = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3)) %>%
     .[1, -1] %>% 
     as.data.frame()
 
@@ -487,13 +487,13 @@ sn_no <- boot.ci(boot(data = data[data$sn_present == 'no', ],
                       R = 1999, 
                       stype = 'i'), 
                  type = 'bca') %>% 
-    data_frame(sn_present = 'no',
-               n = nrow(filter(data, !is.na(sex) & 
-                                   sn_present == 'yes')), 
-               Proportion = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3)) %>%
+    tibble(sn_present = 'no',
+           n = nrow(filter(data, !is.na(sex) & 
+                                sn_present == 'yes')), 
+           Proportion = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3)) %>%
     .[1, -1] %>% 
     as.data.frame()
 
@@ -525,14 +525,14 @@ boot_sex <- boot.ci(boot(data = data,
                          R = 1999, 
                          stype = 'i'),
                     type = 'bca') %>%
-    data_frame(n = nrow(filter(data, !is.na(sex))), 
-               Odds.ratio = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3),
-               Includes.one = ifelse(Bca.lower <= 1 & Bca.upper >= 1,
-                                      yes = 'yes',
-                                      no = 'no')) %>%
+    tibble(n = nrow(filter(data, !is.na(sex))), 
+           Odds.ratio = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3),
+           Includes.one = ifelse(Bca.lower <= 1 & Bca.upper >= 1,
+                                 yes = 'yes',
+                                 no = 'no')) %>%
     .[1, -1] %>% 
     as.data.frame(); boot_sex
 
@@ -576,7 +576,7 @@ data %>%
 ## Method = BCa, Resamples = 1999
 set.seed(1234)
 groupwiseMedian(CD4_cell.ul ~ sn_present, 
-                data = data, 
+                data = data %>% filter(!is.na(CD4_cell.ul)), 
                 R = 1999,
                 boot = TRUE, 
                 bca = TRUE)[c(1:3, 5, 6, 7)]
@@ -602,14 +602,14 @@ boot_cd4 <- boot.ci(boot(data = data,
                          R = 1999, 
                          stype = 'i'),
                     type = 'bca') %>%
-    data_frame(n = nrow(filter(data, !is.na(CD4_cell.ul))), 
-               Median.difference = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3),
-               Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
-                                      yes = 'yes',
-                                      no = 'no')) %>%
+    tibble(n = nrow(filter(data, !is.na(CD4_cell.ul))), 
+           Median.difference = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3),
+           Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
+                                  yes = 'yes',
+                                  no = 'no')) %>%
     .[1, -1] %>% 
     as.data.frame(); boot_cd4 
 
@@ -681,14 +681,14 @@ boot_vl <- boot.ci(boot(data = data,
                         R = 1999, 
                         stype = 'i'),
                    type = 'bca') %>%
-    data_frame(n = nrow(filter(data, !is.na(viral_load_copies.ml))), 
-               Median.difference = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3),
-               Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
-                                      yes = 'yes',
-                                      no = 'no')) %>%
+    tibble(n = nrow(filter(data, !is.na(viral_load_copies.ml))), 
+           Median.difference = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3),
+           Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
+                                  yes = 'yes',
+                                  no = 'no')) %>%
     .[1, -1] %>% 
     as.data.frame(); boot_vl
 
@@ -739,7 +739,7 @@ data %>%
 set.seed(1234)
 groupwiseMedian(alcohol_units.week ~ sn_present, 
                 data = data[data$alcohol_units.week > 0, ], # Remove none drinkers
-                R = 1999, 
+                R = 100000, # Had to increase this one to avoid extreme zero-order stats
                 boot = TRUE, 
                 bca = TRUE)[c(1:3, 5, 6, 7)]
 
@@ -780,13 +780,13 @@ sn_yes <- boot.ci(boot(data = data[data$sn_present == 'yes', ],
                        R = 1999, 
                        stype = 'i'), 
                   type = 'bca') %>% 
-    data_frame(sn_present = 'yes',
-               n = nrow(filter(data, !is.na(TB_current) & 
-                                   sn_present == 'yes')), 
-               Proportion = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3)) %>%
+    tibble(sn_present = 'yes',
+           n = nrow(filter(data, !is.na(TB_current) & 
+                               sn_present == 'yes')),
+           Proportion = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3)) %>%
     .[1, -1] %>% 
     as.data.frame()
 
@@ -798,13 +798,13 @@ sn_no <- boot.ci(boot(data = data[data$sn_present == 'no', ],
                       R = 1999, 
                       stype = 'i'), 
                  type = 'bca') %>% 
-    data_frame(sn_present = 'no',
-               n = nrow(filter(data, !is.na(TB_current) & 
-                                   sn_present == 'no')), 
-               Proportion = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3)) %>%
+    tibble(sn_present = 'no',
+           n = nrow(filter(data, !is.na(TB_current) & 
+                               sn_present == 'no')), 
+           Proportion = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3)) %>%
     .[1, -1] %>% 
     as.data.frame()
 
@@ -837,14 +837,14 @@ boot_tb <- boot.ci(boot(data = data,
                         R = 1999, 
                         stype = 'i'),
                    type = 'bca') %>%
-    data_frame(n = nrow(filter(data, !is.na(TB_current))), 
-               Odds.ratio = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3),
-               Includes.zero = ifelse(Bca.lower <= 1 & Bca.upper >= 1,
-                                      yes = 'yes',
-                                      no = 'no')) %>%
+    tibble(n = nrow(filter(data, !is.na(TB_current))), 
+           Odds.ratio = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3),
+           Includes.zero = ifelse(Bca.lower <= 1 & Bca.upper >= 1,
+                                  yes = 'yes',
+                                  no = 'no')) %>%
     .[1, -1] %>% 
     as.data.frame(); boot_tb
 
@@ -907,13 +907,13 @@ sn_yes <- boot.ci(boot(data = data_tb[data_tb$sn_present == 'yes', ],
                        R = 1999, 
                        stype = 'i'), 
                   type = 'bca') %>% 
-    data_frame(sn_present = 'yes',
-               n = nrow(filter(data_tb, !is.na(rifafour_treatment) & 
-                                   sn_present == 'yes')), 
-               Proportion = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3)) %>%
+    tibble(sn_present = 'yes',
+           n = nrow(filter(data_tb, !is.na(rifafour_treatment) & 
+                               sn_present == 'yes')), 
+           Proportion = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3)) %>%
     .[1, -1] %>% 
     as.data.frame()
 
@@ -925,13 +925,13 @@ sn_no <- boot.ci(boot(data = data_tb[data_tb$sn_present == 'no', ],
                       R = 1999, 
                       stype = 'i'), 
                  type = 'bca') %>% 
-    data_frame(sn_present = 'no',
-               n = nrow(filter(data_tb, !is.na(rifafour_treatment) & 
-                                   sn_present == 'no')), 
-               Proportion = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3)) %>%
+    tibble(sn_present = 'no',
+           n = nrow(filter(data_tb, !is.na(rifafour_treatment) & 
+                               sn_present == 'no')), 
+           Proportion = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3)) %>%
     .[1, -1] %>% 
     as.data.frame()
 
@@ -964,14 +964,14 @@ boot_tb2 <- boot.ci(boot(data = data_tb,
                          R = 1999, 
                          stype = 'i'),
                     type = 'bca') %>%
-    data_frame(n = nrow(filter(data_tb, !is.na(rifafour_treatment))), 
-               Odds.ratio = round(.$t0, 3), 
-               Conf.level = 0.95, 
-               Bca.lower = round(.$bca[[4]], 3),
-               Bca.upper = round(.$bca[[5]], 3),
-               Includes.zero = ifelse(Bca.lower <= 1 & Bca.upper >= 1,
-                                      yes = 'yes',
-                                      no = 'no')) %>%
+    tibble(n = nrow(filter(data_tb, !is.na(rifafour_treatment))), 
+           Odds.ratio = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3),
+           Includes.zero = ifelse(Bca.lower <= 1 & Bca.upper >= 1,
+                                  yes = 'yes',
+                                  no = 'no')) %>%
     .[1, -1] %>% 
     as.data.frame(); boot_tb2
 

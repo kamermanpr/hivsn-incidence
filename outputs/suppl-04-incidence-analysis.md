@@ -2,7 +2,7 @@
 title: "Supplement 4"
 subtitle: 'HIV-SN incidence analysis'
 author: 'Peter Kamerman and Prinisha Pillay'
-date: "30 November 2018"
+date: "17 March 2019"
 ---
 
 
@@ -67,8 +67,8 @@ Extract 3 and 6 month periods for cumulative incidence.
 
 ```r
 ## Generate time filters
-months_6 <- round(lubridate::dyears(0.5) / lubridate::ddays(1)) 
-months_3 <- round(lubridate::dyears(0.25) / lubridate::ddays(1))
+months_6 <- round(dyears(0.5) / ddays(1)) 
+months_3 <- round(dyears(0.25) / ddays(1))
     
 # Extract SN:yes within 6-month period
 data_6months <- data %>%
@@ -257,8 +257,8 @@ as.data.frame(tab_sn) %>%
 
 ```
 ##   sn_present Count Percentage Cases/1000 patients Conf.interval
-## 1         no    66         80                                  
-## 2        yes    17         20                 200   120  -  290
+## 1         no   103         86                                  
+## 2        yes    17         14                 140    80  -  210
 ```
 
 ### First 3-month period
@@ -290,8 +290,8 @@ as.data.frame(tab_sn) %>%
 
 ```
 ##   sn_present Count Percentage Cases/1000 patients Conf.interval
-## 1         no    76         92                                  
-## 2        yes     7          8                  80     20 to 140
+## 1         no   113         94                                  
+## 2        yes     7          6                  60     20 to 100
 ```
 
 ## Second 3-month period
@@ -323,8 +323,8 @@ as.data.frame(tab_sn) %>%
 
 ```
 ##   sn_present Count Percentage Cases/1000 patients Conf.interval
-## 1         no    66         87                                  
-## 2        yes    10         13                 130     70 to 210
+## 1         no   103         91                                  
+## 2        yes    10          9                  90     40 to 140
 ```
 
 # Incidence rate (person years)
@@ -353,16 +353,16 @@ df_ci <- boot.ci(boot.out = boot(data = df_6months,
                                  stype = 'i'),
                  type = 'bca')
 
-data_frame(`Cases/person.year` = round(df_ci$t0, 2),
-           Conf.interval = paste0(round(df_ci$bca[4], 2), ' to ',
-                                 round(df_ci$bca[5], 2)))
+tibble(`Cases/person.year` = round(df_ci$t0, 2),
+       Conf.interval = paste0(round(df_ci$bca[4], 2), ' to ',
+                              round(df_ci$bca[5], 2)))
 ```
 
 ```
 ## # A tibble: 1 x 2
 ##   `Cases/person.year` Conf.interval
 ##                 <dbl> <chr>        
-## 1                0.47 0.3 to 0.69
+## 1                0.37 0.25 to 0.55
 ```
 
 # Survival curves
@@ -385,7 +385,7 @@ km_basic
 ##     1, data = data_surv)
 ## 
 ##       n  events  median 0.95LCL 0.95UCL 
-##      83      20      NA      NA      NA
+##     120      20      NA      NA      NA
 ```
 
 ```r
@@ -397,25 +397,25 @@ summary(km_basic)
 ##     1, data = data_surv)
 ## 
 ##  time n.risk n.event survival std.err lower 95% CI upper 95% CI
-##    14     83       1    0.988  0.0120        0.965        1.000
-##    22     82       1    0.976  0.0168        0.943        1.000
-##    23     81       1    0.964  0.0205        0.925        1.000
-##    28     80       2    0.940  0.0261        0.890        0.992
-##    31     78       1    0.928  0.0284        0.874        0.985
-##    46     77       1    0.916  0.0305        0.858        0.977
-##    47     76       1    0.904  0.0324        0.842        0.969
-##    51     75       1    0.892  0.0341        0.827        0.961
-##    52     74       1    0.880  0.0357        0.812        0.952
-##    53     73       1    0.867  0.0372        0.798        0.944
-##    55     72       1    0.855  0.0386        0.783        0.935
-##    56     71       1    0.843  0.0399        0.769        0.925
-##    64     70       1    0.831  0.0411        0.755        0.916
-##    73     69       1    0.819  0.0422        0.741        0.906
-##    84     68       1    0.807  0.0433        0.727        0.897
-##   104     67       1    0.795  0.0443        0.713        0.887
-##   132     66       1    0.783  0.0452        0.699        0.877
-##   143     65       1    0.771  0.0461        0.686        0.867
-##   144     64       1    0.759  0.0469        0.672        0.857
+##    14    120       1    0.992  0.0083        0.976        1.000
+##    22    119       1    0.983  0.0117        0.961        1.000
+##    23    118       1    0.975  0.0143        0.947        1.000
+##    28    117       2    0.958  0.0182        0.923        0.995
+##    31    115       1    0.950  0.0199        0.912        0.990
+##    46    113       1    0.942  0.0214        0.901        0.985
+##    47    112       1    0.933  0.0228        0.890        0.979
+##    51    111       1    0.925  0.0241        0.879        0.973
+##    52    110       1    0.916  0.0253        0.868        0.967
+##    53    109       1    0.908  0.0264        0.858        0.961
+##    55    108       1    0.900  0.0275        0.847        0.955
+##    56    107       1    0.891  0.0285        0.837        0.949
+##    64    105       1    0.883  0.0295        0.827        0.942
+##    73    104       1    0.874  0.0304        0.817        0.936
+##    84     98       1    0.865  0.0314        0.806        0.929
+##   104     89       1    0.856  0.0325        0.794        0.922
+##   132     80       1    0.845  0.0338        0.781        0.914
+##   143     70       1    0.833  0.0354        0.766        0.905
+##   144     69       1    0.821  0.0369        0.752        0.896
 ```
 
 ```r
@@ -513,8 +513,8 @@ km_pain
 ##     pain, data = data_surv)
 ## 
 ##           n events median 0.95LCL 0.95UCL
-## pain=no  65     11     NA      NA      NA
-## pain=yes 18      9    104      55      NA
+## pain=no  96     11     NA      NA      NA
+## pain=yes 24      9     NA      84      NA
 ```
 
 ```r
@@ -527,29 +527,29 @@ summary(km_pain)
 ## 
 ##                 pain=no 
 ##  time n.risk n.event survival std.err lower 95% CI upper 95% CI
-##    23     65       1    0.985  0.0153        0.955        1.000
-##    28     64       1    0.969  0.0214        0.928        1.000
-##    31     63       1    0.954  0.0260        0.904        1.000
-##    47     62       1    0.938  0.0298        0.882        0.999
-##    51     61       1    0.923  0.0331        0.861        0.990
-##    53     60       1    0.908  0.0359        0.840        0.981
-##    56     59       1    0.892  0.0384        0.820        0.971
-##    64     58       1    0.877  0.0407        0.801        0.961
-##   132     57       1    0.862  0.0428        0.782        0.950
-##   143     56       1    0.846  0.0448        0.763        0.939
-##   144     55       1    0.831  0.0465        0.744        0.927
+##    23     96       1    0.990  0.0104        0.969        1.000
+##    28     95       1    0.979  0.0146        0.951        1.000
+##    31     94       1    0.969  0.0178        0.935        1.000
+##    47     92       1    0.958  0.0205        0.919        0.999
+##    51     91       1    0.948  0.0228        0.904        0.993
+##    53     90       1    0.937  0.0248        0.890        0.987
+##    56     89       1    0.927  0.0267        0.876        0.980
+##    64     87       1    0.916  0.0284        0.862        0.973
+##   132     70       1    0.903  0.0309        0.844        0.966
+##   143     61       1    0.888  0.0337        0.824        0.957
+##   144     60       1    0.873  0.0363        0.805        0.947
 ## 
 ##                 pain=yes 
 ##  time n.risk n.event survival std.err lower 95% CI upper 95% CI
-##    14     18       1    0.944  0.0540        0.844        1.000
-##    22     17       1    0.889  0.0741        0.755        1.000
-##    28     16       1    0.833  0.0878        0.678        1.000
-##    46     15       1    0.778  0.0980        0.608        0.996
-##    52     14       1    0.722  0.1056        0.542        0.962
-##    55     13       1    0.667  0.1111        0.481        0.924
-##    73     12       1    0.611  0.1149        0.423        0.883
-##    84     11       1    0.556  0.1171        0.368        0.840
-##   104     10       1    0.500  0.1179        0.315        0.794
+##    14     24       1    0.958  0.0408        0.882        1.000
+##    22     23       1    0.917  0.0564        0.813        1.000
+##    28     22       1    0.875  0.0675        0.752        1.000
+##    46     21       1    0.833  0.0761        0.697        0.997
+##    52     20       1    0.792  0.0829        0.645        0.972
+##    55     19       1    0.750  0.0884        0.595        0.945
+##    73     18       1    0.708  0.0928        0.548        0.916
+##    84     15       1    0.661  0.0979        0.495        0.884
+##   104     12       1    0.606  0.1041        0.433        0.849
 ```
 
 ```r
@@ -565,10 +565,10 @@ survdiff(Surv(time = visit_day,
 ##     pain, data = data_surv)
 ## 
 ##           N Observed Expected (O-E)^2/E (O-E)^2/V
-## pain=no  65       11    16.68      1.93      11.9
-## pain=yes 18        9     3.32      9.72      11.9
+## pain=no  96       11    16.89      2.05      13.4
+## pain=yes 24        9     3.11     11.13      13.4
 ## 
-##  Chisq= 11.9  on 1 degrees of freedom, p= 6e-04
+##  Chisq= 13.4  on 1 degrees of freedom, p= 3e-04
 ```
 
 ```r
@@ -604,8 +604,6 @@ ggsurvplot(km_pain,
 # Multivariable modeling
 
 In an exploratory analysis using Cox proportional hazard models (not shown here) various predictors violated assumptions of the model (e.g., proportional hazard, linearity, no influence points). Therefore we used logistic regression modelling, with visit 1 charateristics as predictors of SN onset. 
-
-**Note: Only complete datasets used (n = 77)**
 
 ## Model data
 
@@ -648,13 +646,13 @@ with(data_model[data_model$sex == 'M', ], cor.test(height_m, mass_kg))
 ## 	Pearson's product-moment correlation
 ## 
 ## data:  height_m and mass_kg
-## t = 0.99029, df = 35, p-value = 0.3288
+## t = 0.77427, df = 52, p-value = 0.4423
 ## alternative hypothesis: true correlation is not equal to 0
 ## 95 percent confidence interval:
-##  -0.1679090  0.4642755
+##  -0.1657403  0.3641103
 ## sample estimates:
-##      cor 
-## 0.165092
+##       cor 
+## 0.1067581
 ```
 
 ```r
@@ -667,27 +665,27 @@ with(data_model[data_model$sex == 'F', ], cor.test(height_m, mass_kg))
 ## 	Pearson's product-moment correlation
 ## 
 ## data:  height_m and mass_kg
-## t = 4.7005, df = 44, p-value = 2.575e-05
+## t = 4.42, df = 64, p-value = 3.899e-05
 ## alternative hypothesis: true correlation is not equal to 0
 ## 95 percent confidence interval:
-##  0.3459427 0.7436566
+##  0.2735853 0.6495961
 ## sample estimates:
-##       cor 
-## 0.5781765
+##      cor 
+## 0.483596
 ```
 
 The two variables are related in females, but not in males. We decided to omit `weight_kg` in favour of `height_m` because of this relationship, and the stronger historical association between height and SN.
 
-## Lasso regression
+## Elastic net regression
 
-We chose to use LASSO (least absolute shrinkage and selection operator) for variable selection. LASSO is a regression analysis method that performs both variable selection and regularization in order to enhance the prediction accuracy and interpretability of the statistical model it produces.
+We chose to use elastic net for variable selection. Elastic net is a regression analysis method that performs both variable selection and regularization in order to enhance the prediction accuracy and interpretability of the statistical model it produces.
 
 The process involves performing a 10-fold cross validation to find the optimal _lambda_ (penalization parameter). And then running the analysis and extracting the model based on the best _lambda_. 
 
 ### Cross-validation to estimate alpha and lambda
 
 ```r
-# Remove mass_kg
+# Remove excluded varibales
 data_model %<>%
     select(-mass_kg)
 
@@ -725,13 +723,21 @@ minlossplot(cvafit)
 <img src="figures/suppl-04-incidence-analysis/cv_lamda-2.png" style="display: block; margin: auto;" />
 
 ```r
-# Print model at each of the four lowest CV loss alphas
+# Print model at each of the three lowest CV loss alphas
+## alpha = 0.125
+plot(cvafit$modlist[[6]])
+title('alpha = 0.125', line = 2.5)
+```
+
+<img src="figures/suppl-04-incidence-analysis/cv_lamda-3.png" style="display: block; margin: auto;" />
+
+```r
 ## alpha = 0.216
 plot(cvafit$modlist[[7]])
 title('alpha = 0.216', line = 2.5)
 ```
 
-<img src="figures/suppl-04-incidence-analysis/cv_lamda-3.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-04-incidence-analysis/cv_lamda-4.png" style="display: block; margin: auto;" />
 
 ```r
 ## alpha = 0.343
@@ -739,23 +745,7 @@ plot(cvafit$modlist[[8]])
 title('alpha = 0.343', line = 2.5)
 ```
 
-<img src="figures/suppl-04-incidence-analysis/cv_lamda-4.png" style="display: block; margin: auto;" />
-
-```r
-## alpha = 0.512
-plot(cvafit$modlist[[9]])
-title('alpha = 0.512', line = 2.5)
-```
-
 <img src="figures/suppl-04-incidence-analysis/cv_lamda-5.png" style="display: block; margin: auto;" />
-
-```r
-## Alpha = 0.729
-plot(cvafit$modlist[[10]])
-title('alpha = 0.729', line = 2.5)
-```
-
-<img src="figures/suppl-04-incidence-analysis/cv_lamda-6.png" style="display: block; margin: auto;" />
 
 ```r
 ## and alpha = 1
@@ -763,18 +753,16 @@ plot(cvafit$modlist[[11]])
 title('alpha = 1.0', line = 2.5)
 ```
 
-<img src="figures/suppl-04-incidence-analysis/cv_lamda-7.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-04-incidence-analysis/cv_lamda-6.png" style="display: block; margin: auto;" />
 
 ```r
 # Extract best lambda for each alpha (lambda.1se)
+## alpha = 0.125
+a125 <- cvafit$modlist[[6]]$lambda.1se
 ## alpha = 0.216
 a216 <- cvafit$modlist[[7]]$lambda.1se
 ## alpha = 0.343
 a343 <- cvafit$modlist[[8]]$lambda.1se
-## alpha = 0.512
-a512 <- cvafit$modlist[[9]]$lambda.1se
-## Alpha = 0.729
-a729 <- cvafit$modlist[[10]]$lambda.1se
 ## and alpha = 1
 a100 <- cvafit$modlist[[11]]$lambda.1se
 ```
@@ -783,6 +771,12 @@ a100 <- cvafit$modlist[[11]]$lambda.1se
 
 ```r
 # Fit the models for each alpha
+## alpha = 0.125
+model_a125 <- glmnet(sn ~ .,
+                     data = data_model, 
+                     alpha = 0.125,
+                     family = 'binomial')
+
 ## alpha = 0.216
 model_a216 <- glmnet(sn ~ .,
                      data = data_model, 
@@ -795,18 +789,6 @@ model_a343 <- glmnet(sn ~ .,
                      alpha = 0.343,
                      family = 'binomial')
 
-## alpha = 0.512
-model_a512 <- glmnet(sn ~ .,
-                     data = data_model, 
-                     alpha = 0.512,
-                     family = 'binomial')
-
-## alpha = 0.729
-model_a729 <- glmnet(sn ~ .,
-                     data = data_model, 
-                     alpha = 0.729,
-                     family = 'binomial')
-
 ## alpha = 1.0
 model_a100 <- glmnet(sn ~ .,
                      data = data_model, 
@@ -814,6 +796,38 @@ model_a100 <- glmnet(sn ~ .,
                      family = 'binomial')
 
 # Plot and get coefficients for each model
+## alpha = 0.125
+plot(model_a125,
+     xvar = 'lambda',
+     label = TRUE)
+abline(v = log(a125))
+title('alpha = 0.125', line = 2.5)
+```
+
+<img src="figures/suppl-04-incidence-analysis/model_fit-1.png" style="display: block; margin: auto;" />
+
+```r
+coef(model_a125, s = a125)
+```
+
+```
+## 12 x 1 sparse Matrix of class "dgCMatrix"
+##                                 1
+## (Intercept)           -9.33556716
+## age_years              0.01891831
+## sexF                   .         
+## sexM                   .         
+## height_m               4.54062406
+## CD4_cell.ul            .         
+## viral_load_copies.ml   .         
+## alcohol_units.week    -0.01435151
+## TB_currentno          -0.58877559
+## TB_currentyes          0.58855939
+## rifafour_treatmentno   .         
+## rifafour_treatmentyes  .
+```
+
+```r
 ## alpha = 0.216
 plot(model_a216,
      xvar = 'lambda',
@@ -822,7 +836,7 @@ abline(v = log(a216))
 title('alpha = 0.216', line = 2.5)
 ```
 
-<img src="figures/suppl-04-incidence-analysis/model_fit-1.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-04-incidence-analysis/model_fit-2.png" style="display: block; margin: auto;" />
 
 ```r
 coef(model_a216, s = a216)
@@ -830,18 +844,18 @@ coef(model_a216, s = a216)
 
 ```
 ## 12 x 1 sparse Matrix of class "dgCMatrix"
-##                                1
-## (Intercept)           -2.8808213
-## age_years              .        
-## sexF                   .        
-## sexM                   .        
-## height_m               1.1289812
-## CD4_cell.ul            .        
-## viral_load_copies.ml   .        
-## alcohol_units.week     .        
-## TB_currentno          -0.1299469
-## TB_currentyes          0.1300469
-## rifafour_treatmentno   .        
+##                                 1
+## (Intercept)           -9.65423087
+## age_years              0.01782834
+## sexF                   .         
+## sexM                   .         
+## height_m               4.75580888
+## CD4_cell.ul            .         
+## viral_load_copies.ml   .         
+## alcohol_units.week    -0.01418191
+## TB_currentno          -0.57902533
+## TB_currentyes          0.57845188
+## rifafour_treatmentno   .         
 ## rifafour_treatmentyes  .
 ```
 
@@ -854,7 +868,7 @@ abline(v = log(a343))
 title('alpha = 0.343', line = 2.5)
 ```
 
-<img src="figures/suppl-04-incidence-analysis/model_fit-2.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-04-incidence-analysis/model_fit-3.png" style="display: block; margin: auto;" />
 
 ```r
 coef(model_a343, s = a343)
@@ -862,81 +876,17 @@ coef(model_a343, s = a343)
 
 ```
 ## 12 x 1 sparse Matrix of class "dgCMatrix"
-##                                1
-## (Intercept)           -3.1867149
-## age_years              .        
-## sexF                   .        
-## sexM                   .        
-## height_m               1.3110726
-## CD4_cell.ul            .        
-## viral_load_copies.ml   .        
-## alcohol_units.week     .        
-## TB_currentno          -0.1165068
-## TB_currentyes          0.1165095
-## rifafour_treatmentno   .        
-## rifafour_treatmentyes  .
-```
-
-```r
-## alpha = 0.512
-plot(model_a512,
-     xvar = 'lambda',
-     label = TRUE)
-abline(v = log(a512))
-title('alpha = 0.512', line = 2.5)
-```
-
-<img src="figures/suppl-04-incidence-analysis/model_fit-3.png" style="display: block; margin: auto;" />
-
-```r
-coef(model_a512, s = a512)
-```
-
-```
-## 12 x 1 sparse Matrix of class "dgCMatrix"
 ##                                 1
-## (Intercept)           -3.33963435
-## age_years              .         
+## (Intercept)           -9.94710075
+## age_years              0.01617587
 ## sexF                   .         
 ## sexM                   .         
-## height_m               1.39138832
+## height_m               4.96701823
 ## CD4_cell.ul            .         
 ## viral_load_copies.ml   .         
-## alcohol_units.week     .         
-## TB_currentno          -0.08030742
-## TB_currentyes          0.08035108
-## rifafour_treatmentno   .         
-## rifafour_treatmentyes  .
-```
-
-```r
-## alpha = 0.729
-plot(model_a729,
-     xvar = 'lambda',
-     label = TRUE)
-abline(v = log(a729))
-title('alpha = 0.729', line = 2.5)
-```
-
-<img src="figures/suppl-04-incidence-analysis/model_fit-4.png" style="display: block; margin: auto;" />
-
-```r
-coef(model_a729, s = a729)
-```
-
-```
-## 12 x 1 sparse Matrix of class "dgCMatrix"
-##                                 1
-## (Intercept)           -3.29018555
-## age_years              .         
-## sexF                   .         
-## sexM                   .         
-## height_m               1.33944233
-## CD4_cell.ul            .         
-## viral_load_copies.ml   .         
-## alcohol_units.week     .         
-## TB_currentno          -0.02155518
-## TB_currentyes          0.02146926
+## alcohol_units.week    -0.01363731
+## TB_currentno          -0.56625392
+## TB_currentyes          0.56465809
 ## rifafour_treatmentno   .         
 ## rifafour_treatmentyes  .
 ```
@@ -950,7 +900,7 @@ abline(v = log(a100))
 title('alpha = 1.0', line = 2.5)
 ```
 
-<img src="figures/suppl-04-incidence-analysis/model_fit-5.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-04-incidence-analysis/model_fit-4.png" style="display: block; margin: auto;" />
 
 ```r
 coef(model_a100, s = a100)
@@ -958,344 +908,22 @@ coef(model_a100, s = a100)
 
 ```
 ## 12 x 1 sparse Matrix of class "dgCMatrix"
-##                               1
-## (Intercept)           -1.116004
-## age_years              .       
-## sexF                   .       
-## sexM                   .       
-## height_m               .       
-## CD4_cell.ul            .       
-## viral_load_copies.ml   .       
-## alcohol_units.week     .       
-## TB_currentno           .       
-## TB_currentyes          .       
-## rifafour_treatmentno   .       
+##                                   1
+## (Intercept)           -1.112312e+01
+## age_years              1.201960e-02
+## sexF                   .           
+## sexM                   .           
+## height_m               6.087209e+00
+## CD4_cell.ul            .           
+## viral_load_copies.ml   .           
+## alcohol_units.week    -1.403370e-02
+## TB_currentno          -1.068291e+00
+## TB_currentyes          3.876452e-14
+## rifafour_treatmentno   .           
 ## rifafour_treatmentyes  .
 ```
 
 Across all alphas, and best lambdas, the output shows the best model includes `height_m` and `TB_current`. 
-
-Fit trimmed model using selected variables
-
-```r
-mod_final <- glm(sn ~ height_m + TB_current,
-               data = data_model, 
-               family = binomial(link = 'logit'))
-
-## Generate model summaries
-### (Type II SS ANOVA shows significant effect for height_m, TB_current)
-### (NOTE: CI of odds ratios for height_m and TB_current are wide)
-print(mod_final)
-```
-
-```
-## 
-## Call:  glm(formula = sn ~ height_m + TB_current, family = binomial(link = "logit"), 
-##     data = data_model)
-## 
-## Coefficients:
-##   (Intercept)       height_m  TB_currentyes  
-##        -19.27          10.72           1.43  
-## 
-## Degrees of Freedom: 82 Total (i.e. Null);  80 Residual
-## Null Deviance:	    91.66 
-## Residual Deviance: 74 	AIC: 80
-```
-
-```r
-car::Anova(mod_final)
-```
-
-```
-## Analysis of Deviance Table (Type II tests)
-## 
-## Response: sn
-##            LR Chisq Df Pr(>Chisq)   
-## height_m     7.7696  1   0.005313 **
-## TB_current   5.0998  1   0.023929 * 
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-```
-
-```r
-summary(mod_final)
-```
-
-```
-## 
-## Call:
-## glm(formula = sn ~ height_m + TB_current, family = binomial(link = "logit"), 
-##     data = data_model)
-## 
-## Deviance Residuals: 
-##     Min       1Q   Median       3Q      Max  
-## -1.3935  -0.6913  -0.4096  -0.2304   2.4169  
-## 
-## Coefficients:
-##               Estimate Std. Error z value Pr(>|z|)   
-## (Intercept)   -19.2742     7.0573  -2.731  0.00631 **
-## height_m       10.7248     4.2267   2.537  0.01117 * 
-## TB_currentyes   1.4297     0.6357   2.249  0.02452 * 
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## (Dispersion parameter for binomial family taken to be 1)
-## 
-##     Null deviance: 91.663  on 82  degrees of freedom
-## Residual deviance: 73.996  on 80  degrees of freedom
-## AIC: 79.996
-## 
-## Number of Fisher Scoring iterations: 5
-```
-
-```r
-OR(mod_final, what = 'all')[1:3, c(1, 2, 6:8)] 
-```
-
-```
-##            model      logit           OR        lowOR         upOR
-## 1:   (Intercept) -19.274156 4.259322e-09 1.304270e-11 1.390956e-06
-## 2:      height_m  10.724798 4.546955e+04 1.392348e+02 1.484887e+07
-## 3: TB_currentyes   1.429731 4.177577e+00 1.279239e-02 1.364261e+03
-```
-
-## Model diagnostics
-
-```r
-# Diagnostic measures for a binary regression model by covariate pattern
-data_dx <- dx(mod_final, byCov = TRUE)
-
-# Outliers and leverage
-## Plot 'dChisq' for each probability (P).
-### 'DChisq' gives the change in the Pearson chi-square statistic with 
-### observation i removed.
-### Values should be < 4 if the observation has little influence on the model.
-(gg_out <- ggplot(data = data_dx) +
-    aes(x = P,
-        y = dChisq) +
-    geom_point(shape = 21,
-               size = 2,
-               fill = '#FFFFFF') +
-    geom_hline(yintercept = 4,
-               linetype =2))
-```
-
-<img src="figures/suppl-04-incidence-analysis/model_diagnostics-1.png" style="display: block; margin: auto;" />
-
-```r
-### Label dodgy point with height and TB info
-gg_out + 
-    geom_label(label = data_dx %>% 
-                   filter(dChisq == max(dChisq)) %>% 
-                   mutate(new = str_glue('height_m: {height_m}, TB(yes): {TB_currentyes}')) %>% 
-                   .$new,
-               x = data_dx %>% 
-                   filter(dChisq == max(dChisq)) %>% 
-                   .$P,
-               y = data_dx %>% 
-                   filter(dChisq == max(dChisq)) %>% 
-                   .$dChisq,
-              hjust = -0.1)
-```
-
-<img src="figures/suppl-04-incidence-analysis/model_diagnostics-2.png" style="display: block; margin: auto;" />
-
-```r
-### Influence plot
-influenceIndexPlot(mod_final, 
-                   id.n = 3, 
-                   id.col = 'red')
-```
-
-<img src="figures/suppl-04-incidence-analysis/model_diagnostics-3.png" style="display: block; margin: auto;" />
-
-```r
-influencePlot(mod_final, 
-              id.col = 'red')
-```
-
-<img src="figures/suppl-04-incidence-analysis/model_diagnostics-4.png" style="display: block; margin: auto;" />
-
-```
-##       StudRes        Hat      CookD
-## 6   2.5024065 0.02341176 0.14362726
-## 45 -1.0571673 0.08129135 0.02233145
-## 47  2.5024065 0.02341176 0.14362726
-## 61 -0.6759985 0.11187100 0.01125179
-```
-
-```r
-### Remove influence points one at a time
-mod_influence6 <- update(mod_final, 
-                         subset = c(-6))
-mod_influence46 <- update(mod_final, 
-                          subset = c(-46))
-mod_influence58 <- update(mod_final, 
-                          subset = c(-58))
-
-### Compare coefficients with and without influence points
-compareCoefs(mod_final, mod_influence6)
-```
-
-```
-## Calls:
-## 1: glm(formula = sn ~ height_m + TB_current, family = binomial(link = 
-##   "logit"), data = data_model)
-## 2: glm(formula = sn ~ height_m + TB_current, family = binomial(link = 
-##   "logit"), data = data_model, subset = c(-6))
-## 
-##               Model 1 Model 2
-## (Intercept)    -19.27  -24.07
-## SE               7.06    8.11
-##                              
-## height_m        10.72   13.52
-## SE               4.23    4.82
-##                              
-## TB_currentyes   1.430   1.513
-## SE              0.636   0.652
-## 
-```
-
-```r
-compareCoefs(mod_final, mod_influence46)
-```
-
-```
-## Calls:
-## 1: glm(formula = sn ~ height_m + TB_current, family = binomial(link = 
-##   "logit"), data = data_model)
-## 2: glm(formula = sn ~ height_m + TB_current, family = binomial(link = 
-##   "logit"), data = data_model, subset = c(-46))
-## 
-##               Model 1 Model 2
-## (Intercept)    -19.27  -19.05
-## SE               7.06    7.03
-##                              
-## height_m        10.72   10.60
-## SE               4.23    4.21
-##                              
-## TB_currentyes   1.430   1.418
-## SE              0.636   0.636
-## 
-```
-
-```r
-compareCoefs(mod_final, mod_influence58)
-```
-
-```
-## Calls:
-## 1: glm(formula = sn ~ height_m + TB_current, family = binomial(link = 
-##   "logit"), data = data_model)
-## 2: glm(formula = sn ~ height_m + TB_current, family = binomial(link = 
-##   "logit"), data = data_model, subset = c(-58))
-## 
-##               Model 1 Model 2
-## (Intercept)    -19.27  -19.07
-## SE               7.06    7.09
-##                              
-## height_m        10.72   10.60
-## SE               4.23    4.25
-##                              
-## TB_currentyes   1.430   1.427
-## SE              0.636   0.635
-## 
-```
-
-```r
-## Check '6' and '46' for anything strange 
-data_model %>%
-    select(sn, height_m, TB_current) %>%
-    .[6, ]
-```
-
-```
-## # A tibble: 1 x 3
-##   sn    height_m TB_current
-##   <fct>    <dbl> <fct>     
-## 1 yes       1.53 no
-```
-
-```r
-data_model %>%
-    select(sn, height_m, TB_current) %>%
-    .[46, ]
-```
-
-```
-## # A tibble: 1 x 3
-##   sn    height_m TB_current
-##   <fct>    <dbl> <fct>     
-## 1 no        1.61 no
-```
-
-```r
-# Test for multicolinearity using variance inflation factor (vif)
-## Rule of thumb: values > 4 are a problem
-vif(mod_final) 
-```
-
-```
-##   height_m TB_current 
-##     1.0178     1.0178
-```
-
-```r
-# Test for correlated residuals 
-## p-vale > 0.05: no correlation between residuals
-durbinWatsonTest(mod_final)
-```
-
-```
-##  lag Autocorrelation D-W Statistic p-value
-##    1       -0.056383      2.105132    0.69
-##  Alternative hypothesis: rho != 0
-```
-
-```r
-# Plot 'dBhat' for each probability (P).
-## 'dBhat' is the change in beta coefficient with observation i excluded.
-## 'dBhat' should be < 1 if the i has little influence on the coefficients.
-ggplot(data = data_dx) +
-    aes(x = P,
-        y = dBhat) +
-    geom_point(shape = 21,
-               size = 2,
-               fill = '#FFFFFF') +
-    geom_hline(yintercept = 1,
-               linetype =2)
-```
-
-<img src="figures/suppl-04-incidence-analysis/model_diagnostics-5.png" style="display: block; margin: auto;" />
-
-```r
-# Check goodness of fit (Hosmer-Lemeshow goodness of fit test)
-## Significant p-values indicate a poor fit
-## ROC 0.7 < auc < 0.8 indicates acceptable discrimination 
-gof(mod_final, g = 8)
-```
-
-<img src="figures/suppl-04-incidence-analysis/model_diagnostics-6.png" style="display: block; margin: auto;" />
-
-```
-##       chiSq df    pVal
-## PrI  90.992 80 0.18827
-## drI  73.996 80 0.66785
-## PrG  28.008 36 0.82691
-## drG  29.809 36 0.75690
-## PrCT 28.008 36 0.82691
-## drCT 29.809 36 0.75690
-##                      val df    pVal
-## HL chiSq         4.66186  6 0.58785
-## mHL F            0.63294  7 0.72505
-## OsRo Z                NA NA 0.33399
-## SstPgeq0.5 Z     1.21921 NA 0.22276
-## SstPl0.5 Z       1.54241 NA 0.12297
-## SstBoth chiSq    3.86551  2 0.14475
-## SllPgeq0.5 chiSq 2.64901  1 0.10361
-## SllPl0.5 chiSq   2.35301  1 0.12504
-## SllBoth chiSq    3.08826  2 0.21350
-```
 
 ----
 
@@ -1306,59 +934,60 @@ sessionInfo()
 ```
 
 ```
-## R version 3.5.1 (2018-07-02)
+## R version 3.5.2 (2018-12-20)
 ## Platform: x86_64-apple-darwin15.6.0 (64-bit)
-## Running under: macOS  10.14.1
+## Running under: macOS Mojave 10.14.3
 ## 
 ## Matrix products: default
 ## BLAS: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRblas.0.dylib
 ## LAPACK: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRlapack.dylib
 ## 
 ## locale:
-## [1] en_GB.UTF-8/en_GB.UTF-8/en_GB.UTF-8/C/en_GB.UTF-8/en_GB.UTF-8
+## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
 ## 
 ## attached base packages:
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] bindrcpp_0.2.2  LogisticDx_0.2  survminer_0.4.3 ggpubr_0.2     
-##  [5] survival_2.43-3 car_3.0-2       carData_3.0-2   boot_1.3-20    
-##  [9] glmnetUtils_1.1 forcats_0.3.0   stringr_1.3.1   dplyr_0.7.8    
-## [13] purrr_0.2.5     readr_1.2.1     tidyr_0.8.2     tibble_1.4.2   
-## [17] ggplot2_3.1.0   tidyverse_1.2.1 magrittr_1.5   
+##  [1] LogisticDx_0.2    survminer_0.4.3   ggpubr_0.2       
+##  [4] survival_2.43-3   car_3.0-2         carData_3.0-2    
+##  [7] boot_1.3-20       glmnetUtils_1.1.1 lubridate_1.7.4  
+## [10] forcats_0.4.0     stringr_1.4.0     dplyr_0.8.0.1    
+## [13] purrr_0.3.1       readr_1.3.1       tidyr_0.8.3      
+## [16] tibble_2.0.1      ggplot2_3.1.0     tidyverse_1.2.1  
+## [19] magrittr_1.5     
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] TH.data_1.0-9       colorspace_1.3-2    rio_0.5.16         
-##  [4] rprojroot_1.3-2     htmlTable_1.12      base64enc_0.1-3    
-##  [7] rstudioapi_0.8      MatrixModels_0.4-1  fansi_0.4.0        
-## [10] mvtnorm_1.0-8       lubridate_1.7.4     xml2_1.2.0         
-## [13] codetools_0.2-15    splines_3.5.1       knitr_1.20         
-## [16] Formula_1.2-3       jsonlite_1.5        speedglm_0.3-2     
-## [19] pROC_1.13.0         broom_0.5.0         km.ci_0.5-2        
-## [22] cluster_2.0.7-1     aod_1.3             compiler_3.5.1     
-## [25] httr_1.3.1          backports_1.1.2     assertthat_0.2.0   
-## [28] Matrix_1.2-15       lazyeval_0.2.1      cli_1.0.1          
-## [31] acepack_1.4.1       htmltools_0.3.6     quantreg_5.36      
-## [34] tools_3.5.1         gtable_0.2.0        glue_1.3.0         
-## [37] Rcpp_1.0.0          cellranger_1.1.0    nlme_3.1-137       
-## [40] iterators_1.0.10    openxlsx_4.1.0      rvest_0.3.2        
-## [43] statmod_1.4.30      polspline_1.1.13    MASS_7.3-51.1      
-## [46] zoo_1.8-4           scales_1.0.0        hms_0.4.2          
-## [49] parallel_3.5.1      sandwich_2.5-0      SparseM_1.77       
-## [52] RColorBrewer_1.1-2  yaml_2.2.0          curl_3.2           
-## [55] gridExtra_2.3       KMsurv_0.1-5        rms_5.1-2          
-## [58] rpart_4.1-13        latticeExtra_0.6-28 stringi_1.2.4      
-## [61] foreach_1.4.4       checkmate_1.8.5     zip_1.0.0          
-## [64] rlang_0.3.0.1       pkgconfig_2.0.2     evaluate_0.12      
-## [67] lattice_0.20-38     bindr_0.1.1         labeling_0.3       
-## [70] htmlwidgets_1.3     cmprsk_2.2-7        tidyselect_0.2.5   
-## [73] plyr_1.8.4          R6_2.3.0            Hmisc_4.1-1        
-## [76] multcomp_1.4-8      pillar_1.3.0        haven_2.0.0        
-## [79] foreign_0.8-71      withr_2.1.2.9000    abind_1.4-5        
-## [82] nnet_7.3-12         modelr_0.1.2        crayon_1.3.4       
-## [85] survMisc_0.5.5      utf8_1.1.4          rmarkdown_1.10     
-## [88] grid_3.5.1          readxl_1.1.0        data.table_1.11.8  
-## [91] digest_0.6.18       xtable_1.8-3        munsell_0.5.0      
-## [94] glmnet_2.0-16
+##  [1] TH.data_1.0-10      colorspace_1.4-0    rio_0.5.16         
+##  [4] htmlTable_1.13.1    base64enc_0.1-3     rstudioapi_0.9.0   
+##  [7] MatrixModels_0.4-1  fansi_0.4.0         mvtnorm_1.0-9      
+## [10] xml2_1.2.0          codetools_0.2-16    splines_3.5.2      
+## [13] knitr_1.21          Formula_1.2-3       jsonlite_1.6       
+## [16] speedglm_0.3-2      pROC_1.13.0         broom_0.5.1        
+## [19] km.ci_0.5-2         cluster_2.0.7-1     aod_1.3.1          
+## [22] compiler_3.5.2      httr_1.4.0          backports_1.1.3    
+## [25] assertthat_0.2.0    Matrix_1.2-15       lazyeval_0.2.1     
+## [28] cli_1.0.1           acepack_1.4.1       htmltools_0.3.6    
+## [31] quantreg_5.38       tools_3.5.2         gtable_0.2.0       
+## [34] glue_1.3.0          Rcpp_1.0.0          cellranger_1.1.0   
+## [37] nlme_3.1-137        iterators_1.0.10    xfun_0.5           
+## [40] openxlsx_4.1.0      rvest_0.3.2         statmod_1.4.30     
+## [43] polspline_1.1.14    MASS_7.3-51.1       zoo_1.8-4          
+## [46] scales_1.0.0        hms_0.4.2           parallel_3.5.2     
+## [49] sandwich_2.5-0      SparseM_1.77        RColorBrewer_1.1-2 
+## [52] yaml_2.2.0          curl_3.3            gridExtra_2.3      
+## [55] KMsurv_0.1-5        rms_5.1-3           rpart_4.1-13       
+## [58] latticeExtra_0.6-28 stringi_1.3.1       foreach_1.4.4      
+## [61] checkmate_1.9.1     zip_2.0.0           rlang_0.3.1        
+## [64] pkgconfig_2.0.2     evaluate_0.13       lattice_0.20-38    
+## [67] htmlwidgets_1.3     labeling_0.3        cmprsk_2.2-7       
+## [70] tidyselect_0.2.5    plyr_1.8.4          R6_2.4.0           
+## [73] generics_0.0.2      Hmisc_4.2-0         multcomp_1.4-8     
+## [76] pillar_1.3.1        haven_2.1.0         foreign_0.8-71     
+## [79] withr_2.1.2.9000    abind_1.4-5         nnet_7.3-12        
+## [82] modelr_0.1.4        crayon_1.3.4        survMisc_0.5.5     
+## [85] utf8_1.1.4          rmarkdown_1.11      grid_3.5.2         
+## [88] readxl_1.3.0        data.table_1.12.0   digest_0.6.18      
+## [91] xtable_1.8-3        munsell_0.5.0       glmnet_2.0-16
 ```
 

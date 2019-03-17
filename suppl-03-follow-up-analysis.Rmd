@@ -17,6 +17,10 @@ library(car)
 # Set plot theme
 theme_set(new = theme_bw())
 
+# Grey palette (white to black)
+grey_pal <- colorRampPalette(colors = c('#FFFFFF', '#000000'),
+                             interpolate = 'linear')(5)
+
 # knitr options
 knitr::opts_chunk$set(warning = FALSE,
                       message = FALSE, 
@@ -93,7 +97,7 @@ data %>%
            visit_count = as.character(visit_count)) %>%
     complete(ID, visit_months) %>%
     # Add a dummy variable for faceting
-    bind_cols(facet = c(rep('Panel 1', 420), rep('Panel 2', 832-420))) %>%
+    bind_cols(facet = c(rep('Panel 1', 600), rep('Panel 2', 1202-600))) %>%
     # Clean-up and order dataframe
     filter(complete.cases(.)) %>%
     # Plot
@@ -105,8 +109,7 @@ data %>%
                shape = 21, 
                size = 3) +
     scale_x_continuous(breaks = seq(0, 250, 25)) +
-    scale_fill_viridis_d(name = 'Visit count: ',
-                         direction = -1) +
+    scale_fill_manual(name = 'Visit count: ', values = grey_pal) +
     labs(title = 'Timing of clinic visits',
          subtitle = 'Visit number coded by fill colour',
          y = 'Participant ID',
@@ -212,7 +215,7 @@ gg_plot <- data_plot %>%
 ggsave(filename = 'figures/follow-up.png', 
        plot = gg_plot, 
        width = 9, 
-       height = 8)
+       height = 11)
 ```
 
 ----
@@ -310,7 +313,9 @@ gg_v2a + gg_v2b
 gg_v2c <- data_v2 %>%
     group_by(sn, max_visits) %>%
     summarise(count = n()) %>%
-    mutate(visits = fct_relevel(factor(max_visits), '5', '4', '3')) %>%
+    mutate(visits = factor(max_visits,
+                           levels = c('5', '4', '3', '2'),
+                           ordered = TRUE)) %>%
     ggplot(data = .) +
     aes(y = count,
         x = sn,
@@ -326,7 +331,9 @@ gg_v2c <- data_v2 %>%
 gg_v2d <- data_v2 %>%
     group_by(sn, max_visits) %>%
     summarise(count = n()) %>%
-    mutate(visits = fct_relevel(factor(max_visits), '5', '4', '3')) %>%
+    mutate(visits = factor(max_visits,
+                           levels = c('5', '4', '3', '2'),
+                           ordered = TRUE)) %>%
     ggplot(data = .) +
     aes(y = count,
         x = sn,
@@ -462,13 +469,13 @@ data_v1 %>%
          x = 'Visit interval') 
 
 # Stats
-## Generate date
+## Generate data
 data_lmer <- data_v1 %>%
     filter(visit_number != 1) %>%
     select(ID, visit_number, visit_break, sn) 
 
 ## Generate model (ID included as random effects)
-mod <- lmer(visit_break ~ sn * visit_number + (1|ID), 
+mod <- lm(visit_break ~ sn + visit_number, 
             data = data_lmer)
 
 ## Analysis of Deviance Table (Type II Wald F tests with Kenward-Roger df)
@@ -477,9 +484,9 @@ Anova(mod = mod,
       test.statistic = 'F')
 
 ## Basic diagnostics
-plot(mod, main = 'Residuals vs Fitted') 
-qqnorm(resid(mod))
-qqline(resid(mod))
+par(mfrow = c(2, 2))
+plot(mod) 
+par(mfrow = c(1, 1))
 ```
 
 ----

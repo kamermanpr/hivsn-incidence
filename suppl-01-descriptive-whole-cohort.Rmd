@@ -174,7 +174,7 @@ boot.ci(boot(data = data,
              R = 1999, 
              stype = 'i'), 
         type = 'bca') %>% 
-    data_frame(n = nrow(filter(data, !is.na(sex))), 
+    tibble(n = nrow(filter(data, !is.na(sex))), 
       Proportion = round(.$t0, 3), 
       Conf.level = 0.95, 
       Bca.lower = round(.$bca[[4]], 3),
@@ -208,12 +208,13 @@ data %>%
 ## Method = BCa, Resamples = 1999
 set.seed(1234)
 groupwiseMedian(CD4_cell.ul ~ 1, 
-                data = data, 
+                data = data[!is.na(data$CD4_cell.ul), ], 
                 R = 1999,
                 boot = TRUE, 
                 bca = TRUE)[c(2:3, 5, 6, 7)]
 # Plot
-data %>%
+data %>% 
+    filter(!is.na(CD4_cell.ul)) %>%
     ggplot(data = .) +
     aes(y = CD4_cell.ul, 
         x = 'All patients') +
@@ -306,11 +307,11 @@ boot.ci(boot(data = data,
              R = 1999, 
              stype = 'i'), 
         type = 'bca') %>% 
-    data_frame(n = nrow(filter(data, !is.na(TB_current))),
-      Proportion = round(.$t0, 3), 
-      Conf.level = 0.95, 
-      Bca.lower = round(.$bca[[4]], 3),
-      Bca.upper = round(.$bca[[5]], 3)) %>%
+    tibble(n = nrow(filter(data, !is.na(TB_current))),
+           Proportion = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3)) %>%
     .[1, -1] %>% 
     as.data.frame()
 
@@ -358,11 +359,11 @@ boot.ci(boot(data = data_tb,
              R = 1999, 
              stype = 'i'), 
         type = 'bca') %>% 
-    data_frame(n = nrow(filter(data_tb, !is.na(rifafour_treatment))), 
-      Proportion = round(.$t0, 3), 
-      Conf.level = 0.95, 
-      Bca.lower = round(.$bca[[4]], 3),
-      Bca.upper = round(.$bca[[5]], 3)) %>%
+    tibble(n = nrow(filter(data_tb, !is.na(rifafour_treatment))), 
+           Proportion = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3)) %>%
     .[1, -1] %>% 
     as.data.frame()
 

@@ -343,9 +343,9 @@ df_ci <- boot.ci(boot.out = boot(data = df_6months,
                                  stype = 'i'),
                  type = 'bca')
 
-data_frame(`Cases/person.year` = round(df_ci$t0, 2),
-           Conf.interval = paste0(round(df_ci$bca[4], 2), ' to ',
-                                 round(df_ci$bca[5], 2)))
+tibble(`Cases/person.year` = round(df_ci$t0, 2),
+       Conf.interval = paste0(round(df_ci$bca[4], 2), ' to ',
+                              round(df_ci$bca[5], 2)))
 ```
 
 # Survival curves
@@ -482,8 +482,6 @@ ggsurvplot(km_pain,
 
 In an exploratory analysis using Cox proportional hazard models (not shown here) various predictors violated assumptions of the model (e.g., proportional hazard, linearity, no influence points). Therefore we used logistic regression modelling, with visit 1 charateristics as predictors of SN onset. 
 
-**Note: Only complete datasets used (n = 77)**
-
 ## Model data
 
 The model does not include:
@@ -520,15 +518,15 @@ with(data_model[data_model$sex == 'F', ], cor.test(height_m, mass_kg))
 
 The two variables are related in females, but not in males. We decided to omit `weight_kg` in favour of `height_m` because of this relationship, and the stronger historical association between height and SN.
 
-## Lasso regression
+## Elastic net regression
 
-We chose to use LASSO (least absolute shrinkage and selection operator) for variable selection. LASSO is a regression analysis method that performs both variable selection and regularization in order to enhance the prediction accuracy and interpretability of the statistical model it produces.
+We chose to use elastic net for variable selection. Elastic net is a regression analysis method that performs both variable selection and regularization in order to enhance the prediction accuracy and interpretability of the statistical model it produces.
 
 The process involves performing a 10-fold cross validation to find the optimal _lambda_ (penalization parameter). And then running the analysis and extracting the model based on the best _lambda_. 
 
 ### Cross-validation to estimate alpha and lambda
 ```{r cv_lamda}
-# Remove mass_kg
+# Remove excluded varibales
 data_model %<>%
     select(-mass_kg)
 
@@ -545,7 +543,11 @@ plot(cvafit)
 # Plot minimum CV loss (deviance) for each value of alpha
 minlossplot(cvafit)
 
-# Print model at each of the four lowest CV loss alphas
+# Print model at each of the three lowest CV loss alphas
+## alpha = 0.125
+plot(cvafit$modlist[[6]])
+title('alpha = 0.125', line = 2.5)
+
 ## alpha = 0.216
 plot(cvafit$modlist[[7]])
 title('alpha = 0.216', line = 2.5)
@@ -554,27 +556,17 @@ title('alpha = 0.216', line = 2.5)
 plot(cvafit$modlist[[8]])
 title('alpha = 0.343', line = 2.5)
 
-## alpha = 0.512
-plot(cvafit$modlist[[9]])
-title('alpha = 0.512', line = 2.5)
-
-## Alpha = 0.729
-plot(cvafit$modlist[[10]])
-title('alpha = 0.729', line = 2.5)
-
 ## and alpha = 1
 plot(cvafit$modlist[[11]])
 title('alpha = 1.0', line = 2.5)
 
 # Extract best lambda for each alpha (lambda.1se)
+## alpha = 0.125
+a125 <- cvafit$modlist[[6]]$lambda.1se
 ## alpha = 0.216
 a216 <- cvafit$modlist[[7]]$lambda.1se
 ## alpha = 0.343
 a343 <- cvafit$modlist[[8]]$lambda.1se
-## alpha = 0.512
-a512 <- cvafit$modlist[[9]]$lambda.1se
-## Alpha = 0.729
-a729 <- cvafit$modlist[[10]]$lambda.1se
 ## and alpha = 1
 a100 <- cvafit$modlist[[11]]$lambda.1se
 ```
@@ -582,6 +574,12 @@ a100 <- cvafit$modlist[[11]]$lambda.1se
 ### Fit the models using CV alphas and best lambdas
 ```{r model_fit}
 # Fit the models for each alpha
+## alpha = 0.125
+model_a125 <- glmnet(sn ~ .,
+                     data = data_model, 
+                     alpha = 0.125,
+                     family = 'binomial')
+
 ## alpha = 0.216
 model_a216 <- glmnet(sn ~ .,
                      data = data_model, 
@@ -594,18 +592,6 @@ model_a343 <- glmnet(sn ~ .,
                      alpha = 0.343,
                      family = 'binomial')
 
-## alpha = 0.512
-model_a512 <- glmnet(sn ~ .,
-                     data = data_model, 
-                     alpha = 0.512,
-                     family = 'binomial')
-
-## alpha = 0.729
-model_a729 <- glmnet(sn ~ .,
-                     data = data_model, 
-                     alpha = 0.729,
-                     family = 'binomial')
-
 ## alpha = 1.0
 model_a100 <- glmnet(sn ~ .,
                      data = data_model, 
@@ -613,6 +599,14 @@ model_a100 <- glmnet(sn ~ .,
                      family = 'binomial')
 
 # Plot and get coefficients for each model
+## alpha = 0.125
+plot(model_a125,
+     xvar = 'lambda',
+     label = TRUE)
+abline(v = log(a125))
+title('alpha = 0.125', line = 2.5)
+coef(model_a125, s = a125)
+
 ## alpha = 0.216
 plot(model_a216,
      xvar = 'lambda',
@@ -629,22 +623,6 @@ abline(v = log(a343))
 title('alpha = 0.343', line = 2.5)
 coef(model_a343, s = a343)
 
-## alpha = 0.512
-plot(model_a512,
-     xvar = 'lambda',
-     label = TRUE)
-abline(v = log(a512))
-title('alpha = 0.512', line = 2.5)
-coef(model_a512, s = a512)
-
-## alpha = 0.729
-plot(model_a729,
-     xvar = 'lambda',
-     label = TRUE)
-abline(v = log(a729))
-title('alpha = 0.729', line = 2.5)
-coef(model_a729, s = a729)
-
 ## alpha = 1.0
 plot(model_a100,
      xvar = 'lambda',
@@ -655,107 +633,6 @@ coef(model_a100, s = a100)
 ```
 
 Across all alphas, and best lambdas, the output shows the best model includes `height_m` and `TB_current`. 
-
-Fit trimmed model using selected variables
-```{r final_model}
-mod_final <- glm(sn ~ height_m + TB_current,
-               data = data_model, 
-               family = binomial(link = 'logit'))
-
-## Generate model summaries
-### (Type II SS ANOVA shows significant effect for height_m, TB_current)
-### (NOTE: CI of odds ratios for height_m and TB_current are wide)
-print(mod_final)
-Anova(mod_final)
-summary(mod_final)
-OR(mod_final, what = 'all')[1:3, c(1, 2, 6:8)] 
-```
-
-## Model diagnostics
-```{r model_diagnostics}
-# Diagnostic measures for a binary regression model by covariate pattern
-data_dx <- dx(mod_final, byCov = TRUE)
-
-# Outliers and leverage
-## Plot 'dChisq' for each probability (P).
-### 'DChisq' gives the change in the Pearson chi-square statistic with 
-### observation i removed.
-### Values should be < 4 if the observation has little influence on the model.
-(gg_out <- ggplot(data = data_dx) +
-    aes(x = P,
-        y = dChisq) +
-    geom_point(shape = 21,
-               size = 2,
-               fill = '#FFFFFF') +
-    geom_hline(yintercept = 4,
-               linetype =2))
-### Label dodgy point with height and TB info
-gg_out + 
-    geom_label(label = data_dx %>% 
-                   filter(dChisq == max(dChisq)) %>% 
-                   mutate(new = str_glue('height_m: {height_m}, TB(yes): {TB_currentyes}')) %>% 
-                   .$new,
-               x = data_dx %>% 
-                   filter(dChisq == max(dChisq)) %>% 
-                   .$P,
-               y = data_dx %>% 
-                   filter(dChisq == max(dChisq)) %>% 
-                   .$dChisq,
-              hjust = -0.1)
-
-### Influence plot
-influenceIndexPlot(mod_final, 
-                   id.n = 3, 
-                   id.col = 'red')
-influencePlot(mod_final, 
-              id.col = 'red')
-
-### Remove influence points one at a time
-mod_influence6 <- update(mod_final, 
-                         subset = c(-6))
-mod_influence46 <- update(mod_final, 
-                          subset = c(-46))
-mod_influence58 <- update(mod_final, 
-                          subset = c(-58))
-
-### Compare coefficients with and without influence points
-compareCoefs(mod_final, mod_influence6)
-compareCoefs(mod_final, mod_influence46)
-compareCoefs(mod_final, mod_influence58)
-
-## Check '6' and '46' for anything strange 
-data_model %>%
-    select(sn, height_m, TB_current) %>%
-    .[6, ]
-data_model %>%
-    select(sn, height_m, TB_current) %>%
-    .[46, ]
-
-# Test for multicolinearity using variance inflation factor (vif)
-## Rule of thumb: values > 4 are a problem
-vif(mod_final) 
-
-# Test for correlated residuals 
-## p-vale > 0.05: no correlation between residuals
-durbinWatsonTest(mod_final)
-
-# Plot 'dBhat' for each probability (P).
-## 'dBhat' is the change in beta coefficient with observation i excluded.
-## 'dBhat' should be < 1 if the i has little influence on the coefficients.
-ggplot(data = data_dx) +
-    aes(x = P,
-        y = dBhat) +
-    geom_point(shape = 21,
-               size = 2,
-               fill = '#FFFFFF') +
-    geom_hline(yintercept = 1,
-               linetype =2)
-
-# Check goodness of fit (Hosmer-Lemeshow goodness of fit test)
-## Significant p-values indicate a poor fit
-## ROC 0.7 < auc < 0.8 indicates acceptable discrimination 
-gof(mod_final, g = 8)
-```
 
 ----
 
