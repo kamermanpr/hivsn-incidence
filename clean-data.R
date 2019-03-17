@@ -140,7 +140,7 @@ df <- df %>%
     )) 
 
 # Export data to rds and csv
-readr::write_csv(x = df, 
-                 path = './data-cleaned/clean_data.csv')
-readr::write_rds(x = df,
-                 path = './data-cleaned/clean_data.rds')
+write_csv(x = df, 
+          path = './data-cleaned/clean_data.csv')
+write_rds(x = df,
+          path = './data-cleaned/clean_data.rds')

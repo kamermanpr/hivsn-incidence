@@ -11,8 +11,6 @@ library(magrittr)
 library(tidyverse)
 library(patchwork)
 library(coin)
-library(lmerTest)
-library(car)
 
 # Set plot theme
 theme_set(new = theme_bw())
