@@ -1,8 +1,8 @@
-html_document:
-    keep_md: true
-    theme: yeti
+pdf_document:
+    latex_engine: xelatex
     highlight: pygments
-    code_folding: show
     toc: true
     toc_depth: 4
-    toc_float: true
+mainfont: Helvetica
+papersize: a4
+geometry: margin=15mm
