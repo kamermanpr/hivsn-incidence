@@ -24,7 +24,7 @@ clean:
 # Generate data
 data-cleaned/clean_data.csv data-cleaned/clean_data.rds: \
 clean-data.R \
-data-original/deidentified-data-august-2017.xlsx
+data-original/deidentified-data-august-2017.120.xlsx
 	Rscript "$<"
 
 # Generate outputs
