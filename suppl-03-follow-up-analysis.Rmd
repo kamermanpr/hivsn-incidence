@@ -11,6 +11,7 @@ library(magrittr)
 library(tidyverse)
 library(patchwork)
 library(coin)
+library(car)
 
 # Set plot theme
 theme_set(new = theme_bw())
@@ -351,7 +352,7 @@ gg_v2c + gg_v2d
 # Stats
 chisq_test(xtabs(~ sn + visit_number, 
                  data = data_v2),
-           distribution = approximate(B = 10000))
+           distribution = approximate(nresample =10000))
 ```
 
 ## Time between first and last visit
@@ -403,7 +404,7 @@ data_v2 %>%
 # Stats
 normal_test(max_duration ~ factor(sn),
             data = data_v2,
-            distribution = approximate(B = 10000))
+            distribution = approximate(nresample =10000))
 ```
 
 ## Time between successive clinic visits
