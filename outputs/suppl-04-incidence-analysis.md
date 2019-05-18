@@ -2,7 +2,7 @@
 title: "Supplement 4"
 subtitle: 'HIV-SN incidence analysis'
 author: 'Peter Kamerman and Prinisha Pillay'
-date: "17 March 2019"
+date: "18 May 2019"
 ---
 
 
@@ -258,7 +258,7 @@ as.data.frame(tab_sn) %>%
 ```
 ##   sn_present Count Percentage Cases/1000 patients Conf.interval
 ## 1         no   103         86                                  
-## 2        yes    17         14                 140    80  -  210
+## 2        yes    17         14                 140    80  -  200
 ```
 
 ### First 3-month period
@@ -362,7 +362,7 @@ tibble(`Cases/person.year` = round(df_ci$t0, 2),
 ## # A tibble: 1 x 2
 ##   `Cases/person.year` Conf.interval
 ##                 <dbl> <chr>        
-## 1                0.37 0.25 to 0.55
+## 1                0.37 0.25 to 0.56
 ```
 
 # Survival curves
@@ -443,7 +443,7 @@ ggsurvplot(km_basic,
            title = 'Kaplan-Meier Survival Curve: SN vs Days')
 ```
 
-<img src="figures/suppl-04-incidence-analysis/km_basic-1.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-04-incidence-analysis/km_basic-1.png" width="672" style="display: block; margin: auto;" />
 
 ```r
 # Publication plot
@@ -491,8 +491,8 @@ gg_plot <- ggsurvplot(km_basic,
 ## Save
 ggsave(filename = 'figures/survival-curve.png', 
        plot = print(gg_plot), 
-       width = 12.7, 
-       height = 12)
+       width = 14, 
+       height = 13)
 ```
 
 ## Plot a basic KM curve conditioned on painful SN
@@ -573,7 +573,7 @@ survdiff(Surv(time = visit_day,
 
 ```r
 # Plot
-ggsurvplot(km_pain,
+gg_plot4 <- ggsurvplot(km_pain,
            conf.int = TRUE,
            fun = 'event',
            risk.table = 'abs_pct', 
@@ -581,25 +581,35 @@ ggsurvplot(km_pain,
            cumevents = TRUE, 
            surv.median.line = 'hv', 
            pval = TRUE, 
-           ggtheme = theme_bw(), 
-           tables.theme = theme(plot.title = element_text(size = 12,
+           ggtheme = theme_new(), 
+           tables.theme = theme(plot.title = element_text(size = 22,
                                                           face = 'bold'),
                                 panel.border = element_blank(),
                                 panel.grid.major.x = element_blank(),
                                 axis.title = element_blank(),
                                 axis.text.x = element_blank(),
                                 axis.ticks = element_blank()),
-           fontsize = 4,
+           fontsize = 7,
            tables.height = 0.14,
-           legend = 'none',
+           legend.title = '',
            legend.labs = c('Non-painful SN', 'Painful SN'), 
            palette = c('#0072B2', '#D55E00'), 
            ylim = c(0, 1),
            xlab = 'Days', 
            title = 'Kaplan-Meier Survival Curve: SN vs Days')
+
+gg_plot4
 ```
 
-<img src="figures/suppl-04-incidence-analysis/km_pain-1.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-04-incidence-analysis/km_pain-1.png" width="672" style="display: block; margin: auto;" />
+
+```r
+## Save
+ggsave(filename = 'figures/survival-curve2.png', 
+       plot = print(gg_plot4), 
+       width = 14, 
+       height = 13)
+```
 
 # Multivariable modeling
 
@@ -634,7 +644,7 @@ ggplot(data = data_model) +
     theme_bw()
 ```
 
-<img src="figures/suppl-04-incidence-analysis/model_selection-1.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-04-incidence-analysis/model_selection-1.png" width="672" style="display: block; margin: auto;" />
 
 ```r
 # Males
@@ -713,14 +723,14 @@ print(cvafit)
 plot(cvafit)
 ```
 
-<img src="figures/suppl-04-incidence-analysis/cv_lamda-1.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-04-incidence-analysis/cv_lamda-1.png" width="672" style="display: block; margin: auto;" />
 
 ```r
 # Plot minimum CV loss (deviance) for each value of alpha
 minlossplot(cvafit)
 ```
 
-<img src="figures/suppl-04-incidence-analysis/cv_lamda-2.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-04-incidence-analysis/cv_lamda-2.png" width="672" style="display: block; margin: auto;" />
 
 ```r
 # Print model at each of the three lowest CV loss alphas
@@ -729,7 +739,7 @@ plot(cvafit$modlist[[6]])
 title('alpha = 0.125', line = 2.5)
 ```
 
-<img src="figures/suppl-04-incidence-analysis/cv_lamda-3.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-04-incidence-analysis/cv_lamda-3.png" width="672" style="display: block; margin: auto;" />
 
 ```r
 ## alpha = 0.216
@@ -737,7 +747,7 @@ plot(cvafit$modlist[[7]])
 title('alpha = 0.216', line = 2.5)
 ```
 
-<img src="figures/suppl-04-incidence-analysis/cv_lamda-4.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-04-incidence-analysis/cv_lamda-4.png" width="672" style="display: block; margin: auto;" />
 
 ```r
 ## alpha = 0.343
@@ -745,7 +755,7 @@ plot(cvafit$modlist[[8]])
 title('alpha = 0.343', line = 2.5)
 ```
 
-<img src="figures/suppl-04-incidence-analysis/cv_lamda-5.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-04-incidence-analysis/cv_lamda-5.png" width="672" style="display: block; margin: auto;" />
 
 ```r
 ## and alpha = 1
@@ -753,7 +763,7 @@ plot(cvafit$modlist[[11]])
 title('alpha = 1.0', line = 2.5)
 ```
 
-<img src="figures/suppl-04-incidence-analysis/cv_lamda-6.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-04-incidence-analysis/cv_lamda-6.png" width="672" style="display: block; margin: auto;" />
 
 ```r
 # Extract best lambda for each alpha (lambda.1se)
@@ -804,7 +814,7 @@ abline(v = log(a125))
 title('alpha = 0.125', line = 2.5)
 ```
 
-<img src="figures/suppl-04-incidence-analysis/model_fit-1.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-04-incidence-analysis/model_fit-1.png" width="672" style="display: block; margin: auto;" />
 
 ```r
 coef(model_a125, s = a125)
@@ -812,18 +822,18 @@ coef(model_a125, s = a125)
 
 ```
 ## 12 x 1 sparse Matrix of class "dgCMatrix"
-##                                 1
-## (Intercept)           -9.33556716
-## age_years              0.01891831
-## sexF                   .         
-## sexM                   .         
-## height_m               4.54062406
-## CD4_cell.ul            .         
-## viral_load_copies.ml   .         
-## alcohol_units.week    -0.01435151
-## TB_currentno          -0.58877559
-## TB_currentyes          0.58855939
-## rifafour_treatmentno   .         
+##                                  1
+## (Intercept)           -4.894615097
+## age_years              0.006582470
+## sexF                   .          
+## sexM                   .          
+## height_m               2.058797946
+## CD4_cell.ul            .          
+## viral_load_copies.ml   .          
+## alcohol_units.week    -0.003015107
+## TB_currentno          -0.406005587
+## TB_currentyes          0.406054771
+## rifafour_treatmentno   .          
 ## rifafour_treatmentyes  .
 ```
 
@@ -836,7 +846,7 @@ abline(v = log(a216))
 title('alpha = 0.216', line = 2.5)
 ```
 
-<img src="figures/suppl-04-incidence-analysis/model_fit-2.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-04-incidence-analysis/model_fit-2.png" width="672" style="display: block; margin: auto;" />
 
 ```r
 coef(model_a216, s = a216)
@@ -844,18 +854,18 @@ coef(model_a216, s = a216)
 
 ```
 ## 12 x 1 sparse Matrix of class "dgCMatrix"
-##                                 1
-## (Intercept)           -9.65423087
-## age_years              0.01782834
-## sexF                   .         
-## sexM                   .         
-## height_m               4.75580888
-## CD4_cell.ul            .         
-## viral_load_copies.ml   .         
-## alcohol_units.week    -0.01418191
-## TB_currentno          -0.57902533
-## TB_currentyes          0.57845188
-## rifafour_treatmentno   .         
+##                                  1
+## (Intercept)           -5.405543371
+## age_years              0.005536200
+## sexF                   .          
+## sexM                   .          
+## height_m               2.400664479
+## CD4_cell.ul            .          
+## viral_load_copies.ml   .          
+## alcohol_units.week    -0.002484731
+## TB_currentno          -0.432851705
+## TB_currentyes          0.432964102
+## rifafour_treatmentno   .          
 ## rifafour_treatmentyes  .
 ```
 
@@ -868,7 +878,7 @@ abline(v = log(a343))
 title('alpha = 0.343', line = 2.5)
 ```
 
-<img src="figures/suppl-04-incidence-analysis/model_fit-3.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-04-incidence-analysis/model_fit-3.png" width="672" style="display: block; margin: auto;" />
 
 ```r
 coef(model_a343, s = a343)
@@ -876,18 +886,18 @@ coef(model_a343, s = a343)
 
 ```
 ## 12 x 1 sparse Matrix of class "dgCMatrix"
-##                                 1
-## (Intercept)           -9.94710075
-## age_years              0.01617587
-## sexF                   .         
-## sexM                   .         
-## height_m               4.96701823
-## CD4_cell.ul            .         
-## viral_load_copies.ml   .         
-## alcohol_units.week    -0.01363731
-## TB_currentno          -0.56625392
-## TB_currentyes          0.56465809
-## rifafour_treatmentno   .         
+##                                  1
+## (Intercept)           -6.105397939
+## age_years              0.004421528
+## sexF                   .          
+## sexM                   .          
+## height_m               2.858565003
+## CD4_cell.ul            .          
+## viral_load_copies.ml   .          
+## alcohol_units.week    -0.002188647
+## TB_currentno          -0.458682524
+## TB_currentyes          0.458521802
+## rifafour_treatmentno   .          
 ## rifafour_treatmentyes  .
 ```
 
@@ -900,7 +910,7 @@ abline(v = log(a100))
 title('alpha = 1.0', line = 2.5)
 ```
 
-<img src="figures/suppl-04-incidence-analysis/model_fit-4.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-04-incidence-analysis/model_fit-4.png" width="672" style="display: block; margin: auto;" />
 
 ```r
 coef(model_a100, s = a100)
@@ -909,16 +919,16 @@ coef(model_a100, s = a100)
 ```
 ## 12 x 1 sparse Matrix of class "dgCMatrix"
 ##                                   1
-## (Intercept)           -1.112312e+01
-## age_years              1.201960e-02
+## (Intercept)           -6.683193e+00
+## age_years              .           
 ## sexF                   .           
 ## sexM                   .           
-## height_m               6.087209e+00
+## height_m               3.571937e+00
 ## CD4_cell.ul            .           
 ## viral_load_copies.ml   .           
-## alcohol_units.week    -1.403370e-02
-## TB_currentno          -1.068291e+00
-## TB_currentyes          3.876452e-14
+## alcohol_units.week     .           
+## TB_currentno          -8.947369e-01
+## TB_currentyes          4.010801e-14
 ## rifafour_treatmentno   .           
 ## rifafour_treatmentyes  .
 ```
@@ -934,13 +944,13 @@ sessionInfo()
 ```
 
 ```
-## R version 3.5.2 (2018-12-20)
+## R version 3.6.0 (2019-04-26)
 ## Platform: x86_64-apple-darwin15.6.0 (64-bit)
-## Running under: macOS Mojave 10.14.3
+## Running under: macOS Mojave 10.14.4
 ## 
 ## Matrix products: default
-## BLAS: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRblas.0.dylib
-## LAPACK: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRlapack.dylib
+## BLAS:   /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
+## LAPACK: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRlapack.dylib
 ## 
 ## locale:
 ## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
@@ -949,45 +959,34 @@ sessionInfo()
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] LogisticDx_0.2    survminer_0.4.3   ggpubr_0.2       
-##  [4] survival_2.43-3   car_3.0-2         carData_3.0-2    
-##  [7] boot_1.3-20       glmnetUtils_1.1.1 lubridate_1.7.4  
-## [10] forcats_0.4.0     stringr_1.4.0     dplyr_0.8.0.1    
-## [13] purrr_0.3.1       readr_1.3.1       tidyr_0.8.3      
-## [16] tibble_2.0.1      ggplot2_3.1.0     tidyverse_1.2.1  
-## [19] magrittr_1.5     
+##  [1] survminer_0.4.3   ggpubr_0.2        survival_2.44-1.1
+##  [4] boot_1.3-22       glmnetUtils_1.1.2 lubridate_1.7.4  
+##  [7] forcats_0.4.0     stringr_1.4.0     dplyr_0.8.0.1    
+## [10] purrr_0.3.2       readr_1.3.1       tidyr_0.8.3      
+## [13] tibble_2.1.1      ggplot2_3.1.1     tidyverse_1.2.1  
+## [16] magrittr_1.5     
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] TH.data_1.0-10      colorspace_1.4-0    rio_0.5.16         
-##  [4] htmlTable_1.13.1    base64enc_0.1-3     rstudioapi_0.9.0   
-##  [7] MatrixModels_0.4-1  fansi_0.4.0         mvtnorm_1.0-9      
-## [10] xml2_1.2.0          codetools_0.2-16    splines_3.5.2      
-## [13] knitr_1.21          Formula_1.2-3       jsonlite_1.6       
-## [16] speedglm_0.3-2      pROC_1.13.0         broom_0.5.1        
-## [19] km.ci_0.5-2         cluster_2.0.7-1     aod_1.3.1          
-## [22] compiler_3.5.2      httr_1.4.0          backports_1.1.3    
-## [25] assertthat_0.2.0    Matrix_1.2-15       lazyeval_0.2.1     
-## [28] cli_1.0.1           acepack_1.4.1       htmltools_0.3.6    
-## [31] quantreg_5.38       tools_3.5.2         gtable_0.2.0       
-## [34] glue_1.3.0          Rcpp_1.0.0          cellranger_1.1.0   
-## [37] nlme_3.1-137        iterators_1.0.10    xfun_0.5           
-## [40] openxlsx_4.1.0      rvest_0.3.2         statmod_1.4.30     
-## [43] polspline_1.1.14    MASS_7.3-51.1       zoo_1.8-4          
-## [46] scales_1.0.0        hms_0.4.2           parallel_3.5.2     
-## [49] sandwich_2.5-0      SparseM_1.77        RColorBrewer_1.1-2 
-## [52] yaml_2.2.0          curl_3.3            gridExtra_2.3      
-## [55] KMsurv_0.1-5        rms_5.1-3           rpart_4.1-13       
-## [58] latticeExtra_0.6-28 stringi_1.3.1       foreach_1.4.4      
-## [61] checkmate_1.9.1     zip_2.0.0           rlang_0.3.1        
-## [64] pkgconfig_2.0.2     evaluate_0.13       lattice_0.20-38    
-## [67] htmlwidgets_1.3     labeling_0.3        cmprsk_2.2-7       
-## [70] tidyselect_0.2.5    plyr_1.8.4          R6_2.4.0           
-## [73] generics_0.0.2      Hmisc_4.2-0         multcomp_1.4-8     
-## [76] pillar_1.3.1        haven_2.1.0         foreign_0.8-71     
-## [79] withr_2.1.2.9000    abind_1.4-5         nnet_7.3-12        
-## [82] modelr_0.1.4        crayon_1.3.4        survMisc_0.5.5     
-## [85] utf8_1.1.4          rmarkdown_1.11      grid_3.5.2         
-## [88] readxl_1.3.0        data.table_1.12.0   digest_0.6.18      
-## [91] xtable_1.8-3        munsell_0.5.0       glmnet_2.0-16
+##  [1] Rcpp_1.0.1        lattice_0.20-38   zoo_1.8-5        
+##  [4] utf8_1.1.4        assertthat_0.2.1  glmnet_2.0-16    
+##  [7] digest_0.6.18     foreach_1.4.4     R6_2.4.0         
+## [10] cellranger_1.1.0  plyr_1.8.4        backports_1.1.4  
+## [13] evaluate_0.13     httr_1.4.0        pillar_1.3.1     
+## [16] rlang_0.3.4       lazyeval_0.2.2    readxl_1.3.1     
+## [19] rstudioapi_0.10   data.table_1.12.2 Matrix_1.2-17    
+## [22] rmarkdown_1.12    labeling_0.3      splines_3.6.0    
+## [25] munsell_0.5.0     broom_0.5.2       compiler_3.6.0   
+## [28] modelr_0.1.4      xfun_0.6          pkgconfig_2.0.2  
+## [31] htmltools_0.3.6   tidyselect_0.2.5  gridExtra_2.3    
+## [34] km.ci_0.5-2       codetools_0.2-16  fansi_0.4.0      
+## [37] crayon_1.3.4      withr_2.1.2.9000  grid_3.6.0       
+## [40] nlme_3.1-139      jsonlite_1.6      xtable_1.8-4     
+## [43] gtable_0.3.0      KMsurv_0.1-5      scales_1.0.0     
+## [46] cli_1.1.0         stringi_1.4.3     xml2_1.2.0       
+## [49] survMisc_0.5.5    generics_0.0.2    iterators_1.0.10 
+## [52] tools_3.6.0       cmprsk_2.2-7      glue_1.3.1       
+## [55] hms_0.4.2         parallel_3.6.0    yaml_2.2.0       
+## [58] colorspace_1.4-1  rvest_0.3.3       knitr_1.22       
+## [61] haven_2.1.0
 ```
 

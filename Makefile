@@ -1,5 +1,5 @@
 # Create directories if required
-$(shell mkdir -p data-cleaned figures outputs outputs/figures/)
+$(shell mkdir -p data-cleaned figures outputs outputs/figures)
 
 # Dummy outputs
 DATA = 	data-cleaned/clean_data.csv \
@@ -55,3 +55,4 @@ suppl-04-incidence-analysis.Rmd \
 data-cleaned/clean_data.rds
 	Rscript -e "rmarkdown::render('$<', output_dir = 'outputs/')"
 	mv figures/suppl-04-incidence-analysis outputs/figures/
+	

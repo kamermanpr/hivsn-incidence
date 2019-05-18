@@ -2,7 +2,7 @@
 title: "Supplement 1"
 subtitle: "Descriptive statistics for the whole cohort"
 author: "Peter Kamerman and Prinisha Pillay"
-date: "17 March 2019"
+date: "18 May 2019"
 ---
 
 
@@ -168,7 +168,7 @@ groupwiseMean(age_years ~ 1,
 
 ```
 ##     n Mean Conf.level Bca.lower Bca.upper
-## 1 120 37.8       0.95        36      39.5
+## 1 120 37.8       0.95      36.1      39.5
 ```
 
 ```r
@@ -185,7 +185,7 @@ data %>%
     theme(axis.text.x = element_blank())
 ```
 
-<img src="figures/suppl-01-descriptive-whole-cohort/age-1.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-01-descriptive-whole-cohort/age-1.png" width="672" style="display: block; margin: auto;" />
 
 ## Body mass
 
@@ -222,7 +222,7 @@ groupwiseMean(mass_kg ~ 1,
 
 ```
 ##     n Mean Conf.level Bca.lower Bca.upper
-## 1 120   65       0.95      62.8      67.7
+## 1 120   65       0.95      62.5      67.9
 ```
 
 ```r
@@ -238,7 +238,7 @@ data %>%
     theme(axis.text.x = element_blank())
 ```
 
-<img src="figures/suppl-01-descriptive-whole-cohort/mass-1.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-01-descriptive-whole-cohort/mass-1.png" width="672" style="display: block; margin: auto;" />
 
 ## Height
 Expect height to show sex difference, so analyse separately for males and females.
@@ -280,8 +280,8 @@ groupwiseMean(age_years ~ sex,
 
 ```
 ##   sex  n Mean Conf.level Bca.lower Bca.upper
-## 1   F 66 36.0       0.95      33.8      38.5
-## 2   M 54 39.9       0.95      37.7      42.2
+## 1   F 66 36.0       0.95      33.8      38.1
+## 2   M 54 39.9       0.95      37.6      42.4
 ```
 
 ```r
@@ -297,7 +297,7 @@ data %>%
          x = 'Sex')
 ```
 
-<img src="figures/suppl-01-descriptive-whole-cohort/height-1.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-01-descriptive-whole-cohort/height-1.png" width="672" style="display: block; margin: auto;" />
 
 ## Sex
 
@@ -338,7 +338,7 @@ boot.ci(boot(data = data,
 
 ```
 ##     n Proportion Conf.level Bca.lower Bca.upper
-## 1 120       0.55       0.95     0.458     0.633
+## 1 120       0.55       0.95      0.45     0.633
 ```
 
 ```r
@@ -357,7 +357,7 @@ data %>%
     theme(axis.text.x = element_blank())
 ```
 
-<img src="figures/suppl-01-descriptive-whole-cohort/sex-1.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-01-descriptive-whole-cohort/sex-1.png" width="672" style="display: block; margin: auto;" />
 
 ## CD4 T-cell count
 
@@ -393,7 +393,7 @@ groupwiseMedian(CD4_cell.ul ~ 1,
 
 ```
 ##     n Median Conf.level Bca.lower Bca.upper
-## 1 119    221       0.95       172       283
+## 1 119    221       0.95       163       283
 ```
 
 ```r
@@ -410,7 +410,7 @@ data %>%
     theme(axis.text.x = element_blank())
 ```
 
-<img src="figures/suppl-01-descriptive-whole-cohort/cd4-1.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-01-descriptive-whole-cohort/cd4-1.png" width="672" style="display: block; margin: auto;" />
 
 ## Viral load
 
@@ -446,7 +446,7 @@ groupwiseMedian(viral_load_copies.ml ~ 1,
 
 ```
 ##     n Median Conf.level Bca.lower Bca.upper
-## 1 108   3.14       0.95      2.93       3.5
+## 1 108   3.14       0.95       2.9       3.5
 ```
 
 ```r
@@ -463,7 +463,7 @@ data %>%
     theme(axis.text.x = element_blank())
 ```
 
-<img src="figures/suppl-01-descriptive-whole-cohort/viral_load-1.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-01-descriptive-whole-cohort/viral_load-1.png" width="672" style="display: block; margin: auto;" />
 
 ## Alcohol
 
@@ -508,7 +508,7 @@ groupwiseMedian(alcohol_units.week ~ 1,
 
 ```
 ##    n Median Conf.level Bca.lower Bca.upper
-## 1 27     15       0.95         6        18
+## 1 27     15       0.95      6.18        18
 ```
 
 ```r
@@ -525,7 +525,7 @@ data %>%
     theme(axis.text.x = element_blank())
 ```
 
-<img src="figures/suppl-01-descriptive-whole-cohort/alcohol-1.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-01-descriptive-whole-cohort/alcohol-1.png" width="672" style="display: block; margin: auto;" />
 
 ## TB
 _Note: Treatment policy was to start some patients, irrespective of TB diagnosis, on TB treatment. Therefore current TB infection and treatment for TB analysed separately._
@@ -569,7 +569,7 @@ boot.ci(boot(data = data,
 
 ```
 ##     n Proportion Conf.level Bca.lower Bca.upper
-## 1 120      0.167       0.95     0.108     0.233
+## 1 120      0.167       0.95       0.1     0.233
 ```
 
 ```r
@@ -588,7 +588,7 @@ data %>%
     theme(axis.text.x = element_blank())
 ```
 
-<img src="figures/suppl-01-descriptive-whole-cohort/tb_current-1.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-01-descriptive-whole-cohort/tb_current-1.png" width="672" style="display: block; margin: auto;" />
 
 ### Currently receiving TB treatment?
 Treatment consisted of rifafour and pyridoxine (prophylaxis). Therefore only need to analyse rifafour data. Data coded as _'No'_ (not being treated), _'Yes'_ (being treated for active TB), and _'Prophylaxis'_ (being treated prophylactically for TB).
@@ -662,7 +662,7 @@ boot.ci(boot(data = data_tb,
 
 ```
 ##     n Proportion Conf.level Bca.lower Bca.upper
-## 1 120      0.275       0.95     0.195     0.358
+## 1 120      0.275       0.95     0.192      0.35
 ```
 
 ```r
@@ -685,7 +685,7 @@ data %>%
     theme(axis.text.x = element_blank())
 ```
 
-<img src="figures/suppl-01-descriptive-whole-cohort/tb_rifafour-1.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-01-descriptive-whole-cohort/tb_rifafour-1.png" width="672" style="display: block; margin: auto;" />
 
 ## Diabetes
 Classified as diabetic based on `data$hba1c_percent` > 7%. No participants were diabetic.
@@ -740,13 +740,13 @@ sessionInfo()
 ```
 
 ```
-## R version 3.5.2 (2018-12-20)
+## R version 3.6.0 (2019-04-26)
 ## Platform: x86_64-apple-darwin15.6.0 (64-bit)
-## Running under: macOS Mojave 10.14.3
+## Running under: macOS Mojave 10.14.4
 ## 
 ## Matrix products: default
-## BLAS: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRblas.0.dylib
-## LAPACK: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRlapack.dylib
+## BLAS:   /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
+## LAPACK: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRlapack.dylib
 ## 
 ## locale:
 ## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
@@ -755,33 +755,34 @@ sessionInfo()
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] skimr_1.0.5      boot_1.3-20      rcompanion_2.1.1 forcats_0.4.0   
-##  [5] stringr_1.4.0    dplyr_0.8.0.1    purrr_0.3.1      readr_1.3.1     
-##  [9] tidyr_0.8.3      tibble_2.0.1     ggplot2_3.1.0    tidyverse_1.2.1 
+##  [1] skimr_1.0.5      boot_1.3-22      rcompanion_2.1.7 forcats_0.4.0   
+##  [5] stringr_1.4.0    dplyr_0.8.0.1    purrr_0.3.2      readr_1.3.1     
+##  [9] tidyr_0.8.3      tibble_2.1.1     ggplot2_3.1.1    tidyverse_1.2.1 
 ## [13] magrittr_1.5    
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_1.0.0         lubridate_1.7.4    mvtnorm_1.0-9     
-##  [4] lattice_0.20-38    multcompView_0.1-7 zoo_1.8-4         
-##  [7] utf8_1.1.4         lmtest_0.9-36      assertthat_0.2.0  
-## [10] digest_0.6.18      R6_2.4.0           cellranger_1.1.0  
-## [13] plyr_1.8.4         backports_1.1.3    EMT_1.1           
-## [16] stats4_3.5.2       evaluate_0.13      httr_1.4.0        
-## [19] pillar_1.3.1       rlang_0.3.1        lazyeval_0.2.1    
-## [22] multcomp_1.4-8     readxl_1.3.0       rstudioapi_0.9.0  
-## [25] Matrix_1.2-15      rmarkdown_1.11     labeling_0.3      
-## [28] splines_3.5.2      foreign_0.8-71     munsell_0.5.0     
-## [31] broom_0.5.1        compiler_3.5.2     modelr_0.1.4      
-## [34] xfun_0.5           pkgconfig_2.0.2    manipulate_1.0.1  
-## [37] DescTools_0.99.27  htmltools_0.3.6    tidyselect_0.2.5  
-## [40] expm_0.999-3       coin_1.2-2         codetools_0.2-16  
-## [43] fansi_0.4.0        crayon_1.3.4       withr_2.1.2.9000  
-## [46] MASS_7.3-51.1      grid_3.5.2         nlme_3.1-137      
-## [49] jsonlite_1.6       gtable_0.2.0       scales_1.0.0      
-## [52] cli_1.0.1          stringi_1.3.1      xml2_1.2.0        
-## [55] generics_0.0.2     nortest_1.0-4      sandwich_2.5-0    
-## [58] TH.data_1.0-10     tools_3.5.2        glue_1.3.0        
-## [61] hms_0.4.2          survival_2.43-3    yaml_2.2.0        
-## [64] colorspace_1.4-0   rvest_0.3.2        knitr_1.21        
-## [67] haven_2.1.0        modeltools_0.2-22
+##  [1] httr_1.4.0         jsonlite_1.6       splines_3.6.0     
+##  [4] modelr_0.1.4       assertthat_0.2.1   expm_0.999-4      
+##  [7] stats4_3.6.0       coin_1.3-0         cellranger_1.1.0  
+## [10] yaml_2.2.0         pillar_1.3.1       backports_1.1.4   
+## [13] lattice_0.20-38    glue_1.3.1         digest_0.6.18     
+## [16] rvest_0.3.3        colorspace_1.4-1   sandwich_2.5-1    
+## [19] htmltools_0.3.6    Matrix_1.2-17      plyr_1.8.4        
+## [22] pkgconfig_2.0.2    broom_0.5.2        haven_2.1.0       
+## [25] EMT_1.1            mvtnorm_1.0-10     scales_1.0.0      
+## [28] manipulate_1.0.1   generics_0.0.2     TH.data_1.0-10    
+## [31] withr_2.1.2.9000   lazyeval_0.2.2     cli_1.1.0         
+## [34] survival_2.44-1.1  crayon_1.3.4       readxl_1.3.1      
+## [37] evaluate_0.13      fansi_0.4.0        nlme_3.1-139      
+## [40] MASS_7.3-51.4      xml2_1.2.0         foreign_0.8-71    
+## [43] tools_3.6.0        hms_0.4.2          matrixStats_0.54.0
+## [46] multcomp_1.4-10    munsell_0.5.0      compiler_3.6.0    
+## [49] multcompView_0.1-7 rlang_0.3.4        grid_3.6.0        
+## [52] rstudioapi_0.10    labeling_0.3       rmarkdown_1.12    
+## [55] DescTools_0.99.28  gtable_0.3.0       codetools_0.2-16  
+## [58] R6_2.4.0           zoo_1.8-5          lubridate_1.7.4   
+## [61] knitr_1.22         utf8_1.1.4         nortest_1.0-4     
+## [64] libcoin_1.0-4      modeltools_0.2-22  stringi_1.4.3     
+## [67] parallel_3.6.0     Rcpp_1.0.1         tidyselect_0.2.5  
+## [70] xfun_0.6           lmtest_0.9-37
 ```

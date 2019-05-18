@@ -2,7 +2,7 @@
 title: "Supplement 3"
 subtitle: 'Descriptive statistics on participant follow-up'
 author: 'Peter Kamerman and Prinisha Pillay'
-date: "17 March 2019"
+date: "18 May 2019"
 ---
 
 
@@ -166,7 +166,74 @@ data %>%
           strip.text = element_blank())
 ```
 
-<img src="figures/suppl-03-follow-up-analysis/visit_full-1.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-03-follow-up-analysis/visit_full-1.png" width="672" style="display: block; margin: auto;" />
+
+```r
+## Publication figure
+gg_plot1 <- data %>%
+    # Process data for plotting
+    group_by(ID) %>%
+    mutate(visit = ifelse(visit_day > 0,
+                          yes = 1,
+                          no = 0),
+           visit_count = cumsum(visit),
+           max_visits = max(visit_count),
+           max_duration = max(visit_day)) %>%
+    ungroup() %>%
+    select(ID, visit_day, visit_months, 
+           visit_count, max_visits, 
+           max_duration) %>%
+    # Clean-up and order dataframe
+    arrange(max_duration, max_visits, desc(ID)) %>%
+    mutate(ID = as_factor(ID),
+           visit_count = as.character(visit_count)) %>%
+    complete(ID, visit_months) %>%
+    # Add a dummy variable for faceting
+    bind_cols(facet = c(rep('Panel 1', 600), rep('Panel 2', 1202-600))) %>%
+    # Clean-up and order dataframe
+    filter(complete.cases(.)) %>%
+    # Plot
+    ggplot(data = .) +
+    aes(x = visit_day,
+        y = ID) +
+    geom_path(colour = '#888888') +
+    geom_point(aes(fill = visit_count),
+               shape = 21, 
+               size = 3) +
+    scale_x_continuous(breaks = seq(0, 250, 50)) +
+    scale_fill_manual(name = 'Visit count: ', values = grey_pal) +
+    labs(y = 'Participant ID',
+         x = 'Days') +
+    facet_wrap(~facet, 
+               ncol = 2, 
+               scales = 'free_y') +
+    theme_bw() +
+    theme(legend.position = 'top',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          legend.margin = margin(t = -0.3, 
+                                 r = 0, 
+                                 b = -0.3, 
+                                 l = 0, 'lines'),
+          axis.title.x = element_text(size = 22),
+          axis.title.y = element_text(size = 22, margin = margin(t = 0, 
+                                                                 r = 1,
+                                                                 b = 0,
+                                                                 l = 0,
+                                                                 'lines')),
+          axis.text.x = element_text(size = 20,
+                                     colour = '#000000'),
+          axis.text.y = element_text(colour = '#000000'),
+          panel.grid = element_blank(),
+          strip.background = element_blank(),
+          strip.text = element_blank())
+
+## Save
+ggsave(filename = 'figures/follow-up.png', 
+       plot = gg_plot1, 
+       width = 10, 
+       height = 10)
+```
 
 ## By SN status
 
@@ -227,11 +294,11 @@ ggplot(data = data_plot) +
           panel.grid = element_blank())
 ```
 
-<img src="figures/suppl-03-follow-up-analysis/visit_sn-1.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-03-follow-up-analysis/visit_sn-1.png" width="672" style="display: block; margin: auto;" />
 
 ```r
 # Publication plot
-gg_plot <- data_plot %>% 
+gg_plot2 <- data_plot %>% 
     ggplot(data = .) +
     aes(x = visit_day,
         y = ID) +
@@ -241,27 +308,36 @@ gg_plot <- data_plot %>%
                size = 3) +
     labs(x = 'Days',
          y = 'Participant ID') +
-    scale_x_continuous(breaks = seq(0, 250, 25)) +
+    scale_x_continuous(breaks = seq(0, 250, 50)) +
     scale_fill_manual(name = 'Neuropathy present: ',
                       values = c('#FFFFFF', '#000000')) +
     facet_wrap(~ sn, 
                ncol = 2, 
                scales = 'free_y') +
+    theme_bw() +
     theme(legend.position = 'top',
-          legend.text = element_text(size = 11),
-          legend.title = element_text(size = 11),
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          legend.margin = margin(t = -0.3, 
+                                 r = 0, 
+                                 b = -0.3, 
+                                 l = 0, 'lines'),
+          axis.title.x = element_text(size = 22),
+          axis.title.y = element_text(size = 22, margin = margin(t = 0, 
+                                                                 r = 1,
+                                                                 b = 0,
+                                                                 l = 0,
+                                                                 'lines')),
+          axis.text.x = element_text(size = 20,
+                                     colour = '#000000'),
           axis.text.y = element_text(colour = '#000000'),
-          axis.text.x = element_text(colour = '#000000',
-                                     size = 12),
-          axis.title = element_text(size = 14),
           panel.grid = element_blank(),
-          panel.border = element_rect(size = 1),
-          strip.text = element_text(size = 12))
+          strip.text = element_text(size = 16))
 
-ggsave(filename = 'figures/follow-up.png', 
-       plot = gg_plot, 
-       width = 9, 
-       height = 11)
+ggsave(filename = 'figures/follow-up2.png', 
+       plot = gg_plot2, 
+       width = 10, 
+       height = 10)
 ```
 
 ----
@@ -377,7 +453,7 @@ gg_v2b <- data_v2 %>%
 gg_v2a + gg_v2b
 ```
 
-<img src="figures/suppl-03-follow-up-analysis/n_visits-1.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-03-follow-up-analysis/n_visits-1.png" width="672" style="display: block; margin: auto;" />
 
 ```r
 ## Conditional on SN
@@ -392,12 +468,20 @@ gg_v2c <- data_v2 %>%
         x = sn,
         fill = visits) +
     geom_bar(stat = 'identity') +
-    scale_fill_grey() +
-    labs(title = 'Number of clinic visits (proportion)',
-         subtitle = '(All participants)',
-         y = 'Proportion') +
-    theme(axis.title.x = element_blank(),
-          axis.text.x = element_blank())
+    scale_x_discrete(labels = c('No', 'Yes')) +
+    scale_fill_grey(name = 'Visits') +
+    labs(title = 'As a count',
+         y = 'Count',
+         x = 'Developed HIV-SN') +
+    theme_bw() +
+    theme(legend.position = 'none',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_text(size = 22),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
 
 gg_v2d <- data_v2 %>%
     group_by(sn, max_visits) %>%
@@ -411,24 +495,37 @@ gg_v2d <- data_v2 %>%
         fill = visits) +
     geom_bar(stat = 'identity', 
              position = position_fill()) +
-    scale_fill_grey() +
-    labs(title = 'Number of clinic visits (proportion)',
-         subtitle = '(All participants)',
-         y = 'Proportion') +
-    theme(axis.title.x = element_blank(),
-          axis.text.x = element_blank())
+    scale_x_discrete(labels = c('No', 'Yes')) +
+    scale_fill_grey(name = 'Visits') +
+    labs(title = 'As a proportion',
+         y = 'Proportion',
+         x = 'Developed HIV-SN') +
+    theme_bw() +
+    theme(legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_text(size = 22),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
 
 # Plot next to each other using patchwork package
-gg_v2c + gg_v2d
+gg_plot3 <- gg_v2c + gg_v2d
+gg_plot3
 ```
 
-<img src="figures/suppl-03-follow-up-analysis/n_visits-2.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-03-follow-up-analysis/n_visits-2.png" width="672" style="display: block; margin: auto;" />
 
 ```r
+ggsave(filename = 'figures/visits.png', 
+       plot = gg_plot3, 
+       width = 10, 
+       height = 7)
+
 # Stats
 chisq_test(xtabs(~ sn + visit_number, 
                  data = data_v2),
-           distribution = approximate(B = 10000))
+           distribution = approximate(nresample = 10000))
 ```
 
 ```
@@ -436,7 +533,7 @@ chisq_test(xtabs(~ sn + visit_number,
 ## 	Approximative Pearson Chi-Squared Test
 ## 
 ## data:  visit_number by sn (no, yes)
-## chi-squared = 4.3515, p-value = 0.22
+## chi-squared = 4.3515, p-value = 0.216
 ```
 
 ## Time between first and last visit
@@ -494,7 +591,7 @@ data_v2 %>%
           axis.text.x = element_blank())
 ```
 
-<img src="figures/suppl-03-follow-up-analysis/time_visits-1.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-03-follow-up-analysis/time_visits-1.png" width="672" style="display: block; margin: auto;" />
 
 ```r
 ## Conditional on SN
@@ -510,13 +607,13 @@ data_v2 %>%
          x = 'SN present')
 ```
 
-<img src="figures/suppl-03-follow-up-analysis/time_visits-2.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-03-follow-up-analysis/time_visits-2.png" width="672" style="display: block; margin: auto;" />
 
 ```r
 # Stats
 normal_test(max_duration ~ factor(sn),
             data = data_v2,
-            distribution = approximate(B = 10000))
+            distribution = approximate(nresample = 10000))
 ```
 
 ```
@@ -524,7 +621,7 @@ normal_test(max_duration ~ factor(sn),
 ## 	Approximative Two-Sample van der Waerden (Normal Quantile) Test
 ## 
 ## data:  max_duration by factor(sn) (no, yes)
-## Z = -2.103, p-value = 0.0349
+## Z = -2.103, p-value = 0.0333
 ## alternative hypothesis: true mu is not equal to 0
 ```
 
@@ -603,7 +700,7 @@ data_v1 %>%
          x = 'Visit interval')
 ```
 
-<img src="figures/suppl-03-follow-up-analysis/cummulative_visits-1.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-03-follow-up-analysis/cummulative_visits-1.png" width="672" style="display: block; margin: auto;" />
 
 ```r
 ## Conditional on SN
@@ -624,7 +721,7 @@ data_v1 %>%
          x = 'Visit interval') 
 ```
 
-<img src="figures/suppl-03-follow-up-analysis/cummulative_visits-2.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-03-follow-up-analysis/cummulative_visits-2.png" width="672" style="display: block; margin: auto;" />
 
 ```r
 # Stats
@@ -659,7 +756,7 @@ par(mfrow = c(2, 2))
 plot(mod) 
 ```
 
-<img src="figures/suppl-03-follow-up-analysis/cummulative_visits-3.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-03-follow-up-analysis/cummulative_visits-3.png" width="672" style="display: block; margin: auto;" />
 
 ```r
 par(mfrow = c(1, 1))
@@ -674,13 +771,13 @@ sessionInfo()
 ```
 
 ```
-## R version 3.5.2 (2018-12-20)
+## R version 3.6.0 (2019-04-26)
 ## Platform: x86_64-apple-darwin15.6.0 (64-bit)
-## Running under: macOS Mojave 10.14.3
+## Running under: macOS Mojave 10.14.4
 ## 
 ## Matrix products: default
-## BLAS: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRblas.0.dylib
-## LAPACK: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRlapack.dylib
+## BLAS:   /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
+## LAPACK: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRlapack.dylib
 ## 
 ## locale:
 ## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
@@ -689,35 +786,35 @@ sessionInfo()
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] car_3.0-2       carData_3.0-2   lmerTest_3.1-0  lme4_1.1-20    
-##  [5] Matrix_1.2-15   coin_1.2-2      survival_2.43-3 patchwork_0.0.1
-##  [9] forcats_0.4.0   stringr_1.4.0   dplyr_0.8.0.1   purrr_0.3.1    
-## [13] readr_1.3.1     tidyr_0.8.3     tibble_2.0.1    ggplot2_3.1.0  
-## [17] tidyverse_1.2.1 magrittr_1.5   
+##  [1] car_3.0-2         carData_3.0-2     coin_1.3-0       
+##  [4] survival_2.44-1.1 patchwork_0.0.1   forcats_0.4.0    
+##  [7] stringr_1.4.0     dplyr_0.8.0.1     purrr_0.3.2      
+## [10] readr_1.3.1       tidyr_0.8.3       tibble_2.1.1     
+## [13] ggplot2_3.1.1     tidyverse_1.2.1   magrittr_1.5     
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] httr_1.4.0        jsonlite_1.6      splines_3.5.2    
-##  [4] modelr_0.1.4      assertthat_0.2.0  stats4_3.5.2     
-##  [7] cellranger_1.1.0  yaml_2.2.0        numDeriv_2016.8-1
-## [10] pillar_1.3.1      backports_1.1.3   lattice_0.20-38  
-## [13] glue_1.3.0        digest_0.6.18     rvest_0.3.2      
-## [16] minqa_1.2.4       colorspace_1.4-0  sandwich_2.5-0   
-## [19] htmltools_0.3.6   plyr_1.8.4        pkgconfig_2.0.2  
-## [22] broom_0.5.1       haven_2.1.0       mvtnorm_1.0-9    
-## [25] scales_1.0.0      openxlsx_4.1.0    rio_0.5.16       
-## [28] generics_0.0.2    ellipsis_0.1.0    TH.data_1.0-10   
-## [31] withr_2.1.2.9000  lazyeval_0.2.1    cli_1.0.1        
-## [34] crayon_1.3.4      readxl_1.3.0      evaluate_0.13    
-## [37] fansi_0.4.0       nlme_3.1-137      MASS_7.3-51.1    
-## [40] xml2_1.2.0        foreign_0.8-71    tools_3.5.2      
-## [43] data.table_1.12.0 hms_0.4.2         multcomp_1.4-8   
-## [46] munsell_0.5.0     zip_2.0.0         compiler_3.5.2   
-## [49] rlang_0.3.1       grid_3.5.2        nloptr_1.2.1     
-## [52] rstudioapi_0.9.0  labeling_0.3      rmarkdown_1.11   
-## [55] gtable_0.2.0      codetools_0.2-16  abind_1.4-5      
-## [58] curl_3.3          R6_2.4.0          zoo_1.8-4        
-## [61] lubridate_1.7.4   knitr_1.21        utf8_1.1.4       
-## [64] modeltools_0.2-22 stringi_1.3.1     Rcpp_1.0.0       
-## [67] tidyselect_0.2.5  xfun_0.5
+##  [1] httr_1.4.0         jsonlite_1.6       splines_3.6.0     
+##  [4] modelr_0.1.4       assertthat_0.2.1   stats4_3.6.0      
+##  [7] cellranger_1.1.0   yaml_2.2.0         pillar_1.3.1      
+## [10] backports_1.1.4    lattice_0.20-38    glue_1.3.1        
+## [13] digest_0.6.18      rvest_0.3.3        colorspace_1.4-1  
+## [16] sandwich_2.5-1     htmltools_0.3.6    Matrix_1.2-17     
+## [19] plyr_1.8.4         pkgconfig_2.0.2    broom_0.5.2       
+## [22] haven_2.1.0        mvtnorm_1.0-10     scales_1.0.0      
+## [25] openxlsx_4.1.0     rio_0.5.16         generics_0.0.2    
+## [28] ellipsis_0.1.0     TH.data_1.0-10     withr_2.1.2.9000  
+## [31] lazyeval_0.2.2     cli_1.1.0          crayon_1.3.4      
+## [34] readxl_1.3.1       evaluate_0.13      fansi_0.4.0       
+## [37] nlme_3.1-139       MASS_7.3-51.4      xml2_1.2.0        
+## [40] foreign_0.8-71     tools_3.6.0        data.table_1.12.2 
+## [43] hms_0.4.2          matrixStats_0.54.0 multcomp_1.4-10   
+## [46] munsell_0.5.0      zip_2.0.1          compiler_3.6.0    
+## [49] rlang_0.3.4        grid_3.6.0         rstudioapi_0.10   
+## [52] labeling_0.3       rmarkdown_1.12     gtable_0.3.0      
+## [55] codetools_0.2-16   abind_1.4-5        curl_3.3          
+## [58] R6_2.4.0           zoo_1.8-5          lubridate_1.7.4   
+## [61] knitr_1.22         utf8_1.1.4         libcoin_1.0-4     
+## [64] modeltools_0.2-22  stringi_1.4.3      parallel_3.6.0    
+## [67] Rcpp_1.0.1         tidyselect_0.2.5   xfun_0.6
 ```
 

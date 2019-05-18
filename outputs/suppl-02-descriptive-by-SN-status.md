@@ -2,7 +2,7 @@
 title: "Supplement 2"
 subtitle: "Descriptive statistics of baseline variables: SN:yes vs SN:no"
 author: "Peter Kamerman and Prinisha Pillay"
-date: "17 March 2019"
+date: "18 May 2019"
 ---
 
 
@@ -269,7 +269,7 @@ groupwiseMean(age_years ~ sn_present,
 
 ```
 ##   sn_present   n Mean Conf.level Bca.lower Bca.upper
-## 1        yes  20 41.8       0.95      38.5      45.4
+## 1        yes  20 41.8       0.95      38.0      45.4
 ## 2         no 100 37.0       0.95      35.2      38.8
 ```
 
@@ -284,10 +284,10 @@ data %>%
     labs(title = 'Age at recruitment',
          subtitle = 'SN:yes vs SN:no',
          y = 'Age (years)',
-         x = 'SN present')
+         x = 'Developed HIV-SN')
 ```
 
-<img src="figures/suppl-02-descriptive-by-SN-status/age-1.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-02-descriptive-by-SN-status/age-1.png" width="672" style="display: block; margin: auto;" />
 
 ```r
 # Bootstrap 95% CI for the difference in mean age
@@ -314,7 +314,7 @@ boot_age <- boot.ci(boot(data = data,
 
 ```
 ##     n Mean.difference Conf.level Bca.lower Bca.upper Includes.zero
-## 1 120            4.84       0.95     0.651     9.181            no
+## 1 120            4.84       0.95     1.062     9.135            no
 ```
 
 ```r
@@ -346,7 +346,7 @@ ggplot(data = boot_age) +
           axis.title.x = element_blank())
 ```
 
-<img src="figures/suppl-02-descriptive-by-SN-status/age-2.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-02-descriptive-by-SN-status/age-2.png" width="672" style="display: block; margin: auto;" />
 
 ## Body mass
 
@@ -387,8 +387,8 @@ groupwiseMean(mass_kg ~ sn_present,
 
 ```
 ##   sn_present   n Mean Conf.level Bca.lower Bca.upper
-## 1        yes  20 73.0       0.95      65.9      82.1
-## 2         no 100 63.4       0.95      61.0      66.2
+## 1        yes  20 73.0       0.95      66.2      82.2
+## 2         no 100 63.4       0.95      60.8      66.1
 ```
 
 ```r
@@ -402,10 +402,10 @@ data %>%
     labs(title = 'Mass at recruitment',
          subtitle = "SN:yes vs SN:no",
          y = 'Mass (kg)',
-         x = 'SN present')
+         x = 'Developed HIV-SN')
 ```
 
-<img src="figures/suppl-02-descriptive-by-SN-status/mass-1.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-02-descriptive-by-SN-status/mass-1.png" width="672" style="display: block; margin: auto;" />
 
 ```r
 # Bootstrap 95% CI for the difference in mean mass
@@ -432,7 +432,7 @@ boot_mass <- boot.ci(boot(data = data,
 
 ```
 ##     n Mean.difference Conf.level Bca.lower Bca.upper Includes.zero
-## 1 120           9.535       0.95     1.946    18.972            no
+## 1 120           9.535       0.95     2.401    19.008            no
 ```
 
 ```r
@@ -464,7 +464,7 @@ ggplot(data = boot_mass) +
           axis.title.x = element_blank())
 ```
 
-<img src="figures/suppl-02-descriptive-by-SN-status/mass-2.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-02-descriptive-by-SN-status/mass-2.png" width="672" style="display: block; margin: auto;" />
 
 ## Height
 Expect height to show sex difference, so analyse separately for males and females.
@@ -510,9 +510,9 @@ groupwiseMean(height_m ~ sn_present + sex,
 
 ```
 ##   sn_present sex  n Boot.mean Conf.level Bca.lower Bca.upper
-## 1        yes   F  8      1.64       0.95      1.58      1.69
+## 1        yes   F  8      1.64       0.95      1.58      1.70
 ## 2        yes   M 12      1.72       0.95      1.69      1.74
-## 3         no   F 58      1.57       0.95      1.56      1.58
+## 3         no   F 58      1.57       0.95      1.56      1.59
 ## 4         no   M 42      1.70       0.95      1.68      1.71
 ```
 
@@ -533,7 +533,7 @@ data %>%
          x = 'Sex')
 ```
 
-<img src="figures/suppl-02-descriptive-by-SN-status/height-1.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-02-descriptive-by-SN-status/height-1.png" width="672" style="display: block; margin: auto;" />
 
 ```r
 # MALES ONLY
@@ -561,7 +561,7 @@ boot_hm <- boot.ci(boot(data = data[data$sex == 'M', ],
 
 ```
 ##    n Mean.difference Conf.level Bca.lower Bca.upper Includes.zero
-## 1 54           0.025       0.95    -0.005     0.054           yes
+## 1 54           0.025       0.95    -0.007     0.052           yes
 ```
 
 ```r
@@ -593,7 +593,7 @@ ggplot(data = boot_hm) +
           axis.title.x = element_blank())
 ```
 
-<img src="figures/suppl-02-descriptive-by-SN-status/height-2.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-02-descriptive-by-SN-status/height-2.png" width="672" style="display: block; margin: auto;" />
 
 ```r
 # FEMALES ONLY
@@ -621,7 +621,7 @@ boot_hf <- boot.ci(boot(data = data[data$sex == 'F', ],
 
 ```
 ##    n Mean.difference Conf.level Bca.lower Bca.upper Includes.zero
-## 1 66           0.072       0.95      0.01     0.131            no
+## 1 66           0.072       0.95     0.005     0.133            no
 ```
 
 ```r
@@ -653,7 +653,7 @@ ggplot(data = boot_hf) +
           axis.title.x = element_blank())
 ```
 
-<img src="figures/suppl-02-descriptive-by-SN-status/height-3.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-02-descriptive-by-SN-status/height-3.png" width="672" style="display: block; margin: auto;" />
 
 ## Sex
 
@@ -726,7 +726,7 @@ sn_yes %>%
 
 ```
 ##   sn_present  n Proportion Conf.level Bca.lower Bca.upper
-## 1        yes 20       0.40       0.95      0.15      0.60
+## 1        yes 20       0.40       0.95      0.15      0.55
 ## 2         no 20       0.58       0.95      0.47      0.66
 ```
 
@@ -742,11 +742,11 @@ data %>%
     labs(title = 'Sex ratio at recruitment',
          subtitle = "SN:yes vs SN:no",
          y = 'Proportion',
-         x = 'SN present') +
+         x = 'Developed HIV-SN') +
     scale_fill_grey(name = 'Sex') 
 ```
 
-<img src="figures/suppl-02-descriptive-by-SN-status/sex-1.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-02-descriptive-by-SN-status/sex-1.png" width="672" style="display: block; margin: auto;" />
 
 ```r
 # Bootstrap 95% CI for the odds ratio of SN:yes vs SN:no
@@ -773,7 +773,7 @@ boot_sex <- boot.ci(boot(data = data,
 
 ```
 ##     n Odds.ratio Conf.level Bca.lower Bca.upper Includes.one
-## 1 120      0.486       0.95      0.15     1.374          yes
+## 1 120      0.486       0.95     0.168     1.371          yes
 ```
 
 ```r
@@ -805,7 +805,7 @@ ggplot(data = boot_sex) +
           axis.title.x = element_blank())
 ```
 
-<img src="figures/suppl-02-descriptive-by-SN-status/sex-2.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-02-descriptive-by-SN-status/sex-2.png" width="672" style="display: block; margin: auto;" />
 
 ## CD4 T-cell count
 
@@ -845,7 +845,7 @@ groupwiseMedian(CD4_cell.ul ~ sn_present,
 
 ```
 ##   sn_present  n Median Conf.level Bca.lower Bca.upper
-## 1        yes 20    200       0.95        74       290
+## 1        yes 20    200       0.95        82       290
 ## 2         no 99    234       0.95       163       285
 ```
 
@@ -860,10 +860,10 @@ data %>%
     labs(title = 'CD4 T-cell count at recruitment',
          subtitle = "SN:yes vs SN:no",
          y = expression(paste('CD4 T-cell count (cells.', mu, l^-1, ')')),
-         x = 'SN present') 
+         x = 'Developed HIV-SN') 
 ```
 
-<img src="figures/suppl-02-descriptive-by-SN-status/cd4-1.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-02-descriptive-by-SN-status/cd4-1.png" width="672" style="display: block; margin: auto;" />
 
 ```r
 # Bootstrap 95% CI for the difference in median CD4 T-cell count
@@ -890,7 +890,7 @@ boot_cd4 <- boot.ci(boot(data = data,
 
 ```
 ##     n Median.difference Conf.level Bca.lower Bca.upper Includes.zero
-## 1 119             -33.5       0.95      -180        87           yes
+## 1 119             -33.5       0.95  -188.279    93.716           yes
 ```
 
 ```r
@@ -922,7 +922,7 @@ ggplot(data = boot_cd4) +
           axis.title.x = element_blank())
 ```
 
-<img src="figures/suppl-02-descriptive-by-SN-status/cd4-2.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-02-descriptive-by-SN-status/cd4-2.png" width="672" style="display: block; margin: auto;" />
 
 ## Viral load
 
@@ -963,7 +963,7 @@ groupwiseMedian(viral_load_copies.ml ~ sn_present,
 ```
 ##   sn_present  n Median Conf.level Bca.lower Bca.upper
 ## 1        yes 19   3.00       0.95      2.08      4.08
-## 2         no 89   3.16       0.95      2.90      3.34
+## 2         no 89   3.16       0.95      2.90      3.50
 ```
 
 ```r
@@ -977,11 +977,11 @@ data %>%
     geom_jitter(height = 0) +
     labs(title = 'Viral load at recruitment',
          subtitle = 'SN:yes vs SN:no',
-         x = 'SN present',
+         x = 'Developed HIV-SN',
          y = expression(paste('log' [10], ' viral load (copies.ml' ^-1, ')')))
 ```
 
-<img src="figures/suppl-02-descriptive-by-SN-status/viral_load-1.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-02-descriptive-by-SN-status/viral_load-1.png" width="672" style="display: block; margin: auto;" />
 
 ```r
 # Bootstrap 95% CI for the difference in median viral load
@@ -1008,7 +1008,7 @@ boot_vl <- boot.ci(boot(data = data,
 
 ```
 ##     n Median.difference Conf.level Bca.lower Bca.upper Includes.zero
-## 1 108             -0.16       0.95    -1.164     1.044           yes
+## 1 108             -0.16       0.95    -1.073     1.044           yes
 ```
 
 ```r
@@ -1040,7 +1040,7 @@ ggplot(data = boot_vl) +
           axis.title.x = element_blank())
 ```
 
-<img src="figures/suppl-02-descriptive-by-SN-status/viral_load-2.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-02-descriptive-by-SN-status/viral_load-2.png" width="672" style="display: block; margin: auto;" />
 
 ## Alcohol
 
@@ -1091,7 +1091,7 @@ groupwiseMedian(alcohol_units.week ~ sn_present,
 ```
 ##   sn_present  n Median Conf.level Bca.lower Bca.upper
 ## 1        yes  2    7.5       0.95         4       7.5
-## 2         no 25   15.0       0.95         4      15.0
+## 2         no 25   15.0       0.95         6      15.0
 ```
 
 ```r
@@ -1105,11 +1105,11 @@ data %>%
     geom_jitter(height = 0) +
     labs(title = 'Alcohol consumption at recruitment',
          subtitle = 'SN:yes vs SN:no',
-         x = 'SN present',
+         x = 'Developed HIV-SN',
          y = expression(paste('Alcohol consumption (units.week' ^-1, ')')))
 ```
 
-<img src="figures/suppl-02-descriptive-by-SN-status/alcohol-1.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-02-descriptive-by-SN-status/alcohol-1.png" width="672" style="display: block; margin: auto;" />
 
 ```r
 # With only two drinkers in the SN:yes group, we did not pursue additional exploration.
@@ -1189,8 +1189,8 @@ sn_yes %>%
 
 ```
 ##   sn_present   n Proportion Conf.level Bca.lower Bca.upper
-## 1        yes  20       0.45       0.95      0.20      0.60
-## 2         no 100       0.11       0.95      0.05      0.17
+## 1        yes  20       0.45       0.95      0.20     0.603
+## 2         no 100       0.11       0.95      0.05     0.170
 ```
 
 ```r
@@ -1205,12 +1205,12 @@ data %>%
                linetype = 2) +
     labs(title = 'Current TB at recruitment',
          subtitle = 'SN:yes vs SN:no',
-         x = 'SN present',
+         x = 'Developed HIV-SN',
          y = 'Proportion') +
     scale_fill_grey(name = 'Current\ninfection')
 ```
 
-<img src="figures/suppl-02-descriptive-by-SN-status/tb_current-1.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-02-descriptive-by-SN-status/tb_current-1.png" width="672" style="display: block; margin: auto;" />
 
 ```r
 # Bootstrap 95% CI for the odds ratio of current TB in SN:yes vs SN:no
@@ -1237,7 +1237,7 @@ boot_tb <- boot.ci(boot(data = data,
 
 ```
 ##     n Odds.ratio Conf.level Bca.lower Bca.upper Includes.zero
-## 1 120      0.155       0.95     0.051      0.47            no
+## 1 120      0.155       0.95     0.048     0.472            no
 ```
 
 ```r
@@ -1269,7 +1269,7 @@ ggplot(data = boot_tb) +
           axis.title.x = element_blank())
 ```
 
-<img src="figures/suppl-02-descriptive-by-SN-status/tb_current-2.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-02-descriptive-by-SN-status/tb_current-2.png" width="672" style="display: block; margin: auto;" />
 
 ### Currently receiving TB treatment?
 Treatment consisted of rifafour and pyridoxine (prophylaxis). Therefore only need to analyse rifafour data. Data coded as _'No'_ (not being treated), _'Yes'_ (being treated for active TB), and _'Prophylaxis'_ (being treated prophylactically for TB).
@@ -1373,8 +1373,8 @@ sn_yes %>%
 
 ```
 ##   sn_present   n Proportion Conf.level Bca.lower Bca.upper
-## 1        yes  20       0.40       0.95      0.15      0.55
-## 2         no 100       0.25       0.95      0.16      0.33
+## 1        yes  20       0.40       0.95     0.150      0.60
+## 2         no 100       0.25       0.95     0.163      0.33
 ```
 
 ```r
@@ -1389,12 +1389,12 @@ data %>%
                linetype = 2) +
     labs(title = 'Being treated for TB at recruitment',
          subtitle = 'SN:yes vs SN:no',
-         x = 'SN present',
+         x = 'Developed HIV-SN',
          y = 'Proportion') +
     scale_fill_grey(name = 'Currently\ntreated')
 ```
 
-<img src="figures/suppl-02-descriptive-by-SN-status/tb_rifafour-1.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-02-descriptive-by-SN-status/tb_rifafour-1.png" width="672" style="display: block; margin: auto;" />
 
 ```r
 # Bootstrap 95% CI for the odds ratio of current TB treatment by SN status
@@ -1421,7 +1421,7 @@ boot_tb2 <- boot.ci(boot(data = data_tb,
 
 ```
 ##     n Odds.ratio Conf.level Bca.lower Bca.upper Includes.zero
-## 1 120      0.503       0.95     0.168     1.456           yes
+## 1 120      0.503       0.95     0.166      1.59           yes
 ```
 
 ```r
@@ -1453,7 +1453,7 @@ ggplot(data = boot_tb2) +
           axis.title.x = element_blank())
 ```
 
-<img src="figures/suppl-02-descriptive-by-SN-status/tb_rifafour-2.png" style="display: block; margin: auto;" />
+<img src="figures/suppl-02-descriptive-by-SN-status/tb_rifafour-2.png" width="672" style="display: block; margin: auto;" />
 
 ----
 
@@ -1464,13 +1464,13 @@ sessionInfo()
 ```
 
 ```
-## R version 3.5.2 (2018-12-20)
+## R version 3.6.0 (2019-04-26)
 ## Platform: x86_64-apple-darwin15.6.0 (64-bit)
-## Running under: macOS Mojave 10.14.3
+## Running under: macOS Mojave 10.14.4
 ## 
 ## Matrix products: default
-## BLAS: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRblas.0.dylib
-## LAPACK: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRlapack.dylib
+## BLAS:   /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
+## LAPACK: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRlapack.dylib
 ## 
 ## locale:
 ## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
@@ -1479,34 +1479,35 @@ sessionInfo()
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] skimr_1.0.5      rcompanion_2.1.1 boot_1.3-20      forcats_0.4.0   
-##  [5] stringr_1.4.0    dplyr_0.8.0.1    purrr_0.3.1      readr_1.3.1     
-##  [9] tidyr_0.8.3      tibble_2.0.1     ggplot2_3.1.0    tidyverse_1.2.1 
+##  [1] skimr_1.0.5      rcompanion_2.1.7 boot_1.3-22      forcats_0.4.0   
+##  [5] stringr_1.4.0    dplyr_0.8.0.1    purrr_0.3.2      readr_1.3.1     
+##  [9] tidyr_0.8.3      tibble_2.1.1     ggplot2_3.1.1    tidyverse_1.2.1 
 ## [13] magrittr_1.5    
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_1.0.0         lubridate_1.7.4    mvtnorm_1.0-9     
-##  [4] lattice_0.20-38    multcompView_0.1-7 zoo_1.8-4         
-##  [7] utf8_1.1.4         lmtest_0.9-36      assertthat_0.2.0  
-## [10] digest_0.6.18      R6_2.4.0           cellranger_1.1.0  
-## [13] plyr_1.8.4         backports_1.1.3    EMT_1.1           
-## [16] stats4_3.5.2       evaluate_0.13      httr_1.4.0        
-## [19] pillar_1.3.1       rlang_0.3.1        lazyeval_0.2.1    
-## [22] multcomp_1.4-8     readxl_1.3.0       rstudioapi_0.9.0  
-## [25] Matrix_1.2-15      rmarkdown_1.11     labeling_0.3      
-## [28] splines_3.5.2      foreign_0.8-71     munsell_0.5.0     
-## [31] broom_0.5.1        compiler_3.5.2     modelr_0.1.4      
-## [34] xfun_0.5           pkgconfig_2.0.2    manipulate_1.0.1  
-## [37] DescTools_0.99.27  htmltools_0.3.6    tidyselect_0.2.5  
-## [40] expm_0.999-3       coin_1.2-2         codetools_0.2-16  
-## [43] fansi_0.4.0        crayon_1.3.4       withr_2.1.2.9000  
-## [46] MASS_7.3-51.1      grid_3.5.2         nlme_3.1-137      
-## [49] jsonlite_1.6       gtable_0.2.0       scales_1.0.0      
-## [52] cli_1.0.1          stringi_1.3.1      xml2_1.2.0        
-## [55] generics_0.0.2     nortest_1.0-4      sandwich_2.5-0    
-## [58] TH.data_1.0-10     tools_3.5.2        glue_1.3.0        
-## [61] hms_0.4.2          survival_2.43-3    yaml_2.2.0        
-## [64] colorspace_1.4-0   rvest_0.3.2        knitr_1.21        
-## [67] haven_2.1.0        modeltools_0.2-22
+##  [1] httr_1.4.0         jsonlite_1.6       splines_3.6.0     
+##  [4] modelr_0.1.4       assertthat_0.2.1   expm_0.999-4      
+##  [7] stats4_3.6.0       coin_1.3-0         cellranger_1.1.0  
+## [10] yaml_2.2.0         pillar_1.3.1       backports_1.1.4   
+## [13] lattice_0.20-38    glue_1.3.1         digest_0.6.18     
+## [16] rvest_0.3.3        colorspace_1.4-1   sandwich_2.5-1    
+## [19] htmltools_0.3.6    Matrix_1.2-17      plyr_1.8.4        
+## [22] pkgconfig_2.0.2    broom_0.5.2        haven_2.1.0       
+## [25] EMT_1.1            mvtnorm_1.0-10     scales_1.0.0      
+## [28] manipulate_1.0.1   generics_0.0.2     TH.data_1.0-10    
+## [31] withr_2.1.2.9000   lazyeval_0.2.2     cli_1.1.0         
+## [34] survival_2.44-1.1  crayon_1.3.4       readxl_1.3.1      
+## [37] evaluate_0.13      fansi_0.4.0        nlme_3.1-139      
+## [40] MASS_7.3-51.4      xml2_1.2.0         foreign_0.8-71    
+## [43] tools_3.6.0        hms_0.4.2          matrixStats_0.54.0
+## [46] multcomp_1.4-10    munsell_0.5.0      compiler_3.6.0    
+## [49] multcompView_0.1-7 rlang_0.3.4        grid_3.6.0        
+## [52] rstudioapi_0.10    labeling_0.3       rmarkdown_1.12    
+## [55] DescTools_0.99.28  gtable_0.3.0       codetools_0.2-16  
+## [58] R6_2.4.0           zoo_1.8-5          lubridate_1.7.4   
+## [61] knitr_1.22         utf8_1.1.4         nortest_1.0-4     
+## [64] libcoin_1.0-4      modeltools_0.2-22  stringi_1.4.3     
+## [67] parallel_3.6.0     Rcpp_1.0.1         tidyselect_0.2.5  
+## [70] xfun_0.6           lmtest_0.9-37
 ```
 
