@@ -13,7 +13,3 @@ This branch of the _hivsn-incidence_ repo was used to generate PDF copies of the
 URL for master: [https://github.com/kamermanpr/hivsn-incidence](https://github.com/kamermanpr/hivsn-incidence.git)
 
 URL for this branch: [https://github.com/kamermanpr/hivsn-incidence/tree/pdf_supplements](https://github.com/kamermanpr/hivsn-incidence/tree/pdf_supplements)
-
-## Run the analysis scripts
-
-The outputs from the scripts contained in this branch are exactly the same as in the _**master**_ branch of the repo, except that the outputs are in _PDF_ format and not _html_ and _md_ formats. If you want to run the scripts, please consult the README file on the _**master**_ branch. 
