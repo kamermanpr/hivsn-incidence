@@ -19,8 +19,9 @@ theme_set(new = theme_bw(base_size = 14))
 # knitr options
 knitr::opts_chunk$set(warning = FALSE,
                       message = FALSE, 
-                      fig.width = 5,
-                      fig.height = 6,
+                      fig.retina = 2,
+                      fig.width = 7,
+                      fig.height = 7,
                       fig.align = 'center',
                       fig.path = 'figures/suppl-01-descriptive-whole-cohort/')
 ```

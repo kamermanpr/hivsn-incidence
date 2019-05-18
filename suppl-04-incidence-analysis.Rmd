@@ -21,6 +21,7 @@ theme_set(new = theme_bw())
 # knitr options
 knitr::opts_chunk$set(warning = FALSE,
                       message = FALSE, 
+                      fig.retina = 2,
                       fig.align = 'center',
                       fig.path = 'figures/suppl-04-incidence-analysis/')
 ```
@@ -428,8 +429,8 @@ gg_plot <- ggsurvplot(km_basic,
 ## Save
 ggsave(filename = 'figures/survival-curve.png', 
        plot = print(gg_plot), 
-       width = 12.7, 
-       height = 12)
+       width = 14, 
+       height = 13)
 ```
 
 ## Plot a basic KM curve conditioned on painful SN
@@ -450,7 +451,7 @@ survdiff(Surv(time = visit_day,
          data = data_surv)
 
 # Plot
-ggsurvplot(km_pain,
+gg_plot4 <- ggsurvplot(km_pain,
            conf.int = TRUE,
            fun = 'event',
            risk.table = 'abs_pct', 
@@ -458,22 +459,31 @@ ggsurvplot(km_pain,
            cumevents = TRUE, 
            surv.median.line = 'hv', 
            pval = TRUE, 
-           ggtheme = theme_bw(), 
-           tables.theme = theme(plot.title = element_text(size = 12,
+           ggtheme = theme_new(), 
+           tables.theme = theme(plot.title = element_text(size = 22,
                                                           face = 'bold'),
                                 panel.border = element_blank(),
                                 panel.grid.major.x = element_blank(),
                                 axis.title = element_blank(),
                                 axis.text.x = element_blank(),
                                 axis.ticks = element_blank()),
-           fontsize = 4,
+           fontsize = 7,
            tables.height = 0.14,
-           legend = 'none',
+           legend.title = '',
            legend.labs = c('Non-painful SN', 'Painful SN'), 
            palette = c('#0072B2', '#D55E00'), 
            ylim = c(0, 1),
            xlab = 'Days', 
            title = 'Kaplan-Meier Survival Curve: SN vs Days')
+
+gg_plot4
+
+## Save
+ggsave(filename = 'figures/survival-curve2.png', 
+       plot = print(gg_plot4), 
+       width = 14, 
+       height = 13)
+
 ```
 
 # Multivariable modeling

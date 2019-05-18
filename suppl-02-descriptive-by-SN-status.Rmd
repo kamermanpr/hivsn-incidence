@@ -19,7 +19,8 @@ theme_set(new = theme_bw(base_size = 14))
 # knitr options
 knitr::opts_chunk$set(warning = FALSE,
                       message = FALSE, 
-                      fig.width = 6,
+                      fig.retina = 2,
+                      fig.width = 7,
                       fig.height = 7,
                       fig.align = 'center',
                       fig.path = 'figures/suppl-02-descriptive-by-SN-status/')
@@ -188,7 +189,7 @@ data %>%
     labs(title = 'Age at recruitment',
          subtitle = 'SN:yes vs SN:no',
          y = 'Age (years)',
-         x = 'SN present')
+         x = 'Developed HIV-SN')
 
 # Bootstrap 95% CI for the difference in mean age
 ## Resample: 1999
@@ -267,7 +268,7 @@ data %>%
     labs(title = 'Mass at recruitment',
          subtitle = "SN:yes vs SN:no",
          y = 'Mass (kg)',
-         x = 'SN present')
+         x = 'Developed HIV-SN')
 
 # Bootstrap 95% CI for the difference in mean mass
 ## Resample: 1999
@@ -512,7 +513,7 @@ data %>%
     labs(title = 'Sex ratio at recruitment',
          subtitle = "SN:yes vs SN:no",
          y = 'Proportion',
-         x = 'SN present') +
+         x = 'Developed HIV-SN') +
     scale_fill_grey(name = 'Sex') 
 
 # Bootstrap 95% CI for the odds ratio of SN:yes vs SN:no
@@ -590,7 +591,7 @@ data %>%
     labs(title = 'CD4 T-cell count at recruitment',
          subtitle = "SN:yes vs SN:no",
          y = expression(paste('CD4 T-cell count (cells.', mu, l^-1, ')')),
-         x = 'SN present') 
+         x = 'Developed HIV-SN') 
 
 # Bootstrap 95% CI for the difference in median CD4 T-cell count
 ## Resample: 1999
@@ -668,7 +669,7 @@ data %>%
     geom_jitter(height = 0) +
     labs(title = 'Viral load at recruitment',
          subtitle = 'SN:yes vs SN:no',
-         x = 'SN present',
+         x = 'Developed HIV-SN',
          y = expression(paste('log' [10], ' viral load (copies.ml' ^-1, ')')))
 
 # Bootstrap 95% CI for the difference in median viral load
@@ -753,7 +754,7 @@ data %>%
     geom_jitter(height = 0) +
     labs(title = 'Alcohol consumption at recruitment',
          subtitle = 'SN:yes vs SN:no',
-         x = 'SN present',
+         x = 'Developed HIV-SN',
          y = expression(paste('Alcohol consumption (units.week' ^-1, ')')))
 
 # With only two drinkers in the SN:yes group, we did not pursue additional exploration.
@@ -823,7 +824,7 @@ data %>%
                linetype = 2) +
     labs(title = 'Current TB at recruitment',
          subtitle = 'SN:yes vs SN:no',
-         x = 'SN present',
+         x = 'Developed HIV-SN',
          y = 'Proportion') +
     scale_fill_grey(name = 'Current\ninfection')
 
@@ -950,7 +951,7 @@ data %>%
                linetype = 2) +
     labs(title = 'Being treated for TB at recruitment',
          subtitle = 'SN:yes vs SN:no',
-         x = 'SN present',
+         x = 'Developed HIV-SN',
          y = 'Proportion') +
     scale_fill_grey(name = 'Currently\ntreated')
 

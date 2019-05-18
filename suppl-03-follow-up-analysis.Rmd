@@ -22,6 +22,7 @@ grey_pal <- colorRampPalette(colors = c('#FFFFFF', '#000000'),
 # knitr options
 knitr::opts_chunk$set(warning = FALSE,
                       message = FALSE, 
+                      fig.retina = 2,
                       fig.align = 'center',
                       fig.path = 'figures/suppl-03-follow-up-analysis/')
 ```
@@ -123,6 +124,71 @@ data %>%
           panel.grid = element_blank(),
           strip.background = element_blank(),
           strip.text = element_blank())
+
+## Publication figure
+gg_plot1 <- data %>%
+    # Process data for plotting
+    group_by(ID) %>%
+    mutate(visit = ifelse(visit_day > 0,
+                          yes = 1,
+                          no = 0),
+           visit_count = cumsum(visit),
+           max_visits = max(visit_count),
+           max_duration = max(visit_day)) %>%
+    ungroup() %>%
+    select(ID, visit_day, visit_months, 
+           visit_count, max_visits, 
+           max_duration) %>%
+    # Clean-up and order dataframe
+    arrange(max_duration, max_visits, desc(ID)) %>%
+    mutate(ID = as_factor(ID),
+           visit_count = as.character(visit_count)) %>%
+    complete(ID, visit_months) %>%
+    # Add a dummy variable for faceting
+    bind_cols(facet = c(rep('Panel 1', 600), rep('Panel 2', 1202-600))) %>%
+    # Clean-up and order dataframe
+    filter(complete.cases(.)) %>%
+    # Plot
+    ggplot(data = .) +
+    aes(x = visit_day,
+        y = ID) +
+    geom_path(colour = '#888888') +
+    geom_point(aes(fill = visit_count),
+               shape = 21, 
+               size = 3) +
+    scale_x_continuous(breaks = seq(0, 250, 50)) +
+    scale_fill_manual(name = 'Visit count: ', values = grey_pal) +
+    labs(y = 'Participant ID',
+         x = 'Days') +
+    facet_wrap(~facet, 
+               ncol = 2, 
+               scales = 'free_y') +
+    theme_bw() +
+    theme(legend.position = 'top',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          legend.margin = margin(t = -0.3, 
+                                 r = 0, 
+                                 b = -0.3, 
+                                 l = 0, 'lines'),
+          axis.title.x = element_text(size = 22),
+          axis.title.y = element_text(size = 22, margin = margin(t = 0, 
+                                                                 r = 1,
+                                                                 b = 0,
+                                                                 l = 0,
+                                                                 'lines')),
+          axis.text.x = element_text(size = 20,
+                                     colour = '#000000'),
+          axis.text.y = element_text(colour = '#000000'),
+          panel.grid = element_blank(),
+          strip.background = element_blank(),
+          strip.text = element_blank())
+
+## Save
+ggsave(filename = 'figures/follow-up.png', 
+       plot = gg_plot1, 
+       width = 10, 
+       height = 10)
 ```
 
 ## By SN status
@@ -183,7 +249,7 @@ ggplot(data = data_plot) +
           panel.grid = element_blank())
 
 # Publication plot
-gg_plot <- data_plot %>% 
+gg_plot2 <- data_plot %>% 
     ggplot(data = .) +
     aes(x = visit_day,
         y = ID) +
@@ -193,27 +259,36 @@ gg_plot <- data_plot %>%
                size = 3) +
     labs(x = 'Days',
          y = 'Participant ID') +
-    scale_x_continuous(breaks = seq(0, 250, 25)) +
+    scale_x_continuous(breaks = seq(0, 250, 50)) +
     scale_fill_manual(name = 'Neuropathy present: ',
                       values = c('#FFFFFF', '#000000')) +
     facet_wrap(~ sn, 
                ncol = 2, 
                scales = 'free_y') +
+    theme_bw() +
     theme(legend.position = 'top',
-          legend.text = element_text(size = 11),
-          legend.title = element_text(size = 11),
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          legend.margin = margin(t = -0.3, 
+                                 r = 0, 
+                                 b = -0.3, 
+                                 l = 0, 'lines'),
+          axis.title.x = element_text(size = 22),
+          axis.title.y = element_text(size = 22, margin = margin(t = 0, 
+                                                                 r = 1,
+                                                                 b = 0,
+                                                                 l = 0,
+                                                                 'lines')),
+          axis.text.x = element_text(size = 20,
+                                     colour = '#000000'),
           axis.text.y = element_text(colour = '#000000'),
-          axis.text.x = element_text(colour = '#000000',
-                                     size = 12),
-          axis.title = element_text(size = 14),
           panel.grid = element_blank(),
-          panel.border = element_rect(size = 1),
-          strip.text = element_text(size = 12))
+          strip.text = element_text(size = 16))
 
-ggsave(filename = 'figures/follow-up.png', 
-       plot = gg_plot, 
-       width = 9, 
-       height = 11)
+ggsave(filename = 'figures/follow-up2.png', 
+       plot = gg_plot2, 
+       width = 10, 
+       height = 10)
 ```
 
 ----
@@ -319,12 +394,20 @@ gg_v2c <- data_v2 %>%
         x = sn,
         fill = visits) +
     geom_bar(stat = 'identity') +
-    scale_fill_grey() +
-    labs(title = 'Number of clinic visits (proportion)',
-         subtitle = '(All participants)',
-         y = 'Proportion') +
-    theme(axis.title.x = element_blank(),
-          axis.text.x = element_blank())
+    scale_x_discrete(labels = c('No', 'Yes')) +
+    scale_fill_grey(name = 'Visits') +
+    labs(title = 'As a count',
+         y = 'Count',
+         x = 'Developed HIV-SN') +
+    theme_bw() +
+    theme(legend.position = 'none',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_text(size = 22),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
 
 gg_v2d <- data_v2 %>%
     group_by(sn, max_visits) %>%
@@ -338,15 +421,28 @@ gg_v2d <- data_v2 %>%
         fill = visits) +
     geom_bar(stat = 'identity', 
              position = position_fill()) +
-    scale_fill_grey() +
-    labs(title = 'Number of clinic visits (proportion)',
-         subtitle = '(All participants)',
-         y = 'Proportion') +
-    theme(axis.title.x = element_blank(),
-          axis.text.x = element_blank())
+    scale_x_discrete(labels = c('No', 'Yes')) +
+    scale_fill_grey(name = 'Visits') +
+    labs(title = 'As a proportion',
+         y = 'Proportion',
+         x = 'Developed HIV-SN') +
+    theme_bw() +
+    theme(legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_text(size = 22),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
 
 # Plot next to each other using patchwork package
-gg_v2c + gg_v2d
+gg_plot3 <- gg_v2c + gg_v2d
+gg_plot3
+
+ggsave(filename = 'figures/visits.png', 
+       plot = gg_plot3, 
+       width = 10, 
+       height = 7)
 
 # Stats
 chisq_test(xtabs(~ sn + visit_number, 
