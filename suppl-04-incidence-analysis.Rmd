@@ -16,7 +16,7 @@ library(survival)
 library(survminer)
 
 # Set plot theme
-theme_set(new = theme_bw())
+theme_set(new = theme_bw(base_size = 16))
 
 # knitr options
 knitr::opts_chunk$set(warning = FALSE,

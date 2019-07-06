@@ -2,7 +2,7 @@
 title: "Supplement 4"
 subtitle: 'HIV-SN incidence analysis'
 author: 'Peter Kamerman and Prinisha Pillay'
-date: "18 May 2019"
+date: "06 July 2019"
 ---
 
 
@@ -362,7 +362,7 @@ tibble(`Cases/person.year` = round(df_ci$t0, 2),
 ## # A tibble: 1 x 2
 ##   `Cases/person.year` Conf.interval
 ##                 <dbl> <chr>        
-## 1                0.37 0.25 to 0.56
+## 1                0.37 0.24 to 0.55
 ```
 
 # Survival curves
@@ -822,18 +822,18 @@ coef(model_a125, s = a125)
 
 ```
 ## 12 x 1 sparse Matrix of class "dgCMatrix"
-##                                  1
-## (Intercept)           -4.894615097
-## age_years              0.006582470
-## sexF                   .          
-## sexM                   .          
-## height_m               2.058797946
-## CD4_cell.ul            .          
-## viral_load_copies.ml   .          
-## alcohol_units.week    -0.003015107
-## TB_currentno          -0.406005587
-## TB_currentyes          0.406054771
-## rifafour_treatmentno   .          
+##                                1
+## (Intercept)           -2.0528761
+## age_years              .        
+## sexF                   .        
+## sexM                   .        
+## height_m               0.3674762
+## CD4_cell.ul            .        
+## viral_load_copies.ml   .        
+## alcohol_units.week     .        
+## TB_currentno          -0.1183944
+## TB_currentyes          0.1184323
+## rifafour_treatmentno   .        
 ## rifafour_treatmentyes  .
 ```
 
@@ -854,18 +854,18 @@ coef(model_a216, s = a216)
 
 ```
 ## 12 x 1 sparse Matrix of class "dgCMatrix"
-##                                  1
-## (Intercept)           -5.405543371
-## age_years              0.005536200
-## sexF                   .          
-## sexM                   .          
-## height_m               2.400664479
-## CD4_cell.ul            .          
-## viral_load_copies.ml   .          
-## alcohol_units.week    -0.002484731
-## TB_currentno          -0.432851705
-## TB_currentyes          0.432964102
-## rifafour_treatmentno   .          
+##                                1
+## (Intercept)           -2.3406269
+## age_years              .        
+## sexF                   .        
+## sexM                   .        
+## height_m               0.5639000
+## CD4_cell.ul            .        
+## viral_load_copies.ml   .        
+## alcohol_units.week     .        
+## TB_currentno          -0.1703713
+## TB_currentyes          0.1705513
+## rifafour_treatmentno   .        
 ## rifafour_treatmentyes  .
 ```
 
@@ -886,18 +886,18 @@ coef(model_a343, s = a343)
 
 ```
 ## 12 x 1 sparse Matrix of class "dgCMatrix"
-##                                  1
-## (Intercept)           -6.105397939
-## age_years              0.004421528
-## sexF                   .          
-## sexM                   .          
-## height_m               2.858565003
-## CD4_cell.ul            .          
-## viral_load_copies.ml   .          
-## alcohol_units.week    -0.002188647
-## TB_currentno          -0.458682524
-## TB_currentyes          0.458521802
-## rifafour_treatmentno   .          
+##                                1
+## (Intercept)           -2.2224057
+## age_years              .        
+## sexF                   .        
+## sexM                   .        
+## height_m               0.4914842
+## CD4_cell.ul            .        
+## viral_load_copies.ml   .        
+## alcohol_units.week     .        
+## TB_currentno          -0.1698450
+## TB_currentyes          0.1698534
+## rifafour_treatmentno   .        
 ## rifafour_treatmentyes  .
 ```
 
@@ -919,16 +919,16 @@ coef(model_a100, s = a100)
 ```
 ## 12 x 1 sparse Matrix of class "dgCMatrix"
 ##                                   1
-## (Intercept)           -6.683193e+00
+## (Intercept)           -1.695158e+00
 ## age_years              .           
 ## sexF                   .           
 ## sexM                   .           
-## height_m               3.571937e+00
+## height_m               2.954020e-01
 ## CD4_cell.ul            .           
 ## viral_load_copies.ml   .           
 ## alcohol_units.week     .           
-## TB_currentno          -8.947369e-01
-## TB_currentyes          4.010801e-14
+## TB_currentno          -3.843904e-01
+## TB_currentyes          3.766113e-14
 ## rifafour_treatmentno   .           
 ## rifafour_treatmentyes  .
 ```
@@ -946,7 +946,7 @@ sessionInfo()
 ```
 ## R version 3.6.0 (2019-04-26)
 ## Platform: x86_64-apple-darwin15.6.0 (64-bit)
-## Running under: macOS Mojave 10.14.4
+## Running under: macOS Mojave 10.14.5
 ## 
 ## Matrix products: default
 ## BLAS:   /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
@@ -959,34 +959,34 @@ sessionInfo()
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] survminer_0.4.3   ggpubr_0.2        survival_2.44-1.1
+##  [1] survminer_0.4.4   ggpubr_0.2.1      survival_2.44-1.1
 ##  [4] boot_1.3-22       glmnetUtils_1.1.2 lubridate_1.7.4  
-##  [7] forcats_0.4.0     stringr_1.4.0     dplyr_0.8.0.1    
+##  [7] forcats_0.4.0     stringr_1.4.0     dplyr_0.8.2      
 ## [10] purrr_0.3.2       readr_1.3.1       tidyr_0.8.3      
-## [13] tibble_2.1.1      ggplot2_3.1.1     tidyverse_1.2.1  
+## [13] tibble_2.1.3      ggplot2_3.2.0     tidyverse_1.2.1  
 ## [16] magrittr_1.5     
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_1.0.1        lattice_0.20-38   zoo_1.8-5        
-##  [4] utf8_1.1.4        assertthat_0.2.1  glmnet_2.0-16    
-##  [7] digest_0.6.18     foreach_1.4.4     R6_2.4.0         
-## [10] cellranger_1.1.0  plyr_1.8.4        backports_1.1.4  
-## [13] evaluate_0.13     httr_1.4.0        pillar_1.3.1     
-## [16] rlang_0.3.4       lazyeval_0.2.2    readxl_1.3.1     
+##  [1] Rcpp_1.0.1        lattice_0.20-38   zoo_1.8-6        
+##  [4] zeallot_0.1.0     utf8_1.1.4        assertthat_0.2.1 
+##  [7] glmnet_2.0-18     digest_0.6.19     foreach_1.4.4    
+## [10] R6_2.4.0          cellranger_1.1.0  backports_1.1.4  
+## [13] evaluate_0.14     httr_1.4.0        pillar_1.4.2     
+## [16] rlang_0.4.0       lazyeval_0.2.2    readxl_1.3.1     
 ## [19] rstudioapi_0.10   data.table_1.12.2 Matrix_1.2-17    
-## [22] rmarkdown_1.12    labeling_0.3      splines_3.6.0    
+## [22] rmarkdown_1.13    labeling_0.3      splines_3.6.0    
 ## [25] munsell_0.5.0     broom_0.5.2       compiler_3.6.0   
-## [28] modelr_0.1.4      xfun_0.6          pkgconfig_2.0.2  
+## [28] modelr_0.1.4      xfun_0.8          pkgconfig_2.0.2  
 ## [31] htmltools_0.3.6   tidyselect_0.2.5  gridExtra_2.3    
 ## [34] km.ci_0.5-2       codetools_0.2-16  fansi_0.4.0      
 ## [37] crayon_1.3.4      withr_2.1.2.9000  grid_3.6.0       
-## [40] nlme_3.1-139      jsonlite_1.6      xtable_1.8-4     
+## [40] xtable_1.8-4      nlme_3.1-140      jsonlite_1.6     
 ## [43] gtable_0.3.0      KMsurv_0.1-5      scales_1.0.0     
-## [46] cli_1.1.0         stringi_1.4.3     xml2_1.2.0       
-## [49] survMisc_0.5.5    generics_0.0.2    iterators_1.0.10 
-## [52] tools_3.6.0       cmprsk_2.2-7      glue_1.3.1       
-## [55] hms_0.4.2         parallel_3.6.0    yaml_2.2.0       
-## [58] colorspace_1.4-1  rvest_0.3.3       knitr_1.22       
-## [61] haven_2.1.0
+## [46] cli_1.1.0         stringi_1.4.3     ggsignif_0.5.0   
+## [49] xml2_1.2.0        vctrs_0.1.0       survMisc_0.5.5   
+## [52] generics_0.0.2    iterators_1.0.10  tools_3.6.0      
+## [55] cmprsk_2.2-8      glue_1.3.1        hms_0.4.2        
+## [58] parallel_3.6.0    yaml_2.2.0        colorspace_1.4-1 
+## [61] rvest_0.3.4       knitr_1.23        haven_2.1.0
 ```
 

@@ -2,7 +2,7 @@
 title: "Supplement 1"
 subtitle: "Descriptive statistics for the whole cohort"
 author: "Peter Kamerman and Prinisha Pillay"
-date: "18 May 2019"
+date: "06 July 2019"
 ---
 
 
@@ -149,7 +149,7 @@ data %>%
 ##  n obs: 120 
 ##  n variables: 1 
 ## 
-## ── Variable type:numeric ─────────────────────────────────────────────────────────────────────────────
+## ── Variable type:numeric ────────────────────────────────────────────────────────────────────────────────────
 ##   variable missing complete   n  mean   sd p0   p25 p50 p75 p100     hist
 ##  age_years       0      120 120 37.77 9.36 21 30.75  37  44   59 ▃▆▇▆▇▃▂▂
 ```
@@ -201,7 +201,7 @@ data %>%
 ##  n obs: 120 
 ##  n variables: 1 
 ## 
-## ── Variable type:numeric ─────────────────────────────────────────────────────────────────────────────
+## ── Variable type:numeric ────────────────────────────────────────────────────────────────────────────────────
 ##  variable missing complete   n  mean    sd   p0  p25   p50  p75  p100
 ##   mass_kg       0      120 120 65.02 14.71 41.4 54.4 62.85 72.5 121.4
 ##      hist
@@ -257,7 +257,7 @@ data %>%
 ##  n variables: 2 
 ##  group variables: sex 
 ## 
-## ── Variable type:numeric ─────────────────────────────────────────────────────────────────────────────
+## ── Variable type:numeric ────────────────────────────────────────────────────────────────────────────────────
 ##  sex variable missing complete  n mean    sd   p0  p25  p50  p75 p100
 ##    F height_m       0       66 66 1.58 0.065 1.46 1.53 1.57 1.62 1.76
 ##    M height_m       0       54 54 1.7  0.05  1.58 1.67 1.7  1.74 1.82
@@ -313,7 +313,7 @@ data %>%
 ##  n obs: 120 
 ##  n variables: 1 
 ## 
-## ── Variable type:factor ──────────────────────────────────────────────────────────────────────────────
+## ── Variable type:factor ─────────────────────────────────────────────────────────────────────────────────────
 ##  variable missing complete   n n_unique          top_counts ordered
 ##       sex       0      120 120        2 F: 66, M: 54, NA: 0   FALSE
 ```
@@ -373,7 +373,7 @@ data %>%
 ##  n obs: 120 
 ##  n variables: 1 
 ## 
-## ── Variable type:numeric ─────────────────────────────────────────────────────────────────────────────
+## ── Variable type:numeric ────────────────────────────────────────────────────────────────────────────────────
 ##     variable missing complete   n   mean     sd p0   p25 p50 p75 p100
 ##  CD4_cell.ul       1      119 120 265.87 224.75  1 119.5 221 345 1347
 ##      hist
@@ -426,7 +426,7 @@ data %>%
 ##  n obs: 120 
 ##  n variables: 1 
 ## 
-## ── Variable type:numeric ─────────────────────────────────────────────────────────────────────────────
+## ── Variable type:numeric ────────────────────────────────────────────────────────────────────────────────────
 ##              variable missing complete   n mean   sd  p0  p25  p50  p75
 ##  viral_load_copies.ml      12      108 120 3.47 1.31 1.7 2.52 3.14 4.26
 ##  p100     hist
@@ -486,7 +486,7 @@ data %>%
 ##  n variables: 2 
 ##  group variables: drinks_alcohol 
 ## 
-## ── Variable type:integer ─────────────────────────────────────────────────────────────────────────────
+## ── Variable type:integer ────────────────────────────────────────────────────────────────────────────────────
 ##  drinks_alcohol           variable missing complete  n  mean    sd p0 p25
 ##              No alcohol_units.week       0       93 93  0     0     0   0
 ##             Yes alcohol_units.week       0       27 27 23.67 25.43  3   8
@@ -544,7 +544,7 @@ data %>%
 ##  n obs: 120 
 ##  n variables: 1 
 ## 
-## ── Variable type:factor ──────────────────────────────────────────────────────────────────────────────
+## ── Variable type:factor ─────────────────────────────────────────────────────────────────────────────────────
 ##    variable missing complete   n n_unique              top_counts ordered
 ##  TB_current       0      120 120        2 no: 100, yes: 20, NA: 0   FALSE
 ```
@@ -616,7 +616,7 @@ data %>%
 ##  n variables: 2 
 ##  group variables: pyridoxine_prophylaxis 
 ## 
-## ── Variable type:factor ──────────────────────────────────────────────────────────────────────────────
+## ── Variable type:factor ─────────────────────────────────────────────────────────────────────────────────────
 ##  pyridoxine_prophylaxis           variable missing complete  n n_unique
 ##                      no rifafour_treatment       0       87 87        1
 ##                     yes rifafour_treatment       0       19 19        1
@@ -702,7 +702,7 @@ data %>%
 ##  n obs: 120 
 ##  n variables: 1 
 ## 
-## ── Variable type:factor ──────────────────────────────────────────────────────────────────────────────
+## ── Variable type:factor ─────────────────────────────────────────────────────────────────────────────────────
 ##        variable missing complete   n n_unique             top_counts
 ##  diabetic_hba1c       9      111 120        1 no: 111, NA: 9, yes: 0
 ##  ordered
@@ -724,7 +724,7 @@ data %>%
 ##  n obs: 120 
 ##  n variables: 1 
 ## 
-## ── Variable type:factor ──────────────────────────────────────────────────────────────────────────────
+## ── Variable type:factor ─────────────────────────────────────────────────────────────────────────────────────
 ##               variable missing complete   n n_unique
 ##  vitaminB12_deficiency      19      101 120        2
 ##               top_counts ordered
@@ -742,7 +742,7 @@ sessionInfo()
 ```
 ## R version 3.6.0 (2019-04-26)
 ## Platform: x86_64-apple-darwin15.6.0 (64-bit)
-## Running under: macOS Mojave 10.14.4
+## Running under: macOS Mojave 10.14.5
 ## 
 ## Matrix products: default
 ## BLAS:   /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
@@ -755,34 +755,35 @@ sessionInfo()
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] skimr_1.0.5      boot_1.3-22      rcompanion_2.1.7 forcats_0.4.0   
-##  [5] stringr_1.4.0    dplyr_0.8.0.1    purrr_0.3.2      readr_1.3.1     
-##  [9] tidyr_0.8.3      tibble_2.1.1     ggplot2_3.1.1    tidyverse_1.2.1 
+##  [1] skimr_1.0.7      boot_1.3-22      rcompanion_2.2.1 forcats_0.4.0   
+##  [5] stringr_1.4.0    dplyr_0.8.2      purrr_0.3.2      readr_1.3.1     
+##  [9] tidyr_0.8.3      tibble_2.1.3     ggplot2_3.2.0    tidyverse_1.2.1 
 ## [13] magrittr_1.5    
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] httr_1.4.0         jsonlite_1.6       splines_3.6.0     
 ##  [4] modelr_0.1.4       assertthat_0.2.1   expm_0.999-4      
 ##  [7] stats4_3.6.0       coin_1.3-0         cellranger_1.1.0  
-## [10] yaml_2.2.0         pillar_1.3.1       backports_1.1.4   
-## [13] lattice_0.20-38    glue_1.3.1         digest_0.6.18     
-## [16] rvest_0.3.3        colorspace_1.4-1   sandwich_2.5-1    
+## [10] yaml_2.2.0         pillar_1.4.2       backports_1.1.4   
+## [13] lattice_0.20-38    glue_1.3.1         digest_0.6.19     
+## [16] rvest_0.3.4        colorspace_1.4-1   sandwich_2.5-1    
 ## [19] htmltools_0.3.6    Matrix_1.2-17      plyr_1.8.4        
 ## [22] pkgconfig_2.0.2    broom_0.5.2        haven_2.1.0       
-## [25] EMT_1.1            mvtnorm_1.0-10     scales_1.0.0      
+## [25] EMT_1.1            mvtnorm_1.0-11     scales_1.0.0      
 ## [28] manipulate_1.0.1   generics_0.0.2     TH.data_1.0-10    
 ## [31] withr_2.1.2.9000   lazyeval_0.2.2     cli_1.1.0         
 ## [34] survival_2.44-1.1  crayon_1.3.4       readxl_1.3.1      
-## [37] evaluate_0.13      fansi_0.4.0        nlme_3.1-139      
+## [37] evaluate_0.14      fansi_0.4.0        nlme_3.1-140      
 ## [40] MASS_7.3-51.4      xml2_1.2.0         foreign_0.8-71    
 ## [43] tools_3.6.0        hms_0.4.2          matrixStats_0.54.0
 ## [46] multcomp_1.4-10    munsell_0.5.0      compiler_3.6.0    
-## [49] multcompView_0.1-7 rlang_0.3.4        grid_3.6.0        
-## [52] rstudioapi_0.10    labeling_0.3       rmarkdown_1.12    
+## [49] multcompView_0.1-7 rlang_0.4.0        grid_3.6.0        
+## [52] rstudioapi_0.10    labeling_0.3       rmarkdown_1.13    
 ## [55] DescTools_0.99.28  gtable_0.3.0       codetools_0.2-16  
-## [58] R6_2.4.0           zoo_1.8-5          lubridate_1.7.4   
-## [61] knitr_1.22         utf8_1.1.4         nortest_1.0-4     
-## [64] libcoin_1.0-4      modeltools_0.2-22  stringi_1.4.3     
-## [67] parallel_3.6.0     Rcpp_1.0.1         tidyselect_0.2.5  
-## [70] xfun_0.6           lmtest_0.9-37
+## [58] R6_2.4.0           zoo_1.8-6          lubridate_1.7.4   
+## [61] knitr_1.23         zeallot_0.1.0      utf8_1.1.4        
+## [64] nortest_1.0-4      libcoin_1.0-4      modeltools_0.2-22 
+## [67] stringi_1.4.3      parallel_3.6.0     Rcpp_1.0.1        
+## [70] vctrs_0.1.0        tidyselect_0.2.5   xfun_0.8          
+## [73] lmtest_0.9-37
 ```

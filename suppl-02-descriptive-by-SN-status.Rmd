@@ -12,16 +12,17 @@ library(tidyverse)
 library(boot)
 library(rcompanion)
 library(skimr)
+library(patchwork)
 
 # Set plot theme
-theme_set(new = theme_bw(base_size = 14))
+theme_set(new = theme_bw(base_size = 16))
 
 # knitr options
 knitr::opts_chunk$set(warning = FALSE,
                       message = FALSE, 
                       fig.retina = 2,
-                      fig.width = 7,
-                      fig.height = 7,
+                      fig.width = 8,
+                      fig.height = 8,
                       fig.align = 'center',
                       fig.path = 'figures/suppl-02-descriptive-by-SN-status/')
 ```
@@ -180,7 +181,7 @@ groupwiseMean(age_years ~ sn_present,
               bca = TRUE)[c(1:3, 5, 6, 7)]
 
 # Plot
-data %>%
+pp1 <- data %>%
     ggplot(data = .) +
     aes(y = age_years, 
         x = sn_present) +
@@ -189,7 +190,16 @@ data %>%
     labs(title = 'Age at recruitment',
          subtitle = 'SN:yes vs SN:no',
          y = 'Age (years)',
-         x = 'Developed HIV-SN')
+         x = 'Developed HIV-SN') +
+    theme(legend.position = 'top',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_text(size = 22),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
+pp1
 
 # Bootstrap 95% CI for the difference in mean age
 ## Resample: 1999
@@ -212,7 +222,7 @@ boot_age <- boot.ci(boot(data = data,
     .[1, -1] %>% 
     as.data.frame(); boot_age
 
-ggplot(data = boot_age) +
+pp2 <- ggplot(data = boot_age) +
     geom_hline(yintercept = 0,
                linetype = 2) +
     geom_point(aes(x = 'x',
@@ -232,12 +242,27 @@ ggplot(data = boot_age) +
     geom_label(aes(x = 'x',
                    y = Bca.upper,
                    label = Bca.upper)) +
-    labs(title = 'Bootstrap 95% CI of the difference between mean age',
+    labs(title = 'Bootstrap 95% CI of the difference in age',
          subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 1999",
          y = 'Difference in age (years)') +
     theme(axis.ticks.x = element_blank(),
           axis.text.x = element_blank(),
-          axis.title.x = element_blank())
+          axis.title.x = element_blank()) +
+    theme(legend.position = 'top',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_text(size = 22),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
+pp2
+
+age <- pp1 + pp2 + plot_layout(ncol = 2)
+ggsave(filename = 'figures/age.png',
+       plot = age,
+       width = 14,
+       height = 7)
 ```
 
 ## Body mass
@@ -259,7 +284,7 @@ groupwiseMean(mass_kg ~ sn_present,
               bca = TRUE)[c(1:3, 5, 6, 7)]
 
 # Plot
-data %>%
+pp3 <- data %>%
     ggplot(data = .) +
     aes(y = mass_kg, 
         x = sn_present) +
@@ -268,7 +293,16 @@ data %>%
     labs(title = 'Mass at recruitment',
          subtitle = "SN:yes vs SN:no",
          y = 'Mass (kg)',
-         x = 'Developed HIV-SN')
+         x = 'Developed HIV-SN') +
+    theme(legend.position = 'top',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_text(size = 22),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
+pp3
 
 # Bootstrap 95% CI for the difference in mean mass
 ## Resample: 1999
@@ -291,7 +325,7 @@ boot_mass <- boot.ci(boot(data = data,
     .[1, -1] %>% 
     as.data.frame(); boot_mass
 
-ggplot(data = boot_mass) +
+pp4 <- ggplot(data = boot_mass) +
     geom_hline(yintercept = 0,
                linetype = 2) +
     geom_point(aes(x = 'x',
@@ -311,12 +345,27 @@ ggplot(data = boot_mass) +
     geom_label(aes(x = 'x',
                    y = Bca.upper,
                    label = Bca.upper)) +
-    labs(title = 'Bootstrap 95% CI of the difference in mean mass',
+    labs(title = 'Bootstrap 95% CI of the difference in mass',
          subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 1999",
          y = 'Difference in mass (kg)') +
     theme(axis.ticks.x = element_blank(),
           axis.text.x = element_blank(),
-          axis.title.x = element_blank())
+          axis.title.x = element_blank()) +
+    theme(legend.position = 'top',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_text(size = 22),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
+pp4
+
+mass <- pp3 + pp4 + plot_layout(ncol = 2)
+ggsave(filename = 'figures/mass.png',
+       plot = mass,
+       width = 14,
+       height = 7)
 ```
 
 ## Height
@@ -339,7 +388,7 @@ groupwiseMean(height_m ~ sn_present + sex,
               bca = TRUE)[c(1:3, 5, 6:8)]
 
 # Plots 
-data %>%
+pp5 <- data %>%
     ggplot(data = .) +
     aes(y = height_m, 
         x = sex,
@@ -351,7 +400,79 @@ data %>%
     labs(title = 'Height at recruitment',
          subtitle = "SN:yes vs SN:no",
          y = 'Height (m)',
-         x = 'Sex')
+         x = 'Sex') +
+    theme(legend.position = 'top',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_text(size = 22),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
+pp5
+
+## Bootstrap 95% CI for the difference in mean height
+### Resample: 1999
+set.seed(1234)
+boot_hm <- boot.ci(boot(data = data,
+                        statistic = boot_deltaMean, 
+                        data_column = 'height_m', 
+                        grouping_column = 'sn_present',
+                        R = 1999, 
+                        stype = 'i'),
+                   type = 'bca') %>%
+    tibble(n = nrow(filter(data, !is.na(height_m))), 
+           Mean.difference = round(.$t0, 3), 
+           Conf.level = 0.95, 
+           Bca.lower = round(.$bca[[4]], 3),
+           Bca.upper = round(.$bca[[5]], 3),
+           Includes.zero = ifelse(Bca.lower <= 0 & Bca.upper >= 0,
+                                  yes = 'yes',
+                                  no = 'no')) %>%
+    .[1, -1] %>% 
+    as.data.frame(); boot_hm
+
+pp6 <- ggplot(data = boot_hm) +
+    geom_hline(yintercept = 0,
+               linetype = 2) +
+    geom_point(aes(x = 'x',
+                   y = Mean.difference),
+               size = 12) +
+    geom_errorbar(aes(x = 'x',
+                      ymin = Bca.lower,
+                      ymax = Bca.upper),
+                  width = 0.5,
+                  size = 1) +
+    geom_label(aes(x = 'x',
+                   y = Bca.lower,
+                   label = Bca.lower)) +
+    geom_label(aes(x = 'x',
+                   y = Mean.difference,
+                   label = Mean.difference)) +
+    geom_label(aes(x = 'x',
+                   y = Bca.upper,
+                   label = Bca.upper)) +
+    labs(title = 'Bootstrap 95% CI of the difference in height',
+         subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 1999",
+         y = 'Difference in height (m)') +
+    theme(axis.ticks.x = element_blank(),
+          axis.text.x = element_blank(),
+          axis.title.x = element_blank()) +
+    theme(legend.position = 'top',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_text(size = 22),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
+pp6
+
+height <- pp5 + pp6 + plot_layout(ncol = 2)
+ggsave(filename = 'figures/height.png',
+       plot = height,
+       width = 14,
+       height = 7.8)
 
 # MALES ONLY
 ## Bootstrap 95% CI for the difference in mean height
@@ -400,7 +521,15 @@ ggplot(data = boot_hm) +
          y = 'Difference in height (m)') +
     theme(axis.ticks.x = element_blank(),
           axis.text.x = element_blank(),
-          axis.title.x = element_blank())
+          axis.title.x = element_blank()) +
+    theme(legend.position = 'top',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_text(size = 22),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
 
 # FEMALES ONLY
 ## Bootstrap 95% CI for the difference in mean height
@@ -449,7 +578,15 @@ ggplot(data = boot_hf) +
          y = 'Difference in height (m)') +
     theme(axis.ticks.x = element_blank(),
           axis.text.x = element_blank(),
-          axis.title.x = element_blank())
+          axis.title.x = element_blank()) +
+    theme(legend.position = 'top',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_text(size = 22),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
 ```
 
 ## Sex
@@ -503,7 +640,7 @@ sn_yes %>%
     bind_rows(sn_no)
     
 # Plot
-data %>%
+pp7 <- data %>%
     ggplot(data = .) +
     aes(x = sn_present,
         fill = sex) +
@@ -514,7 +651,16 @@ data %>%
          subtitle = "SN:yes vs SN:no",
          y = 'Proportion',
          x = 'Developed HIV-SN') +
-    scale_fill_grey(name = 'Sex') 
+    scale_fill_grey(name = 'Sex')  +
+    theme(legend.position = 'top',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_text(size = 22),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
+pp7
 
 # Bootstrap 95% CI for the odds ratio of SN:yes vs SN:no
 ## Resample: 1999
@@ -537,7 +683,7 @@ boot_sex <- boot.ci(boot(data = data,
     .[1, -1] %>% 
     as.data.frame(); boot_sex
 
-ggplot(data = boot_sex) +
+pp8 <- ggplot(data = boot_sex) +
     geom_hline(yintercept = 1,
                linetype = 2) +
     geom_point(aes(x = 'x',
@@ -557,12 +703,28 @@ ggplot(data = boot_sex) +
     geom_label(aes(x = 'x',
                    y = Bca.upper,
                    label = Bca.upper)) +
-    labs(title = 'Bootstrap 95% CI of the odds ratio for being female',
+    labs(title = 'Bootstrap 95% CI of the odds ratio\nfor being female',
          subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 1999",
          y = 'Odds ratio') +
     theme(axis.ticks.x = element_blank(),
           axis.text.x = element_blank(),
-          axis.title.x = element_blank())
+          axis.title.x = element_blank())  +
+    theme(legend.position = 'top',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_text(size = 22),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
+pp8
+
+sex <- pp7 + pp8 + plot_layout(ncol = 2)
+ggsave(filename = 'figures/sex.png',
+       plot = sex,
+       width = 14,
+       height = 8.2)
+
 ```
 
 ## CD4 T-cell count
@@ -582,7 +744,7 @@ groupwiseMedian(CD4_cell.ul ~ sn_present,
                 boot = TRUE, 
                 bca = TRUE)[c(1:3, 5, 6, 7)]
 # Plot
-data %>%
+pp9 <- data %>%
     ggplot(data = .) +
     aes(y = CD4_cell.ul, 
         x = sn_present) +
@@ -591,7 +753,16 @@ data %>%
     labs(title = 'CD4 T-cell count at recruitment',
          subtitle = "SN:yes vs SN:no",
          y = expression(paste('CD4 T-cell count (cells.', mu, l^-1, ')')),
-         x = 'Developed HIV-SN') 
+         x = 'Developed HIV-SN')  +
+    theme(legend.position = 'top',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_text(size = 22),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
+pp9
 
 # Bootstrap 95% CI for the difference in median CD4 T-cell count
 ## Resample: 1999
@@ -614,7 +785,7 @@ boot_cd4 <- boot.ci(boot(data = data,
     .[1, -1] %>% 
     as.data.frame(); boot_cd4 
 
-ggplot(data = boot_cd4) +
+pp10 <- ggplot(data = boot_cd4) +
      geom_hline(yintercept = 0,
                linetype = 2) +
     geom_point(aes(x = 'x',
@@ -634,12 +805,29 @@ ggplot(data = boot_cd4) +
     geom_label(aes(x = 'x',
                    y = Bca.upper,
                    label = Bca.upper)) +
-   labs(title = 'Bootstrap 95% CI of the difference in median CD4 T-cell count',
+   labs(title = 'Bootstrap 95% CI of the difference in\nmedian CD4 T-cell count',
          subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 1999",
-         y = expression(paste('Difference CD4 T-cell count (cells.', mu, l^-1, ')'))) +
+         y = expression(paste('Difference in CD4 T-cell count (cells.', mu, l^-1, ')'))) +
     theme(axis.ticks.x = element_blank(),
           axis.text.x = element_blank(),
-          axis.title.x = element_blank())
+          axis.title.x = element_blank()) +
+    theme(legend.position = 'top',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_text(size = 22),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
+pp10
+
+cd4 <- pp9 + pp10 + plot_layout(ncol = 2)
+
+ggsave(filename = 'figures/cd4.png',
+       plot = cd4,
+       height = 7.5,
+       width = 14)
+
 ```
 
 ## Viral load
@@ -660,7 +848,7 @@ groupwiseMedian(viral_load_copies.ml ~ sn_present,
                 bca = TRUE)[c(1:3, 5, 6, 7)]
 
 # Plot
-data %>%
+pp11 <- data %>%
     filter(!is.na(viral_load_copies.ml)) %>%
     ggplot(data = .) +
     aes(y = viral_load_copies.ml, 
@@ -670,7 +858,16 @@ data %>%
     labs(title = 'Viral load at recruitment',
          subtitle = 'SN:yes vs SN:no',
          x = 'Developed HIV-SN',
-         y = expression(paste('log' [10], ' viral load (copies.ml' ^-1, ')')))
+         y = expression(paste('log' [10], ' viral load (copies.ml' ^-1, ')')))  +
+    theme(legend.position = 'top',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_text(size = 22),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
+pp11
 
 # Bootstrap 95% CI for the difference in median viral load
 ## Resample: 1999
@@ -693,7 +890,7 @@ boot_vl <- boot.ci(boot(data = data,
     .[1, -1] %>% 
     as.data.frame(); boot_vl
 
-ggplot(data = boot_vl) +
+pp12 <- ggplot(data = boot_vl) +
     geom_hline(yintercept = 0,
                linetype = 2) +
     geom_point(aes(x = 'x',
@@ -713,12 +910,28 @@ ggplot(data = boot_vl) +
     geom_label(aes(x = 'x',
                    y = Bca.upper,
                    label = Bca.upper)) +
-    labs(title = 'Bootstrap 95% CI of the difference in median viral load',
+    labs(title = 'Bootstrap 95% CI of the difference in\nmedian viral load',
          subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 1999",
-         y = expression(paste('Difference in median log' [10], ' viral load (copies.ml' ^-1, ')'))) +
+         y = expression(paste('Difference in log' [10], ' viral load (copies.ml' ^-1, ')'))) +
     theme(axis.ticks.x = element_blank(),
           axis.text.x = element_blank(),
-          axis.title.x = element_blank())
+          axis.title.x = element_blank())  +
+    theme(legend.position = 'top',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_text(size = 22),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
+pp12
+
+vl <- pp11 + pp12 + plot_layout(ncol = 2)
+ggsave(filename = 'figures/viral-load.png',
+       plot = vl,
+       height = 7.5,
+       width = 14)
+
 ```
 
 ## Alcohol
@@ -755,7 +968,15 @@ data %>%
     labs(title = 'Alcohol consumption at recruitment',
          subtitle = 'SN:yes vs SN:no',
          x = 'Developed HIV-SN',
-         y = expression(paste('Alcohol consumption (units.week' ^-1, ')')))
+         y = expression(paste('Alcohol consumption (units.week' ^-1, ')')))  +
+    theme(legend.position = 'top',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_text(size = 22),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
 
 # With only two drinkers in the SN:yes group, we did not pursue additional exploration.
 ```
@@ -814,7 +1035,7 @@ sn_yes %>%
     bind_rows(sn_no)
 
 # Plot
-data %>%
+pp13 <- data %>%
     mutate(TB_current = str_to_title(TB_current)) %>% 
     ggplot(data = .) +
     aes(x = sn_present,
@@ -826,7 +1047,16 @@ data %>%
          subtitle = 'SN:yes vs SN:no',
          x = 'Developed HIV-SN',
          y = 'Proportion') +
-    scale_fill_grey(name = 'Current\ninfection')
+    scale_fill_grey(name = 'Current\ninfection')  +
+    theme(legend.position = 'top',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_text(size = 22),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
+pp13
 
 # Bootstrap 95% CI for the odds ratio of current TB in SN:yes vs SN:no
 ## Resample: 1999
@@ -849,7 +1079,7 @@ boot_tb <- boot.ci(boot(data = data,
     .[1, -1] %>% 
     as.data.frame(); boot_tb
 
-ggplot(data = boot_tb) +
+pp14 <- ggplot(data = boot_tb) +
     geom_hline(yintercept = 1,
                linetype = 2) +
     geom_point(aes(x = 'x',
@@ -869,12 +1099,28 @@ ggplot(data = boot_tb) +
     geom_label(aes(x = 'x',
                    y = Bca.upper,
                    label = Bca.upper)) +
-    labs(title = 'Bootstrap 95% CI of the odds ratio for current TB',
+    labs(title = 'Bootstrap 95% CI of the odds ratio\nfor current TB',
          subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 1999",
          y = 'Odds ratio for current TB') +
     theme(axis.ticks.x = element_blank(),
           axis.text.x = element_blank(),
-          axis.title.x = element_blank())
+          axis.title.x = element_blank())  +
+    theme(legend.position = 'top',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_text(size = 22),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
+pp14
+
+tb <- pp13 + pp14 + plot_layout(ncol = 2)
+ggsave(filename = 'figures/tb.png',
+       plot = tb,
+       height = 8.2,
+       width = 14)
+
 ```
 
 ### Currently receiving TB treatment?
@@ -941,7 +1187,7 @@ sn_yes %>%
     bind_rows(sn_no)
 
 # Plot
-data %>%
+pp15 <- data %>%
     mutate(TB_current = str_to_title(rifafour_treatment)) %>% 
     ggplot(data = .) +
     aes(x = sn_present,
@@ -953,7 +1199,17 @@ data %>%
          subtitle = 'SN:yes vs SN:no',
          x = 'Developed HIV-SN',
          y = 'Proportion') +
-    scale_fill_grey(name = 'Currently\ntreated')
+    scale_fill_grey(name = 'Currently\ntreated')  +
+    theme(legend.position = 'top',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_text(size = 22),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
+
+pp15
 
 # Bootstrap 95% CI for the odds ratio of current TB treatment by SN status
 ## Resample: 1999
@@ -976,7 +1232,7 @@ boot_tb2 <- boot.ci(boot(data = data_tb,
     .[1, -1] %>% 
     as.data.frame(); boot_tb2
 
-ggplot(data = boot_tb2) +
+pp16 <- ggplot(data = boot_tb2) +
     geom_hline(yintercept = 1,
                linetype = 2) +
     geom_point(aes(x = 'x',
@@ -996,12 +1252,29 @@ ggplot(data = boot_tb2) +
     geom_label(aes(x = 'x',
                    y = Bca.upper,
                    label = Bca.upper)) +
-    labs(title = 'Bootstrap 95% CI of the odds ratio for current TB treatment',
+    labs(title = 'Bootstrap 95% CI of the odds ratio for\ncurrent TB treatment',
          subtitle = "SN:yes vs SN:no\nInterval type: BCa, Resamples: 1999",
          y = 'Odds ratio for current TB treatment') +
     theme(axis.ticks.x = element_blank(),
           axis.text.x = element_blank(),
-          axis.title.x = element_blank())
+          axis.title.x = element_blank())  +
+    theme(legend.position = 'top',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_text(size = 22),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
+
+pp16
+
+tb_treat <- pp15 + pp16 + plot_layout(ncol = 2)
+ggsave(filename = 'figures/tb-treat.png',
+       plot = tb_treat,
+       height = 8.2,
+       width = 14)
+
 ```
 
 ----

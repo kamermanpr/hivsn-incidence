@@ -2,7 +2,7 @@
 title: "Supplement 3"
 subtitle: 'Descriptive statistics on participant follow-up'
 author: 'Peter Kamerman and Prinisha Pillay'
-date: "18 May 2019"
+date: "06 July 2019"
 ---
 
 
@@ -166,7 +166,7 @@ data %>%
           strip.text = element_blank())
 ```
 
-<img src="figures/suppl-03-follow-up-analysis/visit_full-1.png" width="672" style="display: block; margin: auto;" />
+<img src="figures/suppl-03-follow-up-analysis/visit_full-1.png" width="768" style="display: block; margin: auto;" />
 
 ```r
 ## Publication figure
@@ -294,7 +294,7 @@ ggplot(data = data_plot) +
           panel.grid = element_blank())
 ```
 
-<img src="figures/suppl-03-follow-up-analysis/visit_sn-1.png" width="672" style="display: block; margin: auto;" />
+<img src="figures/suppl-03-follow-up-analysis/visit_sn-1.png" width="768" style="display: block; margin: auto;" />
 
 ```r
 # Publication plot
@@ -390,7 +390,7 @@ data_v2 %>%
 ```
 ## # A tibble: 1 x 6
 ##       n Median.visits   Q25   Q75   min   max
-##   <int>         <dbl> <dbl> <dbl> <dbl> <dbl>
+##   <int>         <dbl> <dbl> <dbl> <int> <int>
 ## 1   120             3     3     3     2     5
 ```
 
@@ -409,7 +409,7 @@ data_v2 %>%
 ```
 ## # A tibble: 2 x 7
 ##   sn        n Median.visits   Q25   Q75   min   max
-##   <fct> <int>         <dbl> <dbl> <dbl> <dbl> <dbl>
+##   <fct> <int>         <dbl> <dbl> <dbl> <int> <int>
 ## 1 no      100             3     3  3        2     5
 ## 2 yes      20             3     3  3.25     3     5
 ```
@@ -453,7 +453,7 @@ gg_v2b <- data_v2 %>%
 gg_v2a + gg_v2b
 ```
 
-<img src="figures/suppl-03-follow-up-analysis/n_visits-1.png" width="672" style="display: block; margin: auto;" />
+<img src="figures/suppl-03-follow-up-analysis/n_visits-1.png" width="768" style="display: block; margin: auto;" />
 
 ```r
 ## Conditional on SN
@@ -514,7 +514,7 @@ gg_plot3 <- gg_v2c + gg_v2d
 gg_plot3
 ```
 
-<img src="figures/suppl-03-follow-up-analysis/n_visits-2.png" width="672" style="display: block; margin: auto;" />
+<img src="figures/suppl-03-follow-up-analysis/n_visits-2.png" width="768" style="display: block; margin: auto;" />
 
 ```r
 ggsave(filename = 'figures/visits.png', 
@@ -533,7 +533,7 @@ chisq_test(xtabs(~ sn + visit_number,
 ## 	Approximative Pearson Chi-Squared Test
 ## 
 ## data:  visit_number by sn (no, yes)
-## chi-squared = 4.3515, p-value = 0.216
+## chi-squared = 4.3515, p-value = 0.2119
 ```
 
 ## Time between first and last visit
@@ -552,7 +552,7 @@ data_v2 %>%
 ```
 ## # A tibble: 1 x 6
 ##       n Median.days   Q25   Q75   min   max
-##   <int>       <dbl> <dbl> <dbl> <dbl> <dbl>
+##   <int>       <dbl> <dbl> <dbl> <int> <int>
 ## 1   120         186  140.  201.    39   263
 ```
 
@@ -571,7 +571,7 @@ data_v2 %>%
 ```
 ## # A tibble: 2 x 7
 ##   sn        n Median.days   Q25   Q75   min   max
-##   <fct> <int>       <dbl> <dbl> <dbl> <dbl> <dbl>
+##   <fct> <int>       <dbl> <dbl> <dbl> <int> <int>
 ## 1 no      100         184  133.  199.    39   263
 ## 2 yes      20         195  182.  208.   166   243
 ```
@@ -587,11 +587,17 @@ data_v2 %>%
     labs(title = 'Number of days of follow-up',
          subtitle = '(All participants)',
          y = 'Days') +
-    theme(axis.title.x = element_blank(),
-          axis.text.x = element_blank())
+    theme(legend.position = 'top',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_blank(),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
 ```
 
-<img src="figures/suppl-03-follow-up-analysis/time_visits-1.png" width="672" style="display: block; margin: auto;" />
+<img src="figures/suppl-03-follow-up-analysis/time_visits-1.png" width="768" style="display: block; margin: auto;" />
 
 ```r
 ## Conditional on SN
@@ -604,10 +610,18 @@ data_v2 %>%
     labs(title = 'Number of days of follow-up',
          subtitle = 'SN:yes vs SN:no',
          y = 'Days',
-         x = 'SN present')
+         x = 'SN present') +
+    theme(legend.position = 'top',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_text(size = 22),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
 ```
 
-<img src="figures/suppl-03-follow-up-analysis/time_visits-2.png" width="672" style="display: block; margin: auto;" />
+<img src="figures/suppl-03-follow-up-analysis/time_visits-2.png" width="768" style="display: block; margin: auto;" />
 
 ```r
 # Stats
@@ -621,7 +635,7 @@ normal_test(max_duration ~ factor(sn),
 ## 	Approximative Two-Sample van der Waerden (Normal Quantile) Test
 ## 
 ## data:  max_duration by factor(sn) (no, yes)
-## Z = -2.103, p-value = 0.0333
+## Z = -2.103, p-value = 0.0364
 ## alternative hypothesis: true mu is not equal to 0
 ```
 
@@ -645,7 +659,7 @@ data_v1 %>%
 ```
 ## # A tibble: 4 x 9
 ##   visit_number     n Mean.days Median.days    SD   Q25   Q75   min   max
-##          <int> <int>     <dbl>       <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+##          <int> <int>     <dbl>       <dbl> <dbl> <dbl> <dbl> <int> <int>
 ## 1            2   120      72.4        69.5  27.1  55    89      14   151
 ## 2            3   105     100.        102    44.4  60   135      14   204
 ## 3            4    19      54.9        50    34.4  27.5  80.5     9   132
@@ -671,7 +685,7 @@ data_v1 %>%
 ## # A tibble: 8 x 10
 ## # Groups:   visit_number [4]
 ##   visit_number sn        n Mean.days Median.days    SD   Q25   Q75   min
-##          <int> <fct> <int>     <dbl>       <dbl> <dbl> <dbl> <dbl> <dbl>
+##          <int> <fct> <int>     <dbl>       <dbl> <dbl> <dbl> <dbl> <int>
 ## 1            2 no      100      71.4        69.5  25.8  56    87.2    14
 ## 2            2 yes      20      77.6        69    33.1  52   104.     28
 ## 3            3 no       85     100.        102    43.1  60   138      26
@@ -680,7 +694,7 @@ data_v1 %>%
 ## 6            4 yes       5      58.6        28    49.2  27    87      19
 ## 7            5 no        5      62.6        61    21.3  56    63      37
 ## 8            5 yes       2      45.5        45.5  24.7  36.8  54.2    28
-## # … with 1 more variable: max <dbl>
+## # … with 1 more variable: max <int>
 ```
 
 ```r
@@ -697,10 +711,18 @@ data_v1 %>%
     labs(title = 'Days between successive clinic visit ',
          subtitle = '(All participants)',
          y = 'Days',
-         x = 'Visit interval')
+         x = 'Visit interval') +
+    theme(legend.position = 'top',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_text(size = 22),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
 ```
 
-<img src="figures/suppl-03-follow-up-analysis/cummulative_visits-1.png" width="672" style="display: block; margin: auto;" />
+<img src="figures/suppl-03-follow-up-analysis/cummulative_visits-1.png" width="768" style="display: block; margin: auto;" />
 
 ```r
 ## Conditional on SN
@@ -714,14 +736,22 @@ data_v1 %>%
     geom_point(position = position_jitterdodge(jitter.height = 0)) +
     scale_x_discrete(labels = c('1 to 2', '2 to 3',
                                 '3 to 4', '4 to 5')) +
-    scale_fill_grey(name = 'Neuropathy\npresent') +
+    scale_fill_grey(name = 'Neuropathy present') +
     labs(title = 'Days between successive clinic visits',
          subtitle = 'SN:yes vs SN:no',
          y = 'Days',
-         x = 'Visit interval') 
+         x = 'Visit interval') +
+    theme(legend.position = 'top',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_text(size = 22),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
 ```
 
-<img src="figures/suppl-03-follow-up-analysis/cummulative_visits-2.png" width="672" style="display: block; margin: auto;" />
+<img src="figures/suppl-03-follow-up-analysis/cummulative_visits-2.png" width="768" style="display: block; margin: auto;" />
 
 ```r
 # Stats
@@ -756,7 +786,7 @@ par(mfrow = c(2, 2))
 plot(mod) 
 ```
 
-<img src="figures/suppl-03-follow-up-analysis/cummulative_visits-3.png" width="672" style="display: block; margin: auto;" />
+<img src="figures/suppl-03-follow-up-analysis/cummulative_visits-3.png" width="768" style="display: block; margin: auto;" />
 
 ```r
 par(mfrow = c(1, 1))
@@ -773,7 +803,7 @@ sessionInfo()
 ```
 ## R version 3.6.0 (2019-04-26)
 ## Platform: x86_64-apple-darwin15.6.0 (64-bit)
-## Running under: macOS Mojave 10.14.4
+## Running under: macOS Mojave 10.14.5
 ## 
 ## Matrix products: default
 ## BLAS:   /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
@@ -786,35 +816,36 @@ sessionInfo()
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] car_3.0-2         carData_3.0-2     coin_1.3-0       
+##  [1] car_3.0-3         carData_3.0-2     coin_1.3-0       
 ##  [4] survival_2.44-1.1 patchwork_0.0.1   forcats_0.4.0    
-##  [7] stringr_1.4.0     dplyr_0.8.0.1     purrr_0.3.2      
-## [10] readr_1.3.1       tidyr_0.8.3       tibble_2.1.1     
-## [13] ggplot2_3.1.1     tidyverse_1.2.1   magrittr_1.5     
+##  [7] stringr_1.4.0     dplyr_0.8.2       purrr_0.3.2      
+## [10] readr_1.3.1       tidyr_0.8.3       tibble_2.1.3     
+## [13] ggplot2_3.2.0     tidyverse_1.2.1   magrittr_1.5     
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] httr_1.4.0         jsonlite_1.6       splines_3.6.0     
 ##  [4] modelr_0.1.4       assertthat_0.2.1   stats4_3.6.0      
-##  [7] cellranger_1.1.0   yaml_2.2.0         pillar_1.3.1      
+##  [7] cellranger_1.1.0   yaml_2.2.0         pillar_1.4.2      
 ## [10] backports_1.1.4    lattice_0.20-38    glue_1.3.1        
-## [13] digest_0.6.18      rvest_0.3.3        colorspace_1.4-1  
+## [13] digest_0.6.19      rvest_0.3.4        colorspace_1.4-1  
 ## [16] sandwich_2.5-1     htmltools_0.3.6    Matrix_1.2-17     
-## [19] plyr_1.8.4         pkgconfig_2.0.2    broom_0.5.2       
-## [22] haven_2.1.0        mvtnorm_1.0-10     scales_1.0.0      
-## [25] openxlsx_4.1.0     rio_0.5.16         generics_0.0.2    
-## [28] ellipsis_0.1.0     TH.data_1.0-10     withr_2.1.2.9000  
-## [31] lazyeval_0.2.2     cli_1.1.0          crayon_1.3.4      
-## [34] readxl_1.3.1       evaluate_0.13      fansi_0.4.0       
-## [37] nlme_3.1-139       MASS_7.3-51.4      xml2_1.2.0        
-## [40] foreign_0.8-71     tools_3.6.0        data.table_1.12.2 
-## [43] hms_0.4.2          matrixStats_0.54.0 multcomp_1.4-10   
-## [46] munsell_0.5.0      zip_2.0.1          compiler_3.6.0    
-## [49] rlang_0.3.4        grid_3.6.0         rstudioapi_0.10   
-## [52] labeling_0.3       rmarkdown_1.12     gtable_0.3.0      
-## [55] codetools_0.2-16   abind_1.4-5        curl_3.3          
-## [58] R6_2.4.0           zoo_1.8-5          lubridate_1.7.4   
-## [61] knitr_1.22         utf8_1.1.4         libcoin_1.0-4     
+## [19] pkgconfig_2.0.2    broom_0.5.2        haven_2.1.0       
+## [22] mvtnorm_1.0-11     scales_1.0.0       openxlsx_4.1.0.1  
+## [25] rio_0.5.16         generics_0.0.2     ellipsis_0.2.0.1  
+## [28] TH.data_1.0-10     withr_2.1.2.9000   lazyeval_0.2.2    
+## [31] cli_1.1.0          crayon_1.3.4       readxl_1.3.1      
+## [34] evaluate_0.14      fansi_0.4.0        nlme_3.1-140      
+## [37] MASS_7.3-51.4      xml2_1.2.0         foreign_0.8-71    
+## [40] tools_3.6.0        data.table_1.12.2  hms_0.4.2         
+## [43] matrixStats_0.54.0 multcomp_1.4-10    munsell_0.5.0     
+## [46] zip_2.0.2          compiler_3.6.0     rlang_0.4.0       
+## [49] grid_3.6.0         rstudioapi_0.10    labeling_0.3      
+## [52] rmarkdown_1.13     gtable_0.3.0       codetools_0.2-16  
+## [55] abind_1.4-5        curl_3.3           R6_2.4.0          
+## [58] zoo_1.8-6          lubridate_1.7.4    knitr_1.23        
+## [61] utf8_1.1.4         zeallot_0.1.0      libcoin_1.0-4     
 ## [64] modeltools_0.2-22  stringi_1.4.3      parallel_3.6.0    
-## [67] Rcpp_1.0.1         tidyselect_0.2.5   xfun_0.6
+## [67] Rcpp_1.0.1         vctrs_0.1.0        tidyselect_0.2.5  
+## [70] xfun_0.8
 ```
 

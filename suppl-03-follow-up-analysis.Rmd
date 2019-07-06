@@ -14,7 +14,7 @@ library(coin)
 library(car)
 
 # Set plot theme
-theme_set(new = theme_bw())
+theme_set(new = theme_bw(base_size = 16))
 
 # Grey palette (white to black)
 grey_pal <- colorRampPalette(colors = c('#FFFFFF', '#000000'),
@@ -24,6 +24,8 @@ grey_pal <- colorRampPalette(colors = c('#FFFFFF', '#000000'),
 knitr::opts_chunk$set(warning = FALSE,
                       message = FALSE, 
                       fig.retina = 2,
+                      fig.height = 8.2,
+                      fig.width = 8,
                       fig.align = 'center',
                       fig.path = 'figures/suppl-03-follow-up-analysis/')
 ```
@@ -482,8 +484,14 @@ data_v2 %>%
     labs(title = 'Number of days of follow-up',
          subtitle = '(All participants)',
          y = 'Days') +
-    theme(axis.title.x = element_blank(),
-          axis.text.x = element_blank())
+    theme(legend.position = 'top',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_blank(),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
 
 ## Conditional on SN
 data_v2 %>%
@@ -495,7 +503,15 @@ data_v2 %>%
     labs(title = 'Number of days of follow-up',
          subtitle = 'SN:yes vs SN:no',
          y = 'Days',
-         x = 'SN present')
+         x = 'SN present') +
+    theme(legend.position = 'top',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_text(size = 22),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
 
 # Stats
 normal_test(max_duration ~ factor(sn),
@@ -544,7 +560,15 @@ data_v1 %>%
     labs(title = 'Days between successive clinic visit ',
          subtitle = '(All participants)',
          y = 'Days',
-         x = 'Visit interval')
+         x = 'Visit interval') +
+    theme(legend.position = 'top',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_text(size = 22),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
 
 ## Conditional on SN
 data_v1 %>%
@@ -557,11 +581,19 @@ data_v1 %>%
     geom_point(position = position_jitterdodge(jitter.height = 0)) +
     scale_x_discrete(labels = c('1 to 2', '2 to 3',
                                 '3 to 4', '4 to 5')) +
-    scale_fill_grey(name = 'Neuropathy\npresent') +
+    scale_fill_grey(name = 'Neuropathy present') +
     labs(title = 'Days between successive clinic visits',
          subtitle = 'SN:yes vs SN:no',
          y = 'Days',
-         x = 'Visit interval') 
+         x = 'Visit interval') +
+    theme(legend.position = 'top',
+          legend.title = element_text(size = 16),
+          legend.text = element_text(size = 16),
+          axis.title = element_text(size = 22),
+          axis.text = element_text(size = 20,
+                                   colour = '#000000'),
+          plot.title = element_text(size = 22),
+          panel.grid = element_blank())
 
 # Stats
 ## Generate data
