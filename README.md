@@ -1,7 +1,7 @@
 # Incidence of HIV-associated sensory neuropathy
 
 ## Bibliometric information
-Pillay P, Wadley AL, Cherry CL, Karstaedt AS, Kamerman PR. HIV-associated sensory neuropathy continues to be a problem in South Africans starting tenofovir-based antiretroviral treatment.
+Pillay P, Wadley AL, Cherry CL, Karstaedt AS, Kamerman PR. HIV-associated sensory neuropathy continues to be a problem in individuals starting tenofovir-based antiretroviral treatment.
 
 ## Abstract
 
